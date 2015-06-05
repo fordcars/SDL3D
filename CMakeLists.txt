@@ -1,0 +1,140 @@
+# I think this only works with Visual Studio on Windows, sorry :(
+# TODO: Repair msvcrt.h conflict on Windows, Make it work with everything, make it funner to use
+
+cmake_minimum_required(VERSION 2.6)
+project(SDL3D)
+
+# A list of header and source files used by your application.
+set(SOURCES
+    src/SDL3D.cpp
+	src/Game.cpp
+	src/HelperFunctions.cpp
+	src/ResourceManager.cpp
+)
+set(HEADERS
+    src/SDL3D.h
+	src/Game.h
+	src/HelperFunctions.h
+	src/Definitions.h
+	src/ResourceManager.h
+)
+
+set(VS_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
+set(XCODE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL3D.app/Contents/MacOS/SDL3D)
+
+set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource)
+set(RESOURCE_DIR_EXE resource) # The resource in the executable's directory
+set(ARCHITECTURE x86)
+
+# {Doesn't) Repair conflicts with msvcrt.lib
+SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
+    "/NODEFAULTLIBS:LIBCMT" )
+SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
+    "/NODEFAULTLIBS:MSVCRT" )
+SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
+    "/NODEFAULTLIBS:MSVCPRTD" )
+	
+SET(CMAKE_CXX_FLAGS_DEBUG
+	"${CMAKE_CXX_FLAGS_DEBUG} /wd4100 /wd4127 /wd4189 /wd4512 /wd4702"
+	CACHE STRING "Debug builds CMAKE CXX flags " FORCE )
+
+# The following code finds SDL2-2.0.3 in your checkout on OS X, Linux
+# as well as Windows.
+set(SDL_FOLDER ${LIB_DIR}/SDL2-2.0.3
+    CACHE STRING "Path to SDL2-2.0.3" FORCE)
+find_library(SDL_LIBRARY
+    NAMES SDL2-2.0.3 SDL2
+    PATHS ${SDL_FOLDER}/lib/${ARCHITECTURE}
+    PATH_SUFFIXES local/lib VisualC/SDL2/Release
+    NO_DEFAULT_PATH
+)
+find_library(SDLMAIN_LIBRARY
+    NAMES SDL2main
+    PATHS ${SDL_FOLDER}/lib/${ARCHITECTURE}
+    PATH_SUFFIXES local/lib VisualC/SDL2main/Release
+    NO_DEFAULT_PATH
+)
+
+# GLEW
+set(GLEW_FOLDER ${LIB_DIR}/glew-1.12.0
+    CACHE STRING "Path to glew-1.12.0" FORCE)
+	
+find_library(GLEW_LIBRARY
+    NAMES glew32
+    PATHS ${GLEW_FOLDER}/lib/Release/Win32
+    PATH_SUFFIXES local/lib
+    NO_DEFAULT_PATH
+)
+
+# we also need to find the system's OpenGL version
+find_package(OpenGL REQUIRED)
+
+# on OS X we also have to add '-framework Cocoa' as library.  This is
+# actually a bit of an hack but it's easy enough and reliable.
+set(EXTRA_LIBS "")
+if (APPLE)
+    set(EXTRA_LIBS ${EXTRA_LIBS} "-framework Cocoa")
+endif()
+
+# our own include folder and the SDL one are additional folders we
+# want to have on our path.
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${SDL_FOLDER}/include
+	${GLEW_FOLDER}/include
+)
+
+# Now we define what makes our executable.  First thing is the name,
+# WIN32 is needed to make this a Win32 GUI application, MACOSX_BUNDLE
+# activates bundle mode on OS X and the last two things are our source
+# and header files this executable consists of.
+add_executable(
+    SDL3D
+    WIN32
+    MACOSX_BUNDLE
+    ${SOURCES}
+    ${HEADERS}
+)
+
+# Lastly we have to link the OpenGL libraries, SDL and the cocoa
+# framework to our application.  The latter is only happening on
+# OS X obviously.
+target_link_libraries(
+    SDL3D
+	${GLEW_LIBRARY}
+    ${OPENGL_LIBRARIES}
+    ${SDL_LIBRARY}
+    ${SDLMAIN_LIBRARY}
+    ${EXTRA_LIBS}
+)
+
+# If this is Windows, copy the DLL next to the program
+if(WIN32)
+    add_custom_command(TARGET SDL3D POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${SDL_FOLDER}/lib/${ARCHITECTURE}/SDL2.dll ${VS_OUTPUT_DIR}/SDL2.dll)
+
+    add_custom_command(TARGET SDL3D POST_BUILD # GLEW
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${GLEW_FOLDER}/bin/Release/Win32/glew32.dll ${VS_OUTPUT_DIR}/glew32.dll)
+		
+	add_custom_command(TARGET SDL3D POST_BUILD # Copy resources
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${RESOURCE_DIR} ${VS_OUTPUT_DIR}/${RESOURCE_DIR_EXE})
+endif()
+
+# If this is Apple, copy the DLL into the Frameworks folder of the .app using the script frameworkify.py
+if(APPLE)
+    add_custom_command(TARGET SDL3D POST_BUILD
+        COMMAND python scripts/frameworkify.py ${XCODE_OUTPUT_DIR}
+        ${SDL_LIBRARY})
+
+    add_custom_command(TARGET SDL3D POST_BUILD # GLEW
+        COMMAND python scripts/frameworkify.py ${XCODE_OUTPUT_DIR}
+        ${GLEW_LIBRARY})
+		
+	add_custom_command(TARGET SDL3D POST_BUILD # Copy resources
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${RESOURCE_DIR} ${XCODE_OUTPUT_DIR}/${RESOURCE_DIR_EXE})
+endif()

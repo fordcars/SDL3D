@@ -1,0 +1,5 @@
+Visual Studio (DOESN'T WORK):
+-Tools -> Options -> Debugging -> Symbols -> and check the "Microsoft Symbol Servers" option.
+-Start .exe
+-In Visual Studio, Debug -> Attach to Process -> attach to the .exe
+-In the .exe, click 'Retry'

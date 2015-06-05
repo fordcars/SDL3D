@@ -1,0 +1,2 @@
+-Use C-strings when you think it is more logical to do so (things that would be hard-coded, for example)
+-Use unique_ptr instead of normal pointers for class instances
