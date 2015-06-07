@@ -2,7 +2,6 @@
 #include <Definitions.h>
 
 #include <SDL.h>
-#include <string>
 #include <iostream>
 #include <fstream>
 
@@ -36,7 +35,7 @@ namespace HelperFunctions
 		dataFile.close();
 	}
 
-	void info(const char *msg)
+	void info(const std::string &msg)
 	{
 		std::ofstream dataFile;
 		dataFile.open(LOG_FILE, std::ios::app);
@@ -44,18 +43,16 @@ namespace HelperFunctions
 		dataFile.close();
 	}
 
-	void crash(const char *msg)
+	void crash(const std::string &msg)
 	{
-		// Od way of doing this
-		std::string strMsg(msg); // const char * to string
 		std::string sdlError = SDL_GetError();
 
-		std::string fullString = "Error: " + strMsg + "\n"; // Concentenate
+		std::string fullString = "Error: " + msg + "\n"; // Concentenate
 
 		if(sdlError.length()>0)
 			fullString += "SDL error: " + sdlError + "\n";
 
-		info(fullString.c_str());
+		info(fullString);
 
 		SDL_Quit();
 		exit(1); // Not the best, doesn't work?
@@ -71,9 +68,9 @@ namespace HelperFunctions
 			crash(error);
 			if(line!=-1)
 			{
-				std::string lineString = std::to_string(line); // const char * to string
+				std::string lineString = std::to_string(line); // int to string
 				lineString = "Line: " + lineString;
-				crash(lineString.c_str());
+				crash(lineString);
 			}
 
 			SDL_ClearError();

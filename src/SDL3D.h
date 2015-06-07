@@ -1,5 +1,5 @@
-#ifndef INC_SDL3D_HPP
-#define INC_SDL3D_HPP
+#ifndef SDL3D_H_
+#define SDL3D_H_
 
 /* Include windows.h properly on Windows */
 #if defined(WIN32) || defined(_WINDOWS)
@@ -8,4 +8,4 @@
 #  include <windows.h>
 #endif
 
-#endif
+#endif /* SDL3D_H_ */

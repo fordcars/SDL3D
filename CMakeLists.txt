@@ -22,8 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# I think this only works with Visual Studio on Windows, sorry :(
-# TODO: Make it work with everything, make it funner to use
+# TODO: Make it work with everything (Linux), make it funner to use
 
 cmake_minimum_required(VERSION 2.6)
 project(SDL3D)

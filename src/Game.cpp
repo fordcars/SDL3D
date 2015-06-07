@@ -11,20 +11,16 @@
 
 using namespace HelperFunctions;
 
-Game::Game(const char *gameName, int width, int height, const char *resourceDir) // Constructor
+Game::Game(const std::string &gameName, int width, int height, const std::string &resourceDir) : mResourceManager(resourceDir)// Constructor
 {
-	mGameName = gameName; // Since std::string casting thingy is implicit, it converts automatically
-	mResourceDir = resourceDir;
+	mGameName = gameName; // Copy string
 
 	mGameWidth = width;
 	mGameHeight = height;
-
-	mResourceManager = new ResourceManager(mResourceDir.c_str());
 }
 
 Game::~Game() // Deconstructor
 {
-	delete mResourceManager;
 	quit();
 }
 
@@ -65,7 +61,7 @@ void Game::init()
 	std::string glVersion;
 	glVersion = (const char *)glGetString(GL_VERSION);
 	glVersion = "Graphics: " + glVersion;
-	info(glVersion.c_str());
+	info(glVersion);
 }
 
 void Game::quit()
@@ -87,7 +83,7 @@ SDL_GLContext Game::getMainContext()
 	return mMainContext;
 }
 
-ResourceManager *Game::getResourceManager()
+ResourceManager &Game::getResourceManager() // Returns a reference
 {
 	return mResourceManager;
 }

@@ -12,11 +12,12 @@ typedef std::unique_ptr<Game> gameType;
 
 int main(int argc, char **argv)
 {
-	gameType game = gameType(new Game("SDL3d", 800, 600, "resource/")); // Smart pointer, calls deconstructor when the scop ends
+	gameType game = gameType(new Game("SDL3d", 800, 600, "resource/")); // Smart pointer, calls deconstructor when the scope ends (this is an example of smart pointer)
+																		// It would of been better to use a reference instead (no pointer).
 	game->init();
 	
-	game->getResourceManager()->addShader("Basic", "basic.v.glsl", "basic.f.glsl");
-	game->getResourceManager()->findShader("Basic");
+	game->getResourceManager().addShader("Basic", "basic.v.glsl", "basic.f.glsl");
+	game->getResourceManager().findShader("Basic");
 
     return 0;
 }

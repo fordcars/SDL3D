@@ -7,7 +7,7 @@
 
 using namespace HelperFunctions;
 
-ResourceManager::ResourceManager(const char* resourceDir)
+ResourceManager::ResourceManager(const std::string &resourceDir)
 {
 	mResourceDir = resourceDir;
 }
@@ -17,13 +17,13 @@ ResourceManager::~ResourceManager()
 	clearShaders();
 }
 
-void ResourceManager::appendShader(std::string shaderName, GLuint shaderProgram)
+void ResourceManager::appendShader(const std::string &shaderName, GLuint shaderProgram)
 {
 	std::pair<std::string, GLuint> shader (shaderName, shaderProgram);
 	mShaders.insert(shader);
 }
 
-std::string ResourceManager::getFileContents(const char *filePath) // Returns the contents of the file
+std::string ResourceManager::getFileContents(const std::string &filePath) // Returns the contents of the file
 {
 	std::ifstream in(filePath, std::ios::in | std::ios::binary);
 	if (in)
@@ -40,7 +40,7 @@ std::string ResourceManager::getFileContents(const char *filePath) // Returns th
 	{
 		std::string crashLog = filePath;
 		crashLog += " cannot be opened!";
-		crash(crashLog.c_str());
+		crash(crashLog);
 		return 0;
 	}
 }
@@ -59,7 +59,7 @@ void ResourceManager::showGLLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PF
 }
 
 
-GLuint ResourceManager::compileShader(const char *shaderFileName, const char *shaderCode, size_t length, GLenum type) // fileName for debugging
+GLuint ResourceManager::compileShader(const std::string &shaderFileName, const std::string &shaderCode, size_t length, GLenum type) // fileName for debugging
 {
 	GLuint shader = glCreateShader(type);
 	GLint shaderOk;
@@ -70,9 +70,9 @@ GLuint ResourceManager::compileShader(const char *shaderFileName, const char *sh
 		return 0;
 	}
 
-	int shaderLength = static_cast<int>(length); // TODO
+	int shaderLength = static_cast<int>(length);
 
-	const char *shaderFiles[] = {shaderCode}; // Pointer to array of pointers
+	const char *shaderFiles[] = {shaderCode.c_str()}; // Pointer to array of pointers
 	const int shaderFilesLength[] = {shaderLength}; // Array
 
 	if(shaderLength==0) // If there is no source
@@ -87,7 +87,7 @@ GLuint ResourceManager::compileShader(const char *shaderFileName, const char *sh
 	{
 		std::string error = "Failed to compile shader '";
 		error = error + shaderFileName + "'.";
-		crash(error.c_str());
+		crash(error);
 		showGLLog(shader, glGetShaderiv, glGetShaderInfoLog); // More log info
 		glDeleteShader(shader);
 
@@ -97,7 +97,7 @@ GLuint ResourceManager::compileShader(const char *shaderFileName, const char *sh
 	return shader;
 }
 
-GLuint ResourceManager::linkShaderProgram(const char *shaderProgramName, GLuint vertexShader, GLuint fragmentShader)
+GLuint ResourceManager::linkShaderProgram(const std::string &shaderProgramName, GLuint vertexShader, GLuint fragmentShader)
 {
 	GLint programOk;
 
@@ -112,7 +112,7 @@ GLuint ResourceManager::linkShaderProgram(const char *shaderProgramName, GLuint 
 	{
 		std::string error = "Failed to link shader program '";
 		error = error + shaderProgramName + "'.";
-		crash(error.c_str());
+		crash(error);
 		showGLLog(program, glGetProgramiv, glGetProgramInfoLog); // More log info
 		glDeleteProgram(program);
 
@@ -122,16 +122,16 @@ GLuint ResourceManager::linkShaderProgram(const char *shaderProgramName, GLuint 
 	return program;
 }
 
-GLuint ResourceManager::findShader(const char *shaderName)
+GLuint ResourceManager::findShader(const std::string &shaderName)
 {
 	// http://www.cplusplus.com/reference/unordered_map/unordered_map/find/
-	shaderMap::const_iterator got = mShaders.find(std::string(shaderName));
+	shaderMap::const_iterator got = mShaders.find(shaderName);
 
 	if(got==mShaders.end())
 	{
 		std::string error = shaderName;
 		error = "Shader '" + error + "' not found!";
-		crash(error.c_str());
+		crash(error);
 		return 0;
 	}
 
@@ -143,9 +143,9 @@ void ResourceManager::clearShaders()
 	mShaders.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
 }
 
-void ResourceManager::addShader(const char *shaderName, const char *vertexShaderFile, const char *fragmentShaderFile)
+void ResourceManager::addShader(const std::string &shaderName, const std::string &vertexShaderFile, const std::string &fragmentShaderFile)
 {
-	std::string vertexFilePath = vertexShaderFile;
+	std::string vertexFilePath = vertexShaderFile; // Copy strings, is this useful?
 	std::string fragmentFilePath = fragmentShaderFile;
 
 	vertexFilePath = mResourceDir + vertexFilePath; // All resources are in the resource dir
@@ -158,5 +158,5 @@ void ResourceManager::addShader(const char *shaderName, const char *vertexShader
 	GLuint fragmentShader = compileShader(fragmentFilePath.c_str(), fragmentShaderCode.c_str(), fragmentShaderCode.length(), GL_FRAGMENT_SHADER);
 	GLuint shaderProgram = linkShaderProgram(shaderName, vertexShader, fragmentShader);
 
-	appendShader(std::string(shaderName), shaderProgram); // Convert to std::string.
+	appendShader(shaderName, shaderProgram);
 }

@@ -1,0 +1,3 @@
+C:/Users/Carl/Documents/GitHub/SDL3D/build/CMakeFiles/SDL3D.dir
+C:/Users/Carl/Documents/GitHub/SDL3D/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Carl/Documents/GitHub/SDL3D/build/CMakeFiles/ZERO_CHECK.dir

@@ -1,2 +1,2 @@
--Use C-strings when you think it is more logical to do so (things that would be hard-coded, for example)
--Use unique_ptr instead of normal pointers for class instances
+-Try to always use std::strings. When you have function taking an std::string, define that as (const string &param) when you don't need to modify the string. This creates a read-only reference to the string. It is faster than passing the string itself, since doing this copies the string.
+-Use references or smart pointers instead of pointers.
