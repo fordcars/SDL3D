@@ -17,48 +17,6 @@ ResourceManager::~ResourceManager()
 	clearShaders();
 }
 
-void ResourceManager::appendShader(const std::string &shaderName, GLuint shaderProgram)
-{
-	std::pair<std::string, GLuint> shader (shaderName, shaderProgram);
-	mShaders.insert(shader);
-}
-
-std::string ResourceManager::getFileContents(const std::string &filePath) // Returns the contents of the file
-{
-	std::ifstream in(filePath, std::ios::in | std::ios::binary);
-	if (in)
-	{
-		std::string contents;
-
-		in.seekg(0, std::ios::end);
-		contents.resize((int)in.tellg()); // ASCII?
-		in.seekg(0, std::ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return(contents);
-	} else
-	{
-		std::string crashLog = filePath;
-		crashLog += " cannot be opened!";
-		crash(crashLog);
-		return 0;
-	}
-}
-
-void ResourceManager::showGLLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog)
-{
-	GLint logLength;
-	char *log;
-	
-	glGet_iv(object, GL_INFO_LOG_LENGTH, &logLength);
-	log = (char *)malloc(logLength);
-
-	glGet__InfoLog(object, logLength, NULL, log);
-	info(log);
-	free(log);
-}
-
-
 GLuint ResourceManager::compileShader(const std::string &shaderFileName, const std::string &shaderCode, size_t length, GLenum type) // fileName for debugging
 {
 	GLuint shader = glCreateShader(type);
@@ -122,25 +80,45 @@ GLuint ResourceManager::linkShaderProgram(const std::string &shaderProgramName, 
 	return program;
 }
 
-GLuint ResourceManager::findShader(const std::string &shaderName)
+void ResourceManager::appendShader(const std::string &shaderName, GLuint shaderProgram)
 {
-	// http://www.cplusplus.com/reference/unordered_map/unordered_map/find/
-	shaderMap::const_iterator got = mShaders.find(shaderName);
-
-	if(got==mShaders.end())
-	{
-		std::string error = shaderName;
-		error = "Shader '" + error + "' not found!";
-		crash(error);
-		return 0;
-	}
-
-	return got->second; // Dunno why you need ->
+	glMapPair shader(shaderName, shaderProgram);
+	mShaders.insert(shader);
 }
 
-void ResourceManager::clearShaders()
+std::string ResourceManager::getFileContents(const std::string &filePath) // Returns the contents of the file
 {
-	mShaders.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
+	std::ifstream in(filePath, std::ios::in | std::ios::binary);
+	if (in)
+	{
+		std::string contents;
+
+		in.seekg(0, std::ios::end);
+		contents.resize((int)in.tellg()); // ASCII?
+		in.seekg(0, std::ios::beg);
+		in.read(&contents[0], contents.size());
+		in.close();
+		return(contents);
+	} else
+	{
+		std::string crashLog = filePath;
+		crashLog += " cannot be opened!";
+		crash(crashLog);
+		return 0;
+	}
+}
+
+void ResourceManager::showGLLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog)
+{
+	GLint logLength;
+	char *log;
+	
+	glGet_iv(object, GL_INFO_LOG_LENGTH, &logLength);
+	log = (char *)malloc(logLength);
+
+	glGet__InfoLog(object, logLength, NULL, log);
+	info(log);
+	free(log);
 }
 
 void ResourceManager::addShader(const std::string &shaderName, const std::string &vertexShaderFile, const std::string &fragmentShaderFile)
@@ -159,4 +137,53 @@ void ResourceManager::addShader(const std::string &shaderName, const std::string
 	GLuint shaderProgram = linkShaderProgram(shaderName, vertexShader, fragmentShader);
 
 	appendShader(shaderName, shaderProgram);
+}
+
+GLuint ResourceManager::findShader(const std::string &shaderName)
+{
+	// http://www.cplusplus.com/reference/unordered_map/unordered_map/find/
+	glMap::const_iterator got = mShaders.find(shaderName);
+
+	if(got==mShaders.end())
+	{
+		std::string error = shaderName;
+		error = "Shader '" + error + "' not found!";
+		crash(error);
+		return 0;
+	}
+
+	return got->second; // Dunno why you need ->
+}
+
+void ResourceManager::clearShaders()
+{
+	mShaders.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
+}
+
+void ResourceManager::addUniform(const std::string &uniformName, GLuint shader)
+{
+	GLuint uniformID = glGetUniformLocation(shader, uniformName.c_str()); // Create the uniform variable
+	glMapPair uniform(uniformName, uniformID);
+	mUniforms.insert(uniform); // Insert in map
+}
+
+void ResourceManager::addUniform(const std::string &uniformName, const std::string &shaderName) // For us lazy developers
+{
+	GLuint shader = findShader(shaderName);
+	addUniform(uniformName, shader);
+}
+
+GLuint ResourceManager::findUniform(const std::string &uniformName)
+{
+	glMap::const_iterator got = mUniforms.find(uniformName);
+
+	if(got==mUniforms.end())
+	{
+		std::string error = uniformName;
+		error = "Uniform '" + error + "' not found!";
+		crash(error);
+		return 0;
+	}
+
+	return got->second;
 }

@@ -24,15 +24,21 @@
 
 # TODO: Make it work with everything (Linux), make it funner to use
 
+# NOTES: No need to modify this to add static libraries
+
 cmake_minimum_required(VERSION 2.6)
 project(SDL3D)
 
-# A list of header and source files used by your application.
+# A list of header and source files
 set(SOURCES
     src/SDL3D.cpp
 	src/Game.cpp
 	src/HelperFunctions.cpp
 	src/ResourceManager.cpp
+	src/InputHandler.cpp
+	src/SimpleTimer.cpp
+	src/Camera.cpp
+	src/Object.cpp
 )
 set(HEADERS
     src/SDL3D.h
@@ -40,6 +46,10 @@ set(HEADERS
 	src/HelperFunctions.h
 	src/Definitions.h
 	src/ResourceManager.h
+	src/InputHandler.h
+	src/SimpleTimer.h
+	src/Camera.h
+	src/Object.h
 )
 
 set(VS_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
@@ -101,11 +111,12 @@ if (APPLE)
 endif()
 
 # our own include folder and the SDL one are additional folders we
-# want to have on our path.
+# want to have on our path. These files here can now be included.
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${SDL_FOLDER}/include
+    ${SDL_FOLDER}/include # For shorter includes
 	${GLEW_FOLDER}/include
+	${LIB_DIR} # All other libraries
 )
 
 # Now we define what makes our executable.  First thing is the name,

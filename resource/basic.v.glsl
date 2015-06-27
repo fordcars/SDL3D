@@ -1,13 +1,14 @@
-﻿uniform mat4 gl_ModelViewMatrix; // From OpenGl
-uniform mat4 gl_ProjectionMatrix; // Uniform variables can only be read. They remain constant through the whole collection of vertices (or anything
-									// beyond, like per frame)
+﻿#version 330 core
 
-attribute vec4 gl_Vertex; // Attribute variables are also read-only. 
-							//They can change per vertex, and, in this case, hold information per vertex (the vertex's position).
+layout(location = 0) in vec3 vertexPosition_modelspace;
+uniform mat4 MVP;
+
+varying vec3 fScreenPos;
 
 void main()
 {
-	gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
-	// or shortened: gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-	// or optimized (not sure if this works): glPosition = ftransform(void);
+	vec4 v = vec4(vertexPosition_modelspace, 1);
+	gl_Position = MVP * v;
+	
+	fScreenPos = vec3(gl_Position.xyz);
 }

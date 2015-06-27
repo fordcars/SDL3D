@@ -43,6 +43,12 @@ namespace HelperFunctions
 		dataFile.close();
 	}
 
+	void warn(const std::string &msg)
+	{
+		std::string fullString = "Warning: " + msg + "\n"; // Concentenate
+		info(fullString);
+	}
+
 	void crash(const std::string &msg)
 	{
 		std::string sdlError = SDL_GetError();

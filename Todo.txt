@@ -1,10 +1,13 @@
--Make findShader() work!
--Update() and classes for objects (level, enemy etc)
+-Do something with crash()! Quits after a while, unrelated?
+-Base class entity that handles lighting etc (do tutorial)
 
--Use OpenGL context with shaders and all :)
+
+-Levels/enemies
 -3d animations: Either vertex shader or CPU for moving vertices
 -Make sure I am including things without #including other files more than once
 
 Only because some libraries are compiled as Release, and not Debug: 'warning LNK4098: defaultlib 'msvcrt.lib' conflicts with use of other libs; use /NODEFAULTLIB:library 2> -SDL3D.vcxproj -> C:\Users\Carl\Desktop\Development\SDL3D\build\Debug\SDL3D.exe'. Compile program as Release to repair this.
 
 Maybe I should of had a Display class? Oh well
+
+-Less getters/setters!
