@@ -121,13 +121,19 @@ void ResourceManager::showGLLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PF
 	free(log);
 }
 
-void ResourceManager::addShader(const std::string &shaderName, const std::string &vertexShaderFile, const std::string &fragmentShaderFile)
+// Returns the full resource oath
+std::string ResourceManager::getFullResourcePath(const std::string &resourcePath)
+{
+	return mResourceDir + resourcePath;
+}
+
+GLuint ResourceManager::addShader(const std::string &shaderName, const std::string &vertexShaderFile, const std::string &fragmentShaderFile)
 {
 	std::string vertexFilePath = vertexShaderFile; // Copy strings, is this useful?
 	std::string fragmentFilePath = fragmentShaderFile;
 
-	vertexFilePath = mResourceDir + vertexFilePath; // All resources are in the resource dir
-	fragmentFilePath = mResourceDir + fragmentFilePath;
+	vertexFilePath = getFullResourcePath(vertexFilePath); // All resources are in the resource dir
+	fragmentFilePath = getFullResourcePath(fragmentFilePath);
 
 	std::string vertexShaderCode = getFileContents(vertexFilePath.c_str());
 	std::string fragmentShaderCode = getFileContents(fragmentFilePath.c_str());
@@ -137,6 +143,8 @@ void ResourceManager::addShader(const std::string &shaderName, const std::string
 	GLuint shaderProgram = linkShaderProgram(shaderName, vertexShader, fragmentShader);
 
 	appendShader(shaderName, shaderProgram);
+
+	return shaderProgram;
 }
 
 GLuint ResourceManager::findShader(const std::string &shaderName)
@@ -160,17 +168,20 @@ void ResourceManager::clearShaders()
 	mShaders.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
 }
 
-void ResourceManager::addUniform(const std::string &uniformName, GLuint shader)
+// A uniform is attached to a shader, but can be modified whenever
+GLuint ResourceManager::addUniform(const std::string &uniformName, GLuint shader) // Uniform name is the name as in the shader
 {
 	GLuint uniformID = glGetUniformLocation(shader, uniformName.c_str()); // Create the uniform variable
 	glMapPair uniform(uniformName, uniformID);
 	mUniforms.insert(uniform); // Insert in map
+
+	return uniformID;
 }
 
-void ResourceManager::addUniform(const std::string &uniformName, const std::string &shaderName) // For us lazy developers
+GLuint ResourceManager::addUniform(const std::string &uniformName, const std::string &shaderName) // For us lazy developers
 {
 	GLuint shader = findShader(shaderName);
-	addUniform(uniformName, shader);
+	return addUniform(uniformName, shader);
 }
 
 GLuint ResourceManager::findUniform(const std::string &uniformName)
@@ -181,6 +192,101 @@ GLuint ResourceManager::findUniform(const std::string &uniformName)
 	{
 		std::string error = uniformName;
 		error = "Uniform '" + error + "' not found!";
+		crash(error);
+		return 0;
+	}
+
+	return got->second;
+}
+
+GLuint ResourceManager::addTexture(const std::string &textureName, const std::string &texturePath) // Adds a texture to the map
+{
+	// Not the best code for getting BMP data
+	unsigned char header[54];
+	unsigned int dataPos;
+	unsigned width, height;
+	unsigned int imageSize;
+	unsigned char *data; // Actual RGB data
+
+	std::string fullPath = getFullResourcePath(texturePath);
+
+	std::string error = fullPath; // Use this for error messages
+
+	FILE *file = fopen(fullPath.c_str(), "rb");
+	if(!file)
+	{
+		error = "BMP image '" + error + "' could not be opened!";
+		crash(error);
+		return 0;
+	}
+
+	if(fread(header, 1, 54, file) != 54) // If it's not 54 bytes, crash!
+	{
+		error = "BMP image '" + error + "' is not a correct BMP file! (Header is not 54 bytes)";
+		crash(error);
+		return 0;
+	}
+
+	if(header[0] != 'B' || header[1] != 'M') // Not BMP file?
+	{
+		error = "BMP image '" + error + "' is not a correct BMP file! (No 'BM' present in header)";
+		crash(error);
+		return 0;
+	}
+
+	dataPos    = *(int*)&(header[0x0A]);
+	imageSize  = *(int*)&(header[0x22]);
+	width      = *(int*)&(header[0x12]);
+	height     = *(int*)&(header[0x16]);
+
+	// Some BMP files suck and miss some info, lets find those out if they are
+	if(imageSize==0)	imageSize = width*height*3; // 3: BGR I guess
+	if(dataPos==0)	    dataPos = 54; // The header is done this way
+
+	// Create a buffer
+	data = new unsigned char [imageSize]; // This gets deleted after glTexImage2D()
+
+	// Read the actual data
+	fread(data, 1, imageSize, file);
+
+	// Everything is in memory now, close the file
+	fclose(file);
+
+	// OpenGL
+	// Create one OpenGL texture
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	// "Bind" the new texture so that future functions will modify this
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	// Give the image to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+
+	delete(data);
+
+	// When we stretch (magnify) the image, use linear filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// When we minify the image, use a linear blend of two mipmaps, each filtered linearly too
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_2D); // Generate the mipmaps (a bunch of copies of the texture of different sizes)
+
+	// Add the texture to the map
+	glMapPair texturePair(textureName, textureID);
+	mTextures.insert(texturePair); // Insert in map
+
+	return textureID;
+}
+
+GLuint ResourceManager::findTexture(const std::string &textureName)
+{
+	glMap::const_iterator got = mTextures.find(textureName);
+
+	if(got==mTextures.end())
+	{
+		std::string error = textureName;
+		error = "Texture '" + error + "' not found!";
 		crash(error);
 		return 0;
 	}

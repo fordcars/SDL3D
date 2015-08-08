@@ -11,6 +11,7 @@
 #include <Camera.h>
 
 #include <Object.h> // For testing
+#include <TexturedObject.h> // For testing
 
 class Game
 {

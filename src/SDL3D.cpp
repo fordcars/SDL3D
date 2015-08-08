@@ -16,7 +16,6 @@ int main(int argc, char **argv)
 																		// It would of been better to use a reference instead (no pointer).
 
 	game->init();
-
 	game->mainLoop(); // Runs the game, returns when the game quits
 
     return 0;

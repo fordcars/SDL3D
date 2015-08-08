@@ -39,6 +39,7 @@ set(SOURCES
 	src/SimpleTimer.cpp
 	src/Camera.cpp
 	src/Object.cpp
+	src/TexturedObject.cpp
 )
 set(HEADERS
     src/SDL3D.h
@@ -50,6 +51,7 @@ set(HEADERS
 	src/SimpleTimer.h
 	src/Camera.h
 	src/Object.h
+	src/TexturedObject.h
 )
 
 set(VS_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})

@@ -1,4 +1,4 @@
--Do something with crash()! Quits after a while, unrelated?
+-Do something with crash()! Quits after a while, unrelated? + opengl debugger for shaders
 -Base class entity that handles lighting etc (do tutorial)
 
 

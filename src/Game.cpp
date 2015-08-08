@@ -35,18 +35,21 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT};
 	mInputHandler.registerKeys(keys, 4);
 
-	GLuint vertexArrayID;
+	GLuint vertexArrayID; // VAO - vertex aray object
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
 
-	mResourceManager.addShader("Basic", "basic.v.glsl", "basic.f.glsl");
-	mResourceManager.findShader("Basic");
+	glEnable(GL_DEPTH_TEST);// Enable depth test (check if z is closer to the screen than last fragement's z)
+	glDepthFunc(GL_LESS); // Accept the fragment closer to the camera
+
+	mResourceManager.addShader("Textured", "textured.v.glsl", "textured.f.glsl");
+	mResourceManager.addTexture("Test", "Test.bmp");
 
 	// Uniforms
-	mResourceManager.addUniform("MVP", "Basic");
+	mResourceManager.addUniform("MVP", "Textured");
 
-	// Test
-	vertexArray vertices = {
+	// Test (Game.h, render() and here)
+	GLfloatArray vertices = {
 		-1.0f,-1.0f,-1.0f, // triangle 1 : begin
 		-1.0f,-1.0f, 1.0f,
 		-1.0f, 1.0f, 1.0f, // triangle 1 : end
@@ -85,11 +88,53 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 		1.0f,-1.0f, 1.0f
 	};
 
-	mCamera.setAspectRatio(800/600);
+	// Two UV coordinatesfor each vertex. They were created with Blender. You'll learn shortly how to do this yourself.
+	GLfloatArray UVCoords = {
+		0.000059f, 1.0f-0.000004f,
+		0.000103f, 1.0f-0.336048f,
+		0.335973f, 1.0f-0.335903f,
+		1.000023f, 1.0f-0.000013f,
+		0.667979f, 1.0f-0.335851f,
+		0.999958f, 1.0f-0.336064f,
+		0.667979f, 1.0f-0.335851f,
+		0.336024f, 1.0f-0.671877f,
+		0.667969f, 1.0f-0.671889f,
+		1.000023f, 1.0f-0.000013f,
+		0.668104f, 1.0f-0.000013f,
+		0.667979f, 1.0f-0.335851f,
+		0.000059f, 1.0f-0.000004f,
+		0.335973f, 1.0f-0.335903f,
+		0.336098f, 1.0f-0.000071f,
+		0.667979f, 1.0f-0.335851f,
+		0.335973f, 1.0f-0.335903f,
+		0.336024f, 1.0f-0.671877f,
+		1.000004f, 1.0f-0.671847f,
+		0.999958f, 1.0f-0.336064f,
+		0.667979f, 1.0f-0.335851f,
+		0.668104f, 1.0f-0.000013f,
+		0.335973f, 1.0f-0.335903f,
+		0.667979f, 1.0f-0.335851f,
+		0.335973f, 1.0f-0.335903f,
+		0.668104f, 1.0f-0.000013f,
+		0.336098f, 1.0f-0.000071f,
+		0.000103f, 1.0f-0.336048f,
+		0.000004f, 1.0f-0.671870f,
+		0.336024f, 1.0f-0.671877f,
+		0.000103f, 1.0f-0.336048f,
+		0.336024f, 1.0f-0.671877f,
+		0.335973f, 1.0f-0.335903f,
+		0.667969f, 1.0f-0.671889f,
+		1.000004f, 1.0f-0.671847f,
+		0.667979f, 1.0f-0.335851f
+	};
+
+	mCamera.setAspectRatio((float)(mGameWidth/mGameHeight));
 	mCamera.setFieldOfView(90);
 	mCamera.setPos(glm::vec3(4.0f, 3.0f, 3.0f));
 
-	test = new Object(vertices, 12 * 3); // Obviously a test
+	mResourceManager.addUniform("sampler2D", "Textured");
+
+	test = new TexturedObject(vertices, 12 * 3, mResourceManager.findTexture("Test"), UVCoords); // Obviously a test
 }
 
 void Game::update()
@@ -116,7 +161,6 @@ void Game::update()
 		mCamera.translate(glm::vec3(speed, 0, 0));
 	}
 
-
 	render();
 
 	if(fpsTimer.getTicks() < mTicksPerFrame) // Frame was too quick!
@@ -140,15 +184,18 @@ void Game::doEvents()
 void Game::render()
 {
 	mCamera.updateMatrices();
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set clear color
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
+
 	glm::mat4 model = glm::mat4(1.0f); // Normally would have rotation/translation/scaling
 	glm::mat4 MVP = mCamera.getProjectionMatrix() * mCamera.getViewMatrix() * model; // Yey
 
 	glUniformMatrix4fv(mResourceManager.findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram(mResourceManager.findShader("Basic"));
+	glUseProgram(mResourceManager.findShader("Textured"));
 
+	glUniform1i(mResourceManager.findUniform("sampler2D"), GL_TEXTURE0); // Use first texture in the shader
 	test->render();
 
 	SDL_GL_SwapWindow(mMainWindow);
