@@ -3,7 +3,7 @@
 
 #include <GL/glew.h>
 #include <SDL_opengl.h>
-#include <gl/GLU.h>
+#include <GL/GLU.h>
 #include <SDL.h>
 
 #include <ResourceManager.h>
@@ -36,10 +36,12 @@ private:
 
 	bool mQuitting; // If set to true, the game will quit at the end of the frame
 
+	void checkCompability();
 	void preMainLoopInit();
-	void update();
 	void doEvents();
 	void render();
+	void checkForErrors();
+	void update();
 
 	// Test
 	Object *test;

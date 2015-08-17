@@ -1,4 +1,5 @@
--Do something with crash()! Quits after a while, unrelated? + opengl debugger for shaders
+-SWITCH FROM GLEW TO SOMTHING ELSE -- glad master on desktop and glad in lib
+-Check out error when quitting
 -Base class entity that handles lighting etc (do tutorial)
 
 
@@ -11,3 +12,5 @@ Only because some libraries are compiled as Release, and not Debug: 'warning LNK
 Maybe I should of had a Display class? Oh well
 
 -Less getters/setters!
+
+-Sometimes stays alive for a while?

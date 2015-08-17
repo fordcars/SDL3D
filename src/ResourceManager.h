@@ -5,6 +5,11 @@
 #include <string>
 #include <unordered_map>
 
+// For DDS files
+#define FOURCC_DXT1 0x31545844
+#define FOURCC_DXT3 0x33545844
+#define FOURCC_DXT5 0x35545844
+
 // A shader is a member of the unordered_map mShaders (std::string shaderName, GLuint shaderProgram)
 // All paths are prefixed with mResourceDir
 
@@ -23,6 +28,7 @@ private:
 	static GLuint linkShaderProgram(const std::string &shaderProgramName, GLuint vertexShader, GLuint fragmentShader);
 
 	void appendShader(const std::string &shaderName, GLuint shaderProgram);
+	void appendTexture(const std::string &textureName, GLuint texture);
 
 	std::string mResourceDir;
 
@@ -31,7 +37,7 @@ public:
 	~ResourceManager();
 
 	static std::string getFileContents(const std::string &fileName); // Static functions: no need for an instance to use them!
-	static void showGLLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog);
+	static std::string getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog);
 
 	std::string getFullResourcePath(const std::string &fileName);
 
@@ -43,7 +49,8 @@ public:
 	GLuint addUniform(const std::string &uniformName, const std::string &shaderName);
 	GLuint findUniform(const std::string &uniformName);
 
-	GLuint addTexture(const std::string &textureName, const std::string &texturePath);
+	GLuint addBMPTexture(const std::string &textureName, const std::string &texturePath);
+	GLuint addDDSTexture(const std::string &textureName, const std::string &texturePath);
 	GLuint findTexture(const std::string &textureName);
 };
 

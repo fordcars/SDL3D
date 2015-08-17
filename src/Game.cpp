@@ -30,6 +30,45 @@ Game::~Game() // Deconstructor
 	quit();
 }
 
+void Game::checkCompability() // Checks if the game will work on the user's setup
+{
+	std::string extensions[] = {"GL_EXT_texture_compression_s3tc"};
+	int numberOfExtensions = 1;
+
+	GLint numExt;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
+
+	bool isCompatible = true; // True if the game is compatible with the setup (after we are done checking the setup here)
+	
+	for(int i = 0; i < numberOfExtensions; i++)
+	{
+		bool foundExtension = false;
+
+		for(int extI = 0; extI < numExt; extI++)
+		{
+			std::string extensionString = (reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, extI))); // const unsigned char * to std::string
+			
+			if(extensionString == extensions[i])
+			{
+				foundExtension = true;
+				break; // Breaks from the most inner loop
+			}
+		}
+
+		if(!foundExtension) // If the extension isn't found
+		{
+			warn("The extension " + extensions[i] + " has not been found on your system.");
+			isCompatible = false; // Not compatible!
+			// Don't break, let the user know what other extensions are not found (if it is the case)
+		}
+	}
+
+	if(isCompatible)
+		info("Your system seems to be compatible with the game!");
+	else
+		crash("Your system is not compatible with the game. Please take a look at the generated warnings.");
+}
+
 void Game::preMainLoopInit() // A few initializations before the main game loop
 {
 	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT};
@@ -42,8 +81,12 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	glEnable(GL_DEPTH_TEST);// Enable depth test (check if z is closer to the screen than last fragement's z)
 	glDepthFunc(GL_LESS); // Accept the fragment closer to the camera
 
+	// Cull triangles which normal is not towards the camera
+	// If there are holes in the model because of this, click the "invert normals" button in your 3D modeler.
+	glEnable(GL_CULL_FACE);
+
 	mResourceManager.addShader("Textured", "textured.v.glsl", "textured.f.glsl");
-	mResourceManager.addTexture("Test", "Test.bmp");
+	mResourceManager.addDDSTexture("Test", "Test.DDS");
 
 	// Uniforms
 	mResourceManager.addUniform("MVP", "Textured");
@@ -137,38 +180,6 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	test = new TexturedObject(vertices, 12 * 3, mResourceManager.findTexture("Test"), UVCoords); // Obviously a test
 }
 
-void Game::update()
-{
-	SimpleTimer fpsTimer; // Frame rate (a reference)
-	fpsTimer.start();
-
-	doEvents();
-
-	float speed = 0.5;
-
-	if(mInputHandler.keyPressed(SDLK_UP))
-	{
-		mCamera.translate(glm::vec3(0, speed, 0));
-	} else if(mInputHandler.keyPressed(SDLK_DOWN))
-	{
-
-		mCamera.translate(glm::vec3(0, -speed, 0));
-	} else if(mInputHandler.keyPressed(SDLK_LEFT))
-	{
-		mCamera.translate(glm::vec3(-speed, 0, 0));
-	} else if(mInputHandler.keyPressed(SDLK_RIGHT))
-	{
-		mCamera.translate(glm::vec3(speed, 0, 0));
-	}
-
-	render();
-
-	if(fpsTimer.getTicks() < mTicksPerFrame) // Frame was too quick!
-	{
-		SDL_Delay(mTicksPerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
-	}
-}
-
 void Game::doEvents()
 {
 	SDL_Event event;
@@ -201,6 +212,60 @@ void Game::render()
 	SDL_GL_SwapWindow(mMainWindow);
 }
 
+void Game::checkForErrors() // Call each frame for safety
+{
+	GLenum err = glGetError();
+
+	if(err!=GL_NO_ERROR) // There is an error
+	{
+		if(err == GL_INVALID_ENUM)
+			warn("OpenGL error: GL_INVALID_ENUM");
+		else if(err == GL_INVALID_VALUE)
+			warn("OpenGL error: GL_INVALID_VALUE");
+		else if(err == GL_INVALID_OPERATION)
+			warn("OpenGL error: GL_INVALID_OPERATION");
+		else if(err == GL_STACK_OVERFLOW)
+			warn("OpenGL error: GL_STACK_OVERFLOW");
+		else if(err == GL_STACK_UNDERFLOW)
+			warn("OpenGL error: GL_STACK_UNDERFLOW");
+		else if(err == GL_OUT_OF_MEMORY)
+			warn("OpenGL error: GL_OUT_OF_MEMORY");
+	}
+}
+
+void Game::update()
+{
+	SimpleTimer fpsTimer; // Frame rate (a reference)
+	fpsTimer.start();
+
+	doEvents();
+
+	float speed = 0.5;
+
+	if(mInputHandler.keyPressed(SDLK_UP))
+	{
+		mCamera.translate(glm::vec3(0, speed, 0));
+	} else if(mInputHandler.keyPressed(SDLK_DOWN))
+	{
+
+		mCamera.translate(glm::vec3(0, -speed, 0));
+	} else if(mInputHandler.keyPressed(SDLK_LEFT))
+	{
+		mCamera.translate(glm::vec3(-speed, 0, 0));
+	} else if(mInputHandler.keyPressed(SDLK_RIGHT))
+	{
+		mCamera.translate(glm::vec3(speed, 0, 0));
+	}
+
+	render();
+	checkForErrors();
+
+	if(fpsTimer.getTicks() < mTicksPerFrame) // Frame was too quick!
+	{
+		SDL_Delay(mTicksPerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
+	}
+}
+
 void Game::init() // Starts the game
 {
 	HelperFunctions::clearDataOutput();
@@ -226,7 +291,7 @@ void Game::init() // Starts the game
 
 	SDL_GL_SetSwapInterval(1); // Kind of VSync?
 
-	glewExperimental = GL_TRUE; // Enable experimental GLEW for added functions
+	glewExperimental = GL_TRUE; // Enable experimental GLEW for added functions. THIS CAUSES A GL_INVALID_OPERATION ERROR.
 	GLenum err = glewInit(); // Init GLEW
 	if(err!=GLEW_OK)
 	{
@@ -240,6 +305,8 @@ void Game::init() // Starts the game
 	glVersion = (const char *)glGetString(GL_VERSION);
 	glVersion = "Graphics: " + glVersion;
 	info(glVersion);
+	
+	checkCompability();
 }
 
 void Game::mainLoop() // Starts the main loop

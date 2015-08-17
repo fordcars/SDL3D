@@ -45,10 +45,12 @@ GLuint ResourceManager::compileShader(const std::string &shaderFileName, const s
 	{
 		std::string error = "Failed to compile shader '";
 		error = error + shaderFileName + "'.";
-		crash(error);
-		showGLLog(shader, glGetShaderiv, glGetShaderInfoLog); // More log info
-		glDeleteShader(shader);
+		
+		std::string glLog = getGLShaderDebugLog(shader, glGetShaderiv, glGetShaderInfoLog); // Give it the right functions
+		glDeleteProgram(shader);
 
+		info(glLog);
+		crash(error);
 		return 0;
 	}
 
@@ -68,12 +70,14 @@ GLuint ResourceManager::linkShaderProgram(const std::string &shaderProgramName, 
 
 	if(!programOk)
 	{
-		std::string error = "Failed to link shader program '";
+		std::string error = "Failed to link shader program'";
 		error = error + shaderProgramName + "'.";
-		crash(error);
-		showGLLog(program, glGetProgramiv, glGetProgramInfoLog); // More log info
+		
+		std::string glLog = getGLShaderDebugLog(program, glGetProgramiv, glGetProgramInfoLog); // Give it the right functions
 		glDeleteProgram(program);
 
+		info(glLog);
+		crash(error);
 		return 0;
 	}
 	
@@ -84,6 +88,12 @@ void ResourceManager::appendShader(const std::string &shaderName, GLuint shaderP
 {
 	glMapPair shader(shaderName, shaderProgram);
 	mShaders.insert(shader);
+}
+
+void ResourceManager::appendTexture(const std::string &textureName, GLuint texture)
+{
+	glMapPair texturePair(textureName, texture);
+	mTextures.insert(texturePair); // Insert in map
 }
 
 std::string ResourceManager::getFileContents(const std::string &filePath) // Returns the contents of the file
@@ -108,17 +118,19 @@ std::string ResourceManager::getFileContents(const std::string &filePath) // Ret
 	}
 }
 
-void ResourceManager::showGLLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog)
+std::string ResourceManager::getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog)
 {
-	GLint logLength;
-	char *log;
+	GLint logLength; // Amount of characters
+	std::string log;
 	
-	glGet_iv(object, GL_INFO_LOG_LENGTH, &logLength);
-	log = (char *)malloc(logLength);
+	glGet_iv(object, GL_INFO_LOG_LENGTH, &logLength); // Get size
+	log.resize(logLength); // Resize string
 
-	glGet__InfoLog(object, logLength, NULL, log);
-	info(log);
-	free(log);
+	if(logLength)
+		glGet__InfoLog(object, logLength, NULL, &log[0]);
+
+	log.pop_back(); // Remove null terminator (\0) that OpenGL added
+	return "\n-----------GL LOG-----------\n" + log; // For looks
 }
 
 // Returns the full resource oath
@@ -140,11 +152,16 @@ GLuint ResourceManager::addShader(const std::string &shaderName, const std::stri
 
 	GLuint vertexShader = compileShader(vertexFilePath.c_str(), vertexShaderCode.c_str(), vertexShaderCode.length(), GL_VERTEX_SHADER); // Is this length stuff right?
 	GLuint fragmentShader = compileShader(fragmentFilePath.c_str(), fragmentShaderCode.c_str(), fragmentShaderCode.length(), GL_FRAGMENT_SHADER);
-	GLuint shaderProgram = linkShaderProgram(shaderName, vertexShader, fragmentShader);
 
-	appendShader(shaderName, shaderProgram);
+	if(vertexShader!=0 && fragmentShader!=0) // Valid shaders
+	{
+		GLuint shaderProgram = linkShaderProgram(shaderName, vertexShader, fragmentShader);
+		appendShader(shaderName, shaderProgram);
 
-	return shaderProgram;
+		return shaderProgram;
+	}
+
+	return 0; // Failed, but error messages should of already been logged by compileShader() and linkShader()
 }
 
 GLuint ResourceManager::findShader(const std::string &shaderName)
@@ -199,7 +216,8 @@ GLuint ResourceManager::findUniform(const std::string &uniformName)
 	return got->second;
 }
 
-GLuint ResourceManager::addTexture(const std::string &textureName, const std::string &texturePath) // Adds a texture to the map
+// When loading a BMP texture, mipmaps are generated automatically. Consider compressing textures into DDS files and use the corresponding function for adding them.
+GLuint ResourceManager::addBMPTexture(const std::string &textureName, const std::string &texturePath) // Adds a texture to the map
 {
 	// Not the best code for getting BMP data
 	unsigned char header[54];
@@ -213,7 +231,7 @@ GLuint ResourceManager::addTexture(const std::string &textureName, const std::st
 	std::string error = fullPath; // Use this for error messages
 
 	FILE *file = fopen(fullPath.c_str(), "rb");
-	if(!file)
+	if(file == NULL)
 	{
 		error = "BMP image '" + error + "' could not be opened!";
 		crash(error);
@@ -261,7 +279,7 @@ GLuint ResourceManager::addTexture(const std::string &textureName, const std::st
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); // Change the second GL_RGB for GL_BGR if the colors are inverted
 
 	delete(data);
 
@@ -272,9 +290,110 @@ GLuint ResourceManager::addTexture(const std::string &textureName, const std::st
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glGenerateMipmap(GL_TEXTURE_2D); // Generate the mipmaps (a bunch of copies of the texture of different sizes)
 
-	// Add the texture to the map
-	glMapPair texturePair(textureName, textureID);
-	mTextures.insert(texturePair); // Insert in map
+	appendTexture(textureName, textureID); // Add to the map (keep track of it)
+
+	return textureID; // May be useful?
+}
+
+// Loads and adds .DDS textures. Compress using DXT1, DXT3 or DXT5.
+GLuint ResourceManager::addDDSTexture(const std::string &textureName, const std::string &texturePath)
+{
+	unsigned char header[124];
+
+	std::string fullPath = getFullResourcePath(texturePath);
+	std::string error = fullPath; // Useful for generating error messages
+
+	FILE *fp;
+
+	// Try to open the file
+	fp = fopen(fullPath.c_str(), "rb"); // File pointer
+	if(fp == NULL)
+	{
+		error = "Texture '" + error + "' cannot be opened!";
+		crash(error);
+		return 0;
+	}
+
+	// Verify the type of file
+	char filecode[4];
+	fread(filecode, 1, 4, fp);
+	if(strncmp(filecode, "DDS ", 4) != 0)
+	{
+		fclose(fp);
+		error = "Texture '" + error + "' is not a correct DDS file!";
+		crash(error);
+		return 0;
+	}
+
+	// Get the surface description
+	fread(&header, 124, 1, fp);
+
+	unsigned int height        = *(unsigned int*)&(header[8]);
+	unsigned int width         = *(unsigned int*)&(header[12]);
+	unsigned int linearSize    = *(unsigned int*)&(header[16]);
+	unsigned int mipmapCount   = *(unsigned int*)&(header[24]);
+	unsigned int fourCC        = *(unsigned int*)&(header[80]);
+
+	unsigned char *buffer;
+	unsigned int bufferSize;
+
+	// How big is it going to be, including all mipmaps?
+	bufferSize = mipmapCount > 1 ? linearSize * 2 : linearSize;
+	buffer = (unsigned char*)malloc(bufferSize * sizeof(unsigned char)); // Memory freed before returning
+	fread(buffer, 1, bufferSize, fp);
+
+	// Close the file
+	fclose(fp);
+
+	// See which format we are dealing with and tell OpenGL what to do with it
+	unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
+	unsigned int format;
+	switch(fourCC)
+	{
+	case FOURCC_DXT1:
+		format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		break;
+
+	case FOURCC_DXT3:
+		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		break;
+
+	case FOURCC_DXT5:
+		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		break;
+
+	default:
+		free(buffer); // Free the memory!
+		error = "Texture '" + error + "' cannot be loaded as DDS file!";
+		crash(error);
+		return 0;
+	}
+
+	// Create one OpenGL texture
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	// "Bind" the newly created texture : all future texture functions will modify this
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	// Fill each mipmap one after another
+	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
+	unsigned int offset = 0;
+
+	// Load the mipmaps
+	for(unsigned int level = 0; level< mipmapCount && (width || height); ++level)
+	{
+		unsigned int size = ((width+3)/4) * ((height+3)/4) * blockSize;
+		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height, 0, size, buffer + offset);
+
+		offset += size;
+		width /= 2;
+		height /= 2;
+	}
+
+	free(buffer); // Free the memory!
+
+	appendTexture(textureName, textureID);
 
 	return textureID;
 }
@@ -283,7 +402,7 @@ GLuint ResourceManager::findTexture(const std::string &textureName)
 {
 	glMap::const_iterator got = mTextures.find(textureName);
 
-	if(got==mTextures.end())
+	if(got == mTextures.end())
 	{
 		std::string error = textureName;
 		error = "Texture '" + error + "' not found!";

@@ -62,7 +62,7 @@ set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource)
 set(RESOURCE_DIR_EXE resource) # The resource in the executable's directory
 set(ARCHITECTURE x86)
 
-# {Doesn't) Repair conflicts with msvcrt.lib
+# Doesn't repair conflicts with msvcrt.lib, but it should. Building as release repairs it, though!
 SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
     "/NODEFAULTLIBS:LIBCMT" )
 SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
@@ -91,17 +91,6 @@ find_library(SDLMAIN_LIBRARY
     NO_DEFAULT_PATH
 )
 
-# GLEW
-set(GLEW_FOLDER ${LIB_DIR}/glew-1.12.0
-    CACHE STRING "Path to glew-1.12.0" FORCE)
-	
-find_library(GLEW_LIBRARY
-    NAMES glew32
-    PATHS ${GLEW_FOLDER}/lib/Release/Win32
-    PATH_SUFFIXES local/lib
-    NO_DEFAULT_PATH
-)
-
 # we also need to find the system's OpenGL version
 find_package(OpenGL REQUIRED)
 
@@ -117,7 +106,6 @@ endif()
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${SDL_FOLDER}/include # For shorter includes
-	${GLEW_FOLDER}/include
 	${LIB_DIR} # All other libraries
 )
 
@@ -138,7 +126,6 @@ add_executable(
 # OS X obviously.
 target_link_libraries(
     SDL3D
-	${GLEW_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${SDL_LIBRARY}
     ${SDLMAIN_LIBRARY}
@@ -150,10 +137,6 @@ if(WIN32)
     add_custom_command(TARGET SDL3D POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${SDL_FOLDER}/lib/${ARCHITECTURE}/SDL2.dll ${VS_OUTPUT_DIR}/SDL2.dll)
-
-    add_custom_command(TARGET SDL3D POST_BUILD # GLEW
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${GLEW_FOLDER}/bin/Release/Win32/glew32.dll ${VS_OUTPUT_DIR}/glew32.dll)
 		
 	add_custom_command(TARGET SDL3D POST_BUILD # Copy resources
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -165,10 +148,6 @@ if(APPLE)
     add_custom_command(TARGET SDL3D POST_BUILD
         COMMAND python scripts/frameworkify.py ${XCODE_OUTPUT_DIR}
         ${SDL_LIBRARY})
-
-    add_custom_command(TARGET SDL3D POST_BUILD # GLEW
-        COMMAND python scripts/frameworkify.py ${XCODE_OUTPUT_DIR}
-        ${GLEW_LIBRARY})
 		
 	add_custom_command(TARGET SDL3D POST_BUILD # Copy resources
 		COMMAND ${CMAKE_COMMAND} -E copy_directory

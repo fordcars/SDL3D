@@ -24,6 +24,7 @@ void Object::render()
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer); // All future function calls will modify this vertex buffer
 
+	// Give it to the shader. Each time the vertex shader runs, it will get the next element of this buffer.
 	glVertexAttribPointer(
 		0,					// Attribute 0, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
 		3,					// Size. Number of values per vertex, must be 1, 2, 3 or 4.
