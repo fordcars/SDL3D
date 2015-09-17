@@ -1,6 +1,10 @@
 #include <TexturedObject.h>
+#include <HelperFunctions.h>
 
-TexturedObject::TexturedObject(GLfloatArray vertices, int numberOfVertices, GLuint texture, GLfloatArray UVCoords) : Object(vertices, numberOfVertices) // Calls Object constructor with those arguments
+TexturedObject::TexturedObject(GLfloatArray vertices, int numberOfVertices, GLfloatArray UVCoords,
+							   constTexturePointer texture, const GLuint textureTypeIntUniform)
+	: Object(vertices, numberOfVertices), // Calls Object constructor with those arguments
+	mTextureTypeUniform(textureTypeIntUniform)
 {
 	mTexture = texture;
 
@@ -20,8 +24,15 @@ TexturedObject::~TexturedObject()
 	// Do nothing
 }
 
+void TexturedObject::setTexture(constTexturePointer texture)
+{
+	mTexture = texture;
+}
+
 void TexturedObject::render()
 {
+	glUniform1i(mTextureTypeUniform, mTexture->getType()); // Send the type over to the shader
+
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, getVertexBuffer()); // All future function calls will modify this vertex buffer
 
@@ -47,7 +58,7 @@ void TexturedObject::render()
 	);
 
 	glActiveTexture(GL_TEXTURE0); // Set the active texture unit, you can have more than 1 texture at once
-	glBindTexture(GL_TEXTURE_2D, mTexture);
+	glBindTexture(GL_TEXTURE_2D, mTexture->getID());
 
 	glDrawArrays(GL_TRIANGLES, 0, getNumberOfVertices()); // Draw!
 

@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <HelperFunctions.h>
+#include <string>
 
 InputHandler::InputHandler()
 {
@@ -15,8 +16,14 @@ InputHandler::~InputHandler()
 
 void InputHandler::registerKey(int sdlKey) // Not const just in-case
 {
-	std::pair<int, bool> key(sdlKey, false);
-	mKeys.insert(key);
+	sdlKeyMapPair key(sdlKey, false);
+	std::pair<sdlKeyMap::iterator, bool> newlyAddedPair = mKeys.insert(key);
+	
+	if(newlyAddedPair.second == false)
+	{
+		std::string error = "Key '" + std::to_string(sdlKey) + "' is already registered and can't be registered again!";
+		HelperFunctions::crash(error);
+	}
 }
 
 void InputHandler::registerKeys(int keys[], int length) // Not very safe

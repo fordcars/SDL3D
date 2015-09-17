@@ -1,0 +1,15 @@
+# Files ignored by git
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+
+# Executables
+*.exe
+*.out
+*.app
+
+build/

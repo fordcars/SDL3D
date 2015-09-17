@@ -9,6 +9,8 @@
 class InputHandler
 {
 	typedef std::unordered_map<int, bool> sdlKeyMap; // Using a non-const key seems to be more compatible with different implementations
+	typedef std::pair<int, bool> sdlKeyMapPair;
+
 private:
 	sdlKeyMap mKeys;
 

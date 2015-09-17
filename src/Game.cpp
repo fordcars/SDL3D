@@ -4,9 +4,12 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <memory> // For smart pointers
 
+#include <glm/glm.hpp> // For matrices and all
 #include <HelperFunctions.h>
 #include <SimpleTimer.h> // For game loop
+#include <Definitions.h>
 
 // With the help of:
 // https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_%28C_/_SDL%29
@@ -14,7 +17,8 @@
 
 using namespace HelperFunctions;
 
-Game::Game(const std::string &gameName, int width, int height, int frameRate, const std::string &resourceDir) : mResourceManager(resourceDir) // Constructor
+Game::Game(const std::string& gameName, int width, int height, int frameRate, const std::string& resourceDir)
+	: mResourceManager(resourceDir) // Constructor
 {
 	mGameName = gameName; // Copy string
 
@@ -71,8 +75,8 @@ void Game::checkCompability() // Checks if the game will work on the user's setu
 
 void Game::preMainLoopInit() // A few initializations before the main game loop
 {
-	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT};
-	mInputHandler.registerKeys(keys, 4);
+	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_SPACE};
+	mInputHandler.registerKeys(keys, 5);
 
 	GLuint vertexArrayID; // VAO - vertex aray object
 	glGenVertexArrays(1, &vertexArrayID);
@@ -85,11 +89,13 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	// If there are holes in the model because of this, click the "invert normals" button in your 3D modeler.
 	glEnable(GL_CULL_FACE);
 
+	// Shaders
 	mResourceManager.addShader("Textured", "textured.v.glsl", "textured.f.glsl");
-	mResourceManager.addDDSTexture("Test", "Test.DDS");
+	mResourceManager.addTexture("Test.bmp", BMP_TEXTURE);
+	mResourceManager.addTexture("TestDDS", "Test.dds", DDS_TEXTURE);
 
-	// Uniforms
-	mResourceManager.addUniform("MVP", "Textured");
+	const std::string uniforms[] = {"MVP", "textureType"};
+	mResourceManager.findShader("Textured")->addUniforms(uniforms, 2);
 
 	// Test (Game.h, render() and here)
 	GLfloatArray vertices = {
@@ -175,9 +181,14 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	mCamera.setFieldOfView(90);
 	mCamera.setPos(glm::vec3(4.0f, 3.0f, 3.0f));
 
-	mResourceManager.addUniform("sampler2D", "Textured");
+	test = new TexturedObject(vertices, 12 * 3, UVCoords, mResourceManager.findTexture("Test"), mResourceManager.findShader("Textured")->findUniform("textureType")); // Obviously a test
+}
 
-	test = new TexturedObject(vertices, 12 * 3, mResourceManager.findTexture("Test"), UVCoords); // Obviously a test
+void Game::cleanUp() // Cleans up everything. Call before quitting
+{
+	SDL_GL_DeleteContext(mMainContext);
+	SDL_DestroyWindow(mMainWindow);
+	SDL_Quit();
 }
 
 void Game::doEvents()
@@ -202,17 +213,17 @@ void Game::render()
 	glm::mat4 model = glm::mat4(1.0f); // Normally would have rotation/translation/scaling
 	glm::mat4 MVP = mCamera.getProjectionMatrix() * mCamera.getViewMatrix() * model; // Yey
 
-	glUniformMatrix4fv(mResourceManager.findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
+	glUseProgram(mResourceManager.findShader("Textured")->getID());
 
-	glUseProgram(mResourceManager.findShader("Textured"));
+	glUniformMatrix4fv(mResourceManager.findShader("Textured")->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 
-	glUniform1i(mResourceManager.findUniform("sampler2D"), GL_TEXTURE0); // Use first texture in the shader
+	//glUniform1i(mResourceManager.findShader("Textured").findUniform("sampler2D"), GL_TEXTURE0); // Use first texture in the shader. sampler2D is not the right name.
 	test->render();
 
 	SDL_GL_SwapWindow(mMainWindow);
 }
 
-void Game::checkForErrors() // Call each frame for safety
+void Game::checkForErrors() // Call each frame for safety. Do not call after deleting the OpenGL context
 {
 	GLenum err = glGetError();
 
@@ -247,7 +258,6 @@ void Game::update()
 		mCamera.translate(glm::vec3(0, speed, 0));
 	} else if(mInputHandler.keyPressed(SDLK_DOWN))
 	{
-
 		mCamera.translate(glm::vec3(0, -speed, 0));
 	} else if(mInputHandler.keyPressed(SDLK_LEFT))
 	{
@@ -291,14 +301,8 @@ void Game::init() // Starts the game
 
 	SDL_GL_SetSwapInterval(1); // Kind of VSync?
 
-	glewExperimental = GL_TRUE; // Enable experimental GLEW for added functions. THIS CAUSES A GL_INVALID_OPERATION ERROR.
-	GLenum err = glewInit(); // Init GLEW
-	if(err!=GLEW_OK)
-	{
-		std::string glewError;
-		glewError = (const char *)glewGetErrorString(err);
-		crash(glewError.c_str());
-	}
+	if(!gladLoadGL()) // Load OpenGL at runtime. I don't use SDL's loader, so no need to use gladLoadGLLoader().
+		crash("GLAD failed to load OpenGL!");
 
 	// Output OpenGL version
 	std::string glVersion;
@@ -317,37 +321,14 @@ void Game::mainLoop() // Starts the main loop
 	{
 		update();
 	}
+
+	cleanUp();
+	info("Game quit successfully.");
+
+	return; // Quit!
 }
 
 void Game::quit() // Call this when you want to quit to be clean
 {
-	if(!mQuitting) // If not already quitting
-	{
-		SDL_GL_DeleteContext(mMainContext);
-		SDL_DestroyWindow(mMainWindow);
-		SDL_Quit();
-
-		mQuitting = true;
-		info("Game quit successfully.");
-	}
-}
-
-SDL_Window *Game::getMainWindow()
-{
-	return mMainWindow;
-}
-
-SDL_GLContext Game::getMainContext()
-{
-	return mMainContext;
-}
-
-ResourceManager &Game::getResourceManager() // Returns a reference
-{
-	return mResourceManager;
-}
-
-InputHandler &Game::getInputHandler()
-{
-	return mInputHandler;
+	mQuitting = true;
 }

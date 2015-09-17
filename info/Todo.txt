@@ -1,0 +1,15 @@
+-Give Shader to object and let it handle necessairy uniforms. Maybe just find the correct uniforms in object?
+-Use std::vector for loading objects points
+-Base class entity that handles lighting etc (do tutorial)
+
+-Support events in input and have handleInput() in Game
+
+-Levels/enemies
+-3d animations: Either vertex shader or CPU for moving vertices
+-Do something with v-sync like that the frame rate doesn't drop to 30?
+
+Maybe I should of had a Display class? Oh well
+
+-Sometimes stays alive for a while after quitting?
+
+-Update arrays to std::vectors (VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)

@@ -1,6 +1,6 @@
 #include <SDL.h> // <> because of CMake? Probably, <> is for the system include directory
 #include <stdio.h>
-#include <memory> // C++ libraries have no .h
+#include <memory> // For smart pointers. C++ libraries have no .h
 
 #include <Game.h>
 #include <SDL3D.h>
@@ -12,7 +12,7 @@ typedef std::unique_ptr<Game> gamePointer;
 
 int main(int argc, char **argv)
 {
-	gamePointer game = gamePointer(new Game("SDL3D", 800, 600, 60, "resource/")); // Smart pointer, calls deconstructor when the scope ends (this is an example of smart pointer)
+	gamePointer game(new Game("SDL3D", 800, 600, 60, "resource/")); // Smart pointer, calls deconstructor when the scope ends (this is an example of smart pointer)
 																		// It would of been better to use a reference instead (no pointer).
 
 	game->init();

@@ -22,12 +22,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# TODO: Make it work with everything (Linux), make it funner to use
+# TODO: Make it work with everything (Linux, compile with -ldl), make it funner to use
 
 # NOTES: No need to modify this to add static libraries
+# CMAKE_CURRENT_SOURCE_DIR is the root directory of the project
 
 cmake_minimum_required(VERSION 2.6)
 project(SDL3D)
+
+set(VS_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
+set(XCODE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL3D.app/Contents/MacOS/SDL3D)
+
+set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource)
+set(RESOURCE_DIR_EXE resource) # The resource in the executable's directory
+set(ARCHITECTURE x86)
+
+set(GLAD_DIR ${LIB_DIR}/glad)
 
 # A list of header and source files
 set(SOURCES
@@ -40,7 +51,14 @@ set(SOURCES
 	src/Camera.cpp
 	src/Object.cpp
 	src/TexturedObject.cpp
+	src/Shader.cpp
+	src/Texture.cpp
+	
+	# Static libs
+	${GLAD_DIR}/src/glad.c
 )
+
+ # Show up in VisualStudio
 set(HEADERS
     src/SDL3D.h
 	src/Game.h
@@ -52,23 +70,12 @@ set(HEADERS
 	src/Camera.h
 	src/Object.h
 	src/TexturedObject.h
+	src/Shader.h
+	src/Texture.h
 )
 
-set(VS_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
-set(XCODE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL3D.app/Contents/MacOS/SDL3D)
-
-set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource)
-set(RESOURCE_DIR_EXE resource) # The resource in the executable's directory
-set(ARCHITECTURE x86)
-
-# Doesn't repair conflicts with msvcrt.lib, but it should. Building as release repairs it, though!
-SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
-    "/NODEFAULTLIBS:LIBCMT" )
-SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
-    "/NODEFAULTLIBS:MSVCRT" )
-SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
-    "/NODEFAULTLIBS:MSVCPRTD" )
+# Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.
+SET(CMAKE_EXE_LINKER_FLAGS /NODEFAULTLIB:\"LIBCMT, MSVCRT, MSVPRTD\")
 	
 SET(CMAKE_CXX_FLAGS_DEBUG
 	"${CMAKE_CXX_FLAGS_DEBUG} /wd4100 /wd4127 /wd4189 /wd4512 /wd4702"
@@ -106,6 +113,7 @@ endif()
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${SDL_FOLDER}/include # For shorter includes
+	${GLAD_DIR}/include
 	${LIB_DIR} # All other libraries
 )
 

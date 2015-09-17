@@ -1,9 +1,10 @@
 #include <Object.h>
 #include <HelperFunctions.h>
 
-Object::Object(GLfloatArray vertices, int numberOfVertices) // Uses std::array for modernism, wasn't necessairy
+Object::Object(GLfloatArray vertices, int numberOfVertices, shaderPointer shader) // Uses std::array for modernism, wasn't necessairy
 {
 	mNumberOfVertices = numberOfVertices;
+	mShader = shader;
 	
 	int vertexDataSize = sizeof(GLfloat) * numberOfVertices * 3; // Calculate array size
 	GLfloat *vertexData = vertices.data();
@@ -19,8 +20,15 @@ Object::~Object()
 	// Do nothing
 }
 
-void Object::render()
+void Object::setShader(shaderPointer shader)
 {
+	mShader = shader;
+}
+
+void Object::render(glm::mat4 projectionMatrix, ) // TTOOOSSOOD
+{
+	glUniformMatrix4fv(mResourceManager.findShader("Textured")->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
+
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer); // All future function calls will modify this vertex buffer
 

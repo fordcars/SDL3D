@@ -1,4 +1,0 @@
--The shaders are encoded in ASCII (or UTF-8, using the first bits)
--If there are holes in models, click the "invert normals" button in your 3D modeler.
-
--On Linux and Mac, link with -ldl (libdl)

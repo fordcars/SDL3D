@@ -9,7 +9,7 @@
 #include <vector>
 
 // String splitting
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems) {
     std::stringstream ss(s);
     std::string item;
     while (std::getline(ss, item, delim)) {
@@ -19,7 +19,7 @@ std::vector<std::string> &split(const std::string &s, char delim, std::vector<st
 }
 
 
-std::vector<std::string> split(const std::string &s, char delim) {
+std::vector<std::string> split(const std::string& s, char delim) {
     std::vector<std::string> elems;
     split(s, delim, elems);
     return elems;
@@ -35,7 +35,7 @@ namespace HelperFunctions
 		dataFile.close();
 	}
 
-	void info(const std::string &msg)
+	void info(const std::string& msg)
 	{
 		std::ofstream dataFile;
 		dataFile.open(LOG_FILE, std::ios::app);
@@ -43,13 +43,13 @@ namespace HelperFunctions
 		dataFile.close();
 	}
 
-	void warn(const std::string &msg)
+	void warn(const std::string& msg)
 	{
 		std::string fullString = "Warning: " + msg; // Concentenate
 		info(fullString);
 	}
 
-	void crash(const std::string &msg) // This quits the game, so don't expect to be able to do other things after calling this!
+	void crash(const std::string& msg) // This quits the game, so don't expect to be able to do other things after calling this!
 	{
 		std::string sdlError = SDL_GetError();
 

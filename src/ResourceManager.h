@@ -1,57 +1,53 @@
 #ifndef RESOURCEMANAGER_H_
 #define RESOURCEMANAGER_H_
 
-#include <GL/glew.h>
+#include <GLAD/glad.h>
 #include <string>
+
 #include <unordered_map>
+#include <memory> // For shared_ptr
+#include <Definitions.h>
 
-// For DDS files
-#define FOURCC_DXT1 0x31545844
-#define FOURCC_DXT3 0x33545844
-#define FOURCC_DXT5 0x35545844
+#include <Shader.h>
+#include <Texture.h>
 
-// A shader is a member of the unordered_map mShaders (std::string shaderName, GLuint shaderProgram)
 // All paths are prefixed with mResourceDir
+
+typedef std::shared_ptr<Shader> shaderPointer; // We need this to be outside of the class for return types in .cpp.
+typedef std::shared_ptr<Texture> texturePointer;
 
 class ResourceManager
 {
-	typedef std::unordered_map<std::string, GLuint> glMap; // string/GLuint map, extremely useful iaminlovewithopengl
-	typedef std::pair<std::string, GLuint> glMapPair; // typedefs are fun
+	// Each map will hold shared_ptrs to instances. When you remove this from the map, the instance will stay alive until all
+	// shared_ptrs pointing to it are gone.
+	typedef std::unordered_map<std::string, shaderPointer> shaderMap; // Map of pointers
+	typedef std::pair<std::string, shaderPointer> shaderMapPair; // These kinds of typedef are great inside the class definition like this
+
+	typedef std::unordered_map<std::string, texturePointer> textureMap;
+	typedef std::pair<std::string, texturePointer> textureMapPair;
 
 private:
-	glMap mShaders; // Map, faster access: shaders[shaderName] = shaderID etc
-	glMap mUniforms; // Uniform variables, uniforms[uniformName] = uniformID
-	glMap mTextures;
-
-	// Static because they donnot need an instance to work
-	static GLuint compileShader(const std::string &shaderFileName, const std::string &shaderCode, size_t length, GLenum type);
-	static GLuint linkShaderProgram(const std::string &shaderProgramName, GLuint vertexShader, GLuint fragmentShader);
-
-	void appendShader(const std::string &shaderName, GLuint shaderProgram);
-	void appendTexture(const std::string &textureName, GLuint texture);
+	shaderMap mShaders; // Map, faster access: shaders[shaderName] = shaderID etc
+	textureMap mTextures;
 
 	std::string mResourceDir;
 
 public:
-	ResourceManager(const std::string &resourceDir);
+	ResourceManager(const std::string& resourceDir);
 	~ResourceManager();
 
-	static std::string getFileContents(const std::string &fileName); // Static functions: no need for an instance to use them!
-	static std::string getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog);
+	static std::string getFileContents(const std::string& fileName); // Static functions: no need for an instance to use them!
+	
+	std::string getFullResourcePath(const std::string& fileName);
 
-	std::string getFullResourcePath(const std::string &fileName);
-
-	GLuint addShader(const std::string &shaderName, const std::string &vertexShaderFile, const std::string &fragmentShaderFile);
-	GLuint findShader(const std::string &shaderName);
+	shaderPointer addShader(const std::string& shaderName, const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
+	shaderPointer findShader(const std::string& shaderName);
 	void clearShaders();
 
-	GLuint addUniform(const std::string &uniformName, GLuint shaderProgram);
-	GLuint addUniform(const std::string &uniformName, const std::string &shaderName);
-	GLuint findUniform(const std::string &uniformName);
-
-	GLuint addBMPTexture(const std::string &textureName, const std::string &texturePath);
-	GLuint addDDSTexture(const std::string &textureName, const std::string &texturePath);
-	GLuint findTexture(const std::string &textureName);
+	texturePointer addTexture(const std::string& name, const std::string& textureFile, int type);
+	texturePointer addTexture(const std::string& textureFile, int type);
+	texturePointer findTexture(const std::string& textureName);
+	void clearTextures();
 };
 
 #endif /* RESOURCEMANAGER_H_ */
