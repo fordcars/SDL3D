@@ -1,3 +1,20 @@
+// Copyright 2015 Carl Hewett
+
+// This file is part of SDL3D.
+
+// SDL3D is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// SDL3D is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+
 #include <Game.h>
 
 #include <string> // No .h for c++
@@ -94,8 +111,8 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	mResourceManager.addTexture("Test.bmp", BMP_TEXTURE);
 	mResourceManager.addTexture("TestDDS", "Test.dds", DDS_TEXTURE);
 
-	const std::string uniforms[] = {"MVP", "textureType"};
-	mResourceManager.findShader("Textured")->addUniforms(uniforms, 2);
+	const std::string uniforms[] = {"MVP", "textureSampler", "textureType"};
+	mResourceManager.findShader("Textured")->addUniforms(uniforms, 3);
 
 	// Test (Game.h, render() and here)
 	GLfloatArray vertices = {
@@ -181,7 +198,7 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	mCamera.setFieldOfView(90);
 	mCamera.setPos(glm::vec3(4.0f, 3.0f, 3.0f));
 
-	test = new TexturedObject(vertices, 12 * 3, UVCoords, mResourceManager.findTexture("Test"), mResourceManager.findShader("Textured")->findUniform("textureType")); // Obviously a test
+	test = new TexturedObject(vertices, 12 * 3, UVCoords, mResourceManager.findShader("Textured"), mResourceManager.findTexture("Test")); // Obviously a test
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -212,13 +229,8 @@ void Game::render()
 
 	glm::mat4 model = glm::mat4(1.0f); // Normally would have rotation/translation/scaling
 	glm::mat4 MVP = mCamera.getProjectionMatrix() * mCamera.getViewMatrix() * model; // Yey
-
-	glUseProgram(mResourceManager.findShader("Textured")->getID());
-
-	glUniformMatrix4fv(mResourceManager.findShader("Textured")->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
-
-	//glUniform1i(mResourceManager.findShader("Textured").findUniform("sampler2D"), GL_TEXTURE0); // Use first texture in the shader. sampler2D is not the right name.
-	test->render();
+	
+	test->render(MVP);
 
 	SDL_GL_SwapWindow(mMainWindow);
 }

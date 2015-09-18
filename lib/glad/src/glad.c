@@ -1,3 +1,5 @@
+// This was generated with GLAD, released under MIT. https://github.com/Dav1dde/glad
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

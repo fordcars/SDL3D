@@ -1,3 +1,20 @@
+// Copyright 2015 Carl Hewett
+
+// This file is part of SDL3D.
+
+// SDL3D is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// SDL3D is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+
 #include <ResourceManager.h>
 #include <fstream>
 #include <HelperFunctions.h>
@@ -48,7 +65,7 @@ std::string ResourceManager::getFullResourcePath(const std::string& resourcePath
 }
 
 // Factory
-shaderPointer ResourceManager::addShader(const std::string& shaderName, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
+ResourceManager::shaderPointer ResourceManager::addShader(const std::string& shaderName, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
 	std::string vertexShaderPath = getFullResourcePath(vertexShaderFile); // All resources are in the resource dir
 	std::string fragmentShaderPath = getFullResourcePath(fragmentShaderFile);
@@ -73,7 +90,7 @@ shaderPointer ResourceManager::addShader(const std::string& shaderName, const st
 	return newlyAddedPair.first->second; // Returns a reference. Get the pair at pair.first, then the value at ->second
 }
 
-shaderPointer ResourceManager::findShader(const std::string& shaderName) // Returns an lvalue reference, so you can modify it in the map. Make sure you keep it in the map though!
+ResourceManager::shaderPointer ResourceManager::findShader(const std::string& shaderName) // Returns an lvalue reference, so you can modify it in the map. Make sure you keep it in the map though!
 {
 	// http://www.cplusplus.com/reference/unordered_map/unordered_map/find/
 	shaderMap::iterator got = mShaders.find(shaderName); // Non-const iterator, since we want a non-const reference!
@@ -94,7 +111,7 @@ void ResourceManager::clearShaders() // For freeing memory, you don't have to ca
 	mShaders.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
 }
 
-texturePointer ResourceManager::addTexture(const std::string& name, const std::string& textureFile, int type)
+ResourceManager::texturePointer ResourceManager::addTexture(const std::string& name, const std::string& textureFile, int type)
 {
 	std::string path = getFullResourcePath(textureFile);
 
@@ -115,7 +132,7 @@ texturePointer ResourceManager::addTexture(const std::string& name, const std::s
 }
 
 // The texture will take the name of the texture file (characters before the first dot). This will make it easier to add many textures.
-texturePointer ResourceManager::addTexture(const std::string& textureFile, int type)
+ResourceManager::texturePointer ResourceManager::addTexture(const std::string& textureFile, int type)
 {
 	std::string path = getFullResourcePath(textureFile);
 	std::string name;
@@ -129,7 +146,7 @@ texturePointer ResourceManager::addTexture(const std::string& textureFile, int t
 	return addTexture(name, textureFile, type); // Create the texture and return it
 }
 
-texturePointer ResourceManager::findTexture(const std::string& textureName)
+ResourceManager::texturePointer ResourceManager::findTexture(const std::string& textureName)
 {
 	textureMap::iterator got = mTextures.find(textureName); // Const iterator, we should not need to change this GLuint
 

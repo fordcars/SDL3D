@@ -1,10 +1,35 @@
+// Copyright 2015 Carl Hewett
+
+// This file is part of SDL3D.
+
+// SDL3D is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// SDL3D is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+
 #include <TexturedObject.h>
 #include <HelperFunctions.h>
 
-TexturedObject::TexturedObject(GLfloatArray vertices, int numberOfVertices, GLfloatArray UVCoords,
-							   constTexturePointer texture, const GLuint textureTypeIntUniform)
-	: Object(vertices, numberOfVertices), // Calls Object constructor with those arguments
-	mTextureTypeUniform(textureTypeIntUniform)
+// Uniforms:
+// - mat4 MVP
+// - sampler2D textureSampler
+// - int textureType
+
+// In:
+// - vertex position in modelspace
+// - UV coords
+
+TexturedObject::TexturedObject(GLfloatArray vertices, int numberOfVertices, GLfloatArray UVCoords, shaderPointer shader,
+							   constTexturePointer texture)
+	: Object(vertices, numberOfVertices, shader) // Calls Object constructor with those arguments
 {
 	mTexture = texture;
 
@@ -29,9 +54,13 @@ void TexturedObject::setTexture(constTexturePointer texture)
 	mTexture = texture;
 }
 
-void TexturedObject::render()
+void TexturedObject::render(glm::mat4 MVP)
 {
-	glUniform1i(mTextureTypeUniform, mTexture->getType()); // Send the type over to the shader
+	glUseProgram(getShader()->getID());
+
+	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
+	glUniform1i(getShader()->findUniform("textureSampler"), GL_TEXTURE0); // The first texture, not necessary for now
+	glUniform1i(getShader()->findUniform("textureType"), mTexture->getType()); // Send the type over to the shader
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, getVertexBuffer()); // All future function calls will modify this vertex buffer

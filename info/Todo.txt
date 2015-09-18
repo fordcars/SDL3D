@@ -1,4 +1,3 @@
--Give Shader to object and let it handle necessairy uniforms. Maybe just find the correct uniforms in object?
 -Use std::vector for loading objects points
 -Base class entity that handles lighting etc (do tutorial)
 
