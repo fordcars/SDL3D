@@ -16,7 +16,9 @@
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
 #include <Object.h>
-#include <HelperFunctions.h>
+#include <HelperFunctions.h> // For vector stuff and error messages
+
+#include <fstream> // For file stuff
 
 // Uniforms:
 // - mat4 MVP
@@ -24,18 +26,12 @@
 // In:
 // - vertex position in modelspace
 
-Object::Object(GLfloatArray vertices, int numberOfVertices, shaderPointer shader) // Uses std::array for modernism, wasn't necessairy
+Object::Object(GLfloatVector &vertices, shaderPointer shaderPointer) // Uses std::array for modernism, wasn't necessairy
 {
-	mNumberOfVertices = numberOfVertices;
-	mShader = shader;
-	
-	int vertexDataSize = sizeof(GLfloat) * numberOfVertices * 3; // Calculate array size
-	GLfloat *vertexData = vertices.data();
+	mShaderPointer = shaderPointer;
 
-	// Create a VBO. Done once per object
-	glGenBuffers(1, &mVertexBuffer); // Generate 1 buffer
-	glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer); // Say it's an array
-	glBufferData(GL_ARRAY_BUFFER, vertexDataSize, vertexData, GL_STATIC_DRAW); // Give it to OpenGL
+	mVertexBuffer.bind(GL_ARRAY_BUFFER);
+	mVertexBuffer.setMutableData(GL_ARRAY_BUFFER, vertices, GL_DYNAMIC_DRAW);
 }
 
 Object::~Object()
@@ -43,23 +39,34 @@ Object::~Object()
 	// Do nothing
 }
 
-void Object::setShader(shaderPointer shader)
+// Static
+void Object::loadOBJData(const std::string& filePath)
 {
-	mShader = shader;
+
+}
+
+Object::GlfloatBuffer &Object::getVertexBuffer()
+{
+	return mVertexBuffer;
+}
+
+void Object::setShader(shaderPointer shaderPointer)
+{
+	mShaderPointer = shaderPointer;
 }
 
 Object::shaderPointer Object::getShader()
 {
-	return mShader;
+	return mShaderPointer;
 }
 
 void Object::render(glm::mat4 MVP)
 {
-	glUseProgram(mShader->getID());
-	glUniformMatrix4fv(mShader->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
+	glUseProgram(mShaderPointer->getID());
+	glUniformMatrix4fv(mShaderPointer->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer); // All future function calls will modify this vertex buffer
+	glEnableVertexAttribArray(0); // Number to give to OpenGL VertexAttribPointer
+	glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer.getID()); // All future function calls will modify this vertex buffer
 
 	// Give it to the shader. Each time the vertex shader runs, it will get the next element of this buffer.
 	glVertexAttribPointer(
@@ -71,6 +78,6 @@ void Object::render(glm::mat4 MVP)
 		(void*)0			// Array buffer offset
 	);
 
-	glDrawArrays(GL_TRIANGLES, 0, mNumberOfVertices); // Draw!
+	glDrawArrays(GL_TRIANGLES, 0, mVertexBuffer.getSize(GL_ARRAY_BUFFER)); // Draw!
 	glDisableVertexAttribArray(0);
 }

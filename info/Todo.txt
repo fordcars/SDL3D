@@ -1,3 +1,6 @@
+-do UVCoords and else to convert TexturedObject
+-Load object
+
 -Use std::vector for loading objects points
 -Base class entity that handles lighting etc (do tutorial)
 
@@ -11,4 +14,5 @@ Maybe I should of had a Display class? Oh well
 
 -Sometimes stays alive for a while after quitting?
 
--Update arrays to std::vectors (VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)
+-Update arrays (uniforms and keys) to std::vectors (VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)
+-Make array for texture loading (with one call)

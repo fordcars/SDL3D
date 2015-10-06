@@ -53,6 +53,7 @@ set(SOURCES
 	src/TexturedObject.cpp
 	src/Shader.cpp
 	src/Texture.cpp
+	src/GLBuffer.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -72,6 +73,7 @@ set(HEADERS
 	src/TexturedObject.h
 	src/Shader.h
 	src/Texture.h
+	src/GLBuffer.h
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

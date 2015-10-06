@@ -27,20 +27,16 @@
 // - vertex position in modelspace
 // - UV coords
 
-TexturedObject::TexturedObject(GLfloatArray vertices, int numberOfVertices, GLfloatArray UVCoords, shaderPointer shader,
+TexturedObject::TexturedObject(GLfloatVector vertices, GLfloatVector UVCoords, shaderPointer shader,
 							   constTexturePointer texture)
-	: Object(vertices, numberOfVertices, shader) // Calls Object constructor with those arguments
+	: Object(vertices, shader) // Calls Object constructor with those arguments
 {
 	mTexture = texture;
-
-	int UVArraySize = sizeof(GLfloat) * numberOfVertices * 2; // Calculate array size
-	GLfloat *UVData = UVCoords.data();
 
 	// Create a VBO. Done once per object
 	glGenBuffers(1, &mUVBuffer); // Generate 1 buffer
 	glBindBuffer(GL_ARRAY_BUFFER, mUVBuffer); // Say it's an array
 
-	// (GL_STATIC_DRAW means that the data will only be modified once)
 	glBufferData(GL_ARRAY_BUFFER, UVArraySize, UVData, GL_STATIC_DRAW); // Give it to OpenGL
 }
 
@@ -59,7 +55,7 @@ void TexturedObject::render(glm::mat4 MVP)
 	glUseProgram(getShader()->getID());
 
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
-	glUniform1i(getShader()->findUniform("textureSampler"), GL_TEXTURE0); // The first texture, not necessary for now
+	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now
 	glUniform1i(getShader()->findUniform("textureType"), mTexture->getType()); // Send the type over to the shader
 
 	glEnableVertexAttribArray(0);

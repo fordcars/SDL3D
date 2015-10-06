@@ -21,8 +21,8 @@
 
 SimpleTimer::SimpleTimer()
 {
-	startTicks = 0;
-	endTicks = 0;
+	mStartTicks = 0;
+	mEndTicks = 0;
 }
 
 SimpleTimer::~SimpleTimer()
@@ -30,12 +30,13 @@ SimpleTimer::~SimpleTimer()
 	// Do nothing
 }
 
-void SimpleTimer::start() // Can be called multiple times (resets timer)
+int SimpleTimer::start() // Can be called multiple times (resets timer)
 {
-	startTicks = SDL_GetTicks();
+	mStartTicks = SDL_GetTicks(); // SDL_GetTicks() returns the number of miliseconds since SDL started
+	return mStartTicks;
 }
 
 int SimpleTimer::getTicks()
 {
-	return SDL_GetTicks() - startTicks;
+	return SDL_GetTicks() - mStartTicks;
 }

@@ -31,7 +31,7 @@ private:
 	GLuint mUVBuffer;
 
 public:
-	TexturedObject(GLfloatArray vertices, int numberOfVertices, GLfloatArray UVCoords, shaderPointer shader, constTexturePointer texture);
+	TexturedObject(GLfloatVector vertices, GLfloatVector UVCoords, shaderPointer shader, constTexturePointer texture);
 	~TexturedObject();
 
 	void setTexture(constTexturePointer texture);

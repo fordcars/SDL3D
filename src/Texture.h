@@ -31,8 +31,8 @@ private:
 
 	GLuint mID;
 
-	static const GLuint getBMPTexture(const std::string& texturePath);
-	static const GLuint getDDSTexture(const std::string& texturePath);
+	static const GLuint loadBMPTexture(const std::string& texturePath);
+	static const GLuint loadDDSTexture(const std::string& texturePath);
 
 public:
 	Texture(const std::string& name, const std::string& texturePath, int type);

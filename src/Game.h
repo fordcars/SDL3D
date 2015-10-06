@@ -36,7 +36,10 @@ private:
 
 	int mGameWidth;
 	int mGameHeight;
-	int mTicksPerFrame;
+	int mMinTicksPerFrame;
+	
+	int mLastFrameTime; // Time at last frame
+	const int mGameSpeedDivider; // Delta is divided by this. Setting this to 16 makes delta 1 (per frame) at 60fps.
 
 	SDL_Window *mMainWindow;
 	SDL_GLContext mMainContext; // OpenGl context

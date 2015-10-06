@@ -24,12 +24,15 @@ using namespace HelperFunctions;
 
 // Takes the shader paths for better error logs
 Shader::Shader(const std::string& name,
-			   const std::string& vertexShaderPath, const std::string& vertexShaderCode,
-			   const std::string& fragmentShaderPath, const std::string& fragmentShaderCode)
+			   const std::string& vertexShaderPath,
+			   const std::string& fragmentShaderPath)
 	: mName(name) // Keep track of the const name
 {
-	GLuint vertexShader = compileShader(vertexShaderPath.c_str(), vertexShaderCode.c_str(), GL_VERTEX_SHADER); // Is this length stuff right?
-	GLuint fragmentShader = compileShader(fragmentShaderPath.c_str(), fragmentShaderCode.c_str(), GL_FRAGMENT_SHADER);
+	std::string vertexShaderCode = getFileContents(vertexShaderPath);
+	std::string fragmentShaderCode = getFileContents(fragmentShaderPath);
+
+	GLuint vertexShader = compileShader(vertexShaderPath, vertexShaderCode, GL_VERTEX_SHADER); // Is this length stuff right?
+	GLuint fragmentShader = compileShader(fragmentShaderPath, fragmentShaderCode, GL_FRAGMENT_SHADER);
 
 	if(vertexShader!=0 && fragmentShader!=0) // Valid shaders
 		mID = linkShaderProgram(mName, vertexShader, fragmentShader);
@@ -135,18 +138,26 @@ std::string Shader::getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGe
 const GLuint Shader::addUniform(const std::string& uniformName) // Uniform name is the name as in the shader
 {
 	GLuint uniformLocation = glGetUniformLocation(mID, uniformName.c_str()); // Returns the "index" of the variable in the shader.
-	GLuintMapPair uniformPair(uniformName, uniformLocation);
-
-	std::pair<GLuintMap::iterator, bool> newlyAddedPair = mUniforms.insert(uniformPair); // Insert in map
 	
-	if(newlyAddedPair.second == false)
+	if(uniformLocation != -1) // Valid uniform
 	{
-		std::string error = "Uniform '" + uniformName + "' in shader '" + mName + "' already exists and cannot be added again!";
-		crash(error);
-		return newlyAddedPair.first->second; // Returns a reference to the uniform that was there before
+		GLuintMapPair uniformPair(uniformName, uniformLocation);
+
+		std::pair<GLuintMap::iterator, bool> newlyAddedPair = mUniforms.insert(uniformPair); // Insert in map
+	
+		if(newlyAddedPair.second == false) // Already exists!
+		{
+			std::string error = "Uniform '" + uniformName + "' in shader '" + mName + "' already exists and cannot be added again!";
+			crash(error);
+			return newlyAddedPair.first->second; // Returns the uniform that was there before
+		}
+	} else // Invalid uniform
+	{
+			std::string error = "Uniform '" + uniformName + "' does not exist or is invalid in shader '" + mName + "'!";
+			crash(error);
 	}
 
-	return uniformLocation;
+	return uniformLocation; // Return the newly added uniform location
 }
 
 void Shader::addUniforms(const std::string uniformNames[], int length)

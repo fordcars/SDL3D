@@ -19,15 +19,24 @@
 #define HELPERFUNCTIONS_H_
 
 #include <string>
+#include <vector>
+#include <cstdlib> // For size_t
 
 namespace HelperFunctions
 {
+	std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems);
+	std::vector<std::string> split(const std::string& s, char delim);
+
+	template<typename T> std::size_t sizeOfVectorData(const typename std::vector<T> &vec);
+
 	void clearDataOutput();
 	void info(const std::string& msg);
 	void warn(const std::string& msg);
 	void crash(const std::string& msg);
 	void checkSDLError(int line = -1);
-	template <typename Type> int findInArray(Type element, Type array[], int numberOfElements);
+
+	std::string getFileContents(const std::string& filePath);
+	template<typename Type> int findInArray(Type element, Type array[], int numberOfElements);
 }
 
 #endif /* HELPERFUNCTIONS_H_ */

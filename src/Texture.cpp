@@ -20,6 +20,10 @@
 
 #include <HelperFunctions.h> // For log
 
+#include <fstream> // For files
+#include <vector>
+#include <cstring> // For strncmp
+
 using namespace HelperFunctions;
 
 Texture::Texture(const std::string& name, const std::string& texturePath, int type)
@@ -28,11 +32,11 @@ Texture::Texture(const std::string& name, const std::string& texturePath, int ty
 	switch(type)
 	{
 	case BMP_TEXTURE:
-		mID = getBMPTexture(texturePath);
+		mID = loadBMPTexture(texturePath);
 		break;
 
 	case DDS_TEXTURE:
-		mID = getDDSTexture(texturePath);
+		mID = loadDDSTexture(texturePath);
 		break;
 
 	default:
@@ -45,37 +49,45 @@ Texture::~Texture()
 	glDeleteTextures(1, &mID); // Delete this texture. Might save memory.
 }
 
+// Static
 // When loading a BMP texture, mipmaps are generated automatically. Consider compressing textures into DDS files and use the corresponding function for adding them.
-const GLuint Texture::getBMPTexture(const std::string& texturePath) // Adds a texture to the map
+const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a texture to the map
 {
 	// Not the best code for getting BMP data
-	unsigned char header[54];
+	const int headerSize = 54;
+	std::vector<char> header(headerSize);
+
 	unsigned int dataPos;
 	unsigned width, height;
 	unsigned int imageSize;
-	unsigned char *data; // Actual RGB data
+	std::vector<char> data; // The actual pixel data
 
-	std::string error = texturePath; // Use this for error messages
+	std::ifstream file(texturePath, std::ios::binary);
 
-	FILE *file = fopen(texturePath.c_str(), "rb");
-	if(file == NULL)
+	if(!file)
 	{
-		error = "BMP image '" + error + "' could not be opened!";
+		std::string error = "BMP image '" + texturePath + "' could not be opened!";
 		crash(error);
 		return 0;
 	}
 
-	if(fread(header, 1, 54, file) != 54) // If it's not 54 bytes, crash!
+	file.read(&header[0], headerSize); // Give the address of the first element, and read() makes a pointer to it (internally)
+
+	if(file.gcount() != 54) // If it's not 54 bytes, crash!
 	{
-		error = "BMP image '" + error + "' is not a correct BMP file! (Header is not 54 bytes)";
+		std::string error = "BMP image '" + texturePath + "' is not a correct BMP file! (Header is not 54 bytes)";
 		crash(error);
+		file.close();
+
 		return 0;
 	}
 
 	if(header[0] != 'B' || header[1] != 'M') // Not BMP file?
 	{
-		error = "BMP image '" + error + "' is not a correct BMP file! (No 'BM' present in header)";
+		std::string error = "BMP image '" + texturePath + "' is not a correct BMP file! (No 'BM' present in header)";
 		crash(error);
+		file.close();
+
 		return 0;
 	}
 
@@ -85,17 +97,17 @@ const GLuint Texture::getBMPTexture(const std::string& texturePath) // Adds a te
 	height     = *(int*)&(header[0x16]);
 
 	// Some BMP files suck and miss some info, lets find those out if they are
-	if(imageSize==0)	imageSize = width*height*3; // 3: BGR I guess
+	if(imageSize==0)	imageSize = width*height*3; // 3: RGB I guess
 	if(dataPos==0)	    dataPos = 54; // The header is done this way
 
 	// Create a buffer
-	data = new unsigned char [imageSize]; // This gets deleted after glTexImage2D()
+	data.resize(imageSize);
 
 	// Read the actual data
-	fread(data, 1, imageSize, file);
+	file.read(&data[0], imageSize);
 
 	// Everything is in memory now, close the file
-	fclose(file);
+	file.close();
 
 	// OpenGL
 	// Create one OpenGL texture
@@ -106,50 +118,50 @@ const GLuint Texture::getBMPTexture(const std::string& texturePath) // Adds a te
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); // Change the second GL_RGB for GL_BGR if the colors are inverted
-
-	delete(data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, &data[0]); // Change the second GL_RGB for GL_BGR if the colors are inverted
 
 	// When we stretch (magnify) the image, use linear filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// When we minify the image, use a linear blend of two mipmaps, each filtered linearly too
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glGenerateMipmap(GL_TEXTURE_2D); // Generate the mipmaps (a bunch of copies of the texture of different sizes)
+	glGenerateMipmap(GL_TEXTURE_2D); // Generate the mipmaps (a bunch of copies of the texture of different sizes) for optimization
 
 	return textureID; // Return the id
 }
 
-// Loads and adds .DDS textures. Compress using DXT1, DXT3 or DXT5.
-const GLuint Texture::getDDSTexture(const std::string& texturePath)
+// Static
+// Loads .DDS textures. Compress using DXT1, DXT3 or DXT5.
+const GLuint Texture::loadDDSTexture(const std::string& texturePath)
 {
-	unsigned char header[124];
-	std::string error = texturePath; // Useful for generating error messages
-
-	FILE *fp;
+	const int headerSize = 124;
+	std::vector<char> header(headerSize);
 
 	// Try to open the file
-	fp = fopen(texturePath.c_str(), "rb"); // File pointer
-	if(fp == NULL)
+	std::ifstream file(texturePath, std::ios::binary);
+
+	if(!file)
 	{
-		error = "Texture '" + error + "' cannot be opened!";
+		std::string error = "Texture '" + texturePath + "' cannot be opened!";
 		crash(error);
 		return 0;
 	}
 
 	// Verify the type of file
-	char filecode[4];
-	fread(filecode, 1, 4, fp);
-	if(strncmp(filecode, "DDS ", 4) != 0)
+	std::vector<char> filecode(4);
+	file.read(&filecode[0], 4);
+
+	if(strncmp(&filecode[0], "DDS ", 4) != 0)
 	{
-		fclose(fp);
-		error = "Texture '" + error + "' is not a correct DDS file!";
+		file.close();
+
+		std::string error = "DDS file '" + texturePath + "' is not a correct DDS file!";
 		crash(error);
 		return 0;
 	}
 
 	// Get the surface description
-	fread(&header, 124, 1, fp);
+	file.read(&header[0], headerSize);
 
 	unsigned int height        = *(unsigned int*)&(header[8]);
 	unsigned int width         = *(unsigned int*)&(header[12]);
@@ -157,16 +169,17 @@ const GLuint Texture::getDDSTexture(const std::string& texturePath)
 	unsigned int mipmapCount   = *(unsigned int*)&(header[24]);
 	unsigned int fourCC        = *(unsigned int*)&(header[80]);
 
-	unsigned char *buffer;
+	std::vector <char> buffer;
 	unsigned int bufferSize;
 
 	// How big is it going to be, including all mipmaps?
 	bufferSize = mipmapCount > 1 ? linearSize * 2 : linearSize;
-	buffer = (unsigned char*)malloc(bufferSize * sizeof(unsigned char)); // Memory freed before returning
-	fread(buffer, 1, bufferSize, fp);
+	buffer.resize(bufferSize);
+
+	file.read(&buffer[0], bufferSize);
 
 	// Close the file
-	fclose(fp);
+	file.close();
 
 	// See which format we are dealing with and tell OpenGL what to do with it
 	unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
@@ -186,8 +199,7 @@ const GLuint Texture::getDDSTexture(const std::string& texturePath)
 		break;
 
 	default:
-		free(buffer); // Free the memory!
-		error = "Texture '" + error + "' cannot be loaded as DDS file!";
+		std::string error = "DDS file '" + texturePath + "' cannot be loaded as DDS file!";
 		crash(error);
 		return 0;
 	}
@@ -207,14 +219,12 @@ const GLuint Texture::getDDSTexture(const std::string& texturePath)
 	for(unsigned int level = 0; level< mipmapCount && (width || height); ++level)
 	{
 		unsigned int size = ((width+3)/4) * ((height+3)/4) * blockSize;
-		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height, 0, size, buffer + offset);
+		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height, 0, size, &buffer[0] + offset);
 
 		offset += size;
 		width /= 2;
 		height /= 2;
 	}
-
-	free(buffer); // Free the memory!
 
 	return textureID;
 }

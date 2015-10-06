@@ -29,25 +29,28 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
+#include <GLBuffer.h>
+
 class Object
 {
 protected: // Only accessible to this class and derived classes
+	typedef GLBuffer<GLfloat> GlfloatBuffer;
+	typedef std::vector<GLfloat> GLfloatVector;
 	typedef std::shared_ptr<const Shader> shaderPointer; // Useful for derived classes, too
 
-	GLuint getVertexBuffer() const { return mVertexBuffer; } // Useful for render functions, these are read only!
-	int getNumberOfVertices() const { return mNumberOfVertices; } // Useful for render functions, these are read only!
+	static void loadOBJData(const std::string& filePath);
 
 private:
-	GLuint mVertexBuffer; // Holds vertices
-	int mNumberOfVertices;
-
-	shaderPointer mShader; // The shader used to render this object
+	GlfloatBuffer mVertexBuffer; // The OpenGL vertex buffer
+	shaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
 public:
-	Object(GLfloatArray vertices, int numberOfVertices, shaderPointer shader);
+	Object(GLfloatVector &vertices, shaderPointer shaderPointer);
 	~Object();
 
-	void setShader(shaderPointer shader);
+	GlfloatBuffer &getVertexBuffer();
+
+	void setShader(shaderPointer shaderPointer);
 	shaderPointer getShader();
 
 	virtual void render(glm::mat4 MVP); // Overload this if you need to!

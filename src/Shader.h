@@ -37,7 +37,7 @@ private:
 	static GLuint linkShaderProgram(const std::string& shaderProgramName, GLuint vertexShader, GLuint fragmentShader);
 
 public:
-	Shader(const std::string& name, const std::string& vertexShaderPath, const std::string& vertexShaderCode, const std::string &fragmentShaderPath, const std::string &fragmentShaderCode);
+	Shader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 	~Shader();
 
 	const GLuint getID() const;

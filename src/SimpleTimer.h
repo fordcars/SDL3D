@@ -21,14 +21,14 @@
 class SimpleTimer
 {
 private:
-	int startTicks; // The time when the timer was started
-	int endTicks; // The time when the timer has stopped
+	int mStartTicks; // The time when the timer was started
+	int mEndTicks; // The time when the timer has stopped
 
 public:
 	SimpleTimer();
 	~SimpleTimer();
 
-	void start();
+	int start();
 	int getTicks();
 };
 

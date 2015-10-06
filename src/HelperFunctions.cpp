@@ -19,43 +19,45 @@
 #include <Definitions.h>
 
 #include <SDL.h>
-#include <iostream>
 #include <fstream>
 
-#include <sstream>
-#include <vector>
-
-// String splitting
-std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
-
-
-std::vector<std::string> split(const std::string& s, char delim) {
-    std::vector<std::string> elems;
-    split(s, delim, elems);
-    return elems;
-}
+#include <sstream> // For std::getLine()
 
 namespace HelperFunctions
 {
+	// String splitting
+	std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems) {
+		std::stringstream ss(s);
+		std::string item;
+		while (std::getline(ss, item, delim)) {
+			elems.push_back(item);
+		}
+		return elems;
+	}
+
+	std::vector<std::string> split(const std::string& s, char delim) {
+		std::vector<std::string> elems;
+		split(s, delim, elems);
+		return elems;
+	}
+
+	// The size of the vector's data, in bytes
+	template<typename T>
+	std::size_t sizeOfVectorData(const typename std::vector<T> &vec)
+	{
+		return sizeof(T) * vec.size();
+	}
+
 	void clearDataOutput()
 	{
-		std::ofstream dataFile;
-		dataFile.open(LOG_FILE);
+		std::ofstream dataFile(LOG_FILE); // No error checking necessairy
 		dataFile << "";
 		dataFile.close();
 	}
 
 	void info(const std::string& msg)
 	{
-		std::ofstream dataFile;
-		dataFile.open(LOG_FILE, std::ios::app);
+		std::ofstream dataFile(LOG_FILE, std::ios::app); // No error checking necessairy
 		dataFile << msg << '\n';
 		dataFile.close();
 	}
@@ -78,7 +80,7 @@ namespace HelperFunctions
 		info(fullString);
 
 		SDL_Quit();
-		exit(1); // Not the best, doesn't work?
+		exit(1); // Not the best
 	}
 
 	void checkSDLError(int line) // Default parameter in HelperFunctions.h
@@ -101,7 +103,29 @@ namespace HelperFunctions
 #endif
 	}
 
-	template <typename Type> // Type is used to represent a single datatype. This line is part of the function definition
+	// Does checks and returns the contents of the file
+	std::string getFileContents(const std::string& filePath)
+	{
+		std::ifstream fileStream(filePath, std::ios::in | std::ios::binary);
+		if(fileStream)
+		{
+			std::string contents;
+
+			fileStream.seekg(0, std::ios::end);
+			contents.resize((int)fileStream.tellg());
+			fileStream.seekg(0, std::ios::beg);
+			fileStream.read(&contents[0], contents.size());
+			fileStream.close();
+			return(contents);
+		} else // Can't open the file!
+		{
+			std::string crashLog = filePath + " doesn't exist or cannot be opened!";
+			crash(crashLog);
+			return 0;
+		}
+	}
+
+	template<typename Type> // Type is used to represent a single datatype. This line is part of the function definition
 	int findInArray(Type element, Type array[], int numberOfElements) // Uses comparision "==" and returns the index of the first instance of the element.
 	{
 		for(int i = 0; i < numberOfElements; i++)

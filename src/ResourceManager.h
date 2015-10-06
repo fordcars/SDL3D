@@ -53,8 +53,6 @@ public:
 	ResourceManager(const std::string& resourceDir);
 	~ResourceManager();
 
-	static std::string getFileContents(const std::string& fileName); // Static functions: no need for an instance to use them!
-	
 	std::string getFullResourcePath(const std::string& fileName);
 
 	shaderPointer addShader(const std::string& shaderName, const std::string& vertexShaderFile, const std::string& fragmentShaderFile);

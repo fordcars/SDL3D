@@ -18,8 +18,7 @@
 #include <Game.h>
 
 #include <string> // No .h for c++
-#include <iostream>
-#include <fstream>
+
 #include <math.h>
 #include <memory> // For smart pointers
 
@@ -34,14 +33,17 @@
 
 using namespace HelperFunctions;
 
-Game::Game(const std::string& gameName, int width, int height, int frameRate, const std::string& resourceDir)
-	: mResourceManager(resourceDir) // Constructor
+Game::Game(const std::string& gameName, int width, int height, int maxFrameRate, const std::string& resourceDir)
+	: mGameSpeedDivider(16),
+	mResourceManager(resourceDir) // Constructor
 {
 	mGameName = gameName; // Copy string
 
 	mGameWidth = width;
 	mGameHeight = height;
-	mTicksPerFrame = (int)(1000 / frameRate); // Trucation
+	mMinTicksPerFrame = (int)(1000 / maxFrameRate); // Trucation
+
+	mLastFrameTime = 0;
 
 	mQuitting = false;
 }
@@ -198,7 +200,7 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	mCamera.setFieldOfView(90);
 	mCamera.setPos(glm::vec3(4.0f, 3.0f, 3.0f));
 
-	test = new TexturedObject(vertices, 12 * 3, UVCoords, mResourceManager.findShader("Textured"), mResourceManager.findTexture("Test")); // Obviously a test
+	test = new TexturedObject(vertices, 12 * 3, UVCoords, mResourceManager.findShader("Textured"), mResourceManager.findTexture("TestDDS")); // Obviously a test
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -255,36 +257,47 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 			warn("OpenGL error: GL_OUT_OF_MEMORY");
 	}
 }
-
+float timeX = 0;  //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+float radius = 1; //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 void Game::update()
 {
-	SimpleTimer fpsTimer; // Frame rate (a reference)
-	fpsTimer.start();
+	SimpleTimer fpsTimer; // For calculating update delay and all
+	int currentTime = fpsTimer.start();
+	int delta = (int)((currentTime - mLastFrameTime)/mGameSpeedDivider);
 
 	doEvents();
 
-	float speed = 0.5;
+	float speed = 0.05f;
 
-	if(mInputHandler.keyPressed(SDLK_UP))
+	if(mLastFrameTime != 0) // Make sure delta makes sense before moving anything!
 	{
-		mCamera.translate(glm::vec3(0, speed, 0));
-	} else if(mInputHandler.keyPressed(SDLK_DOWN))
-	{
-		mCamera.translate(glm::vec3(0, -speed, 0));
-	} else if(mInputHandler.keyPressed(SDLK_LEFT))
-	{
-		mCamera.translate(glm::vec3(-speed, 0, 0));
-	} else if(mInputHandler.keyPressed(SDLK_RIGHT))
-	{
-		mCamera.translate(glm::vec3(speed, 0, 0));
+		if(mInputHandler.keyPressed(SDLK_UP))
+		{
+			radius -= speed;
+		} else if(mInputHandler.keyPressed(SDLK_DOWN))
+		{
+			radius += speed;
+		} else if(mInputHandler.keyPressed(SDLK_LEFT))
+		{
+			timeX += speed;
+		} else if(mInputHandler.keyPressed(SDLK_RIGHT))
+		{
+			timeX -= speed;
+		}
+
+		glm::vec3 position(radius * cos(timeX), mCamera.getPos().y, radius * sin(timeX));
+		mCamera.setPos(position);
 	}
 
 	render();
 	checkForErrors();
 
-	if(fpsTimer.getTicks() < mTicksPerFrame) // Frame was too quick!
+	mLastFrameTime = currentTime;
+
+	// If the frame took les ticks than the minimum, delay the next frame, virtually always does this.
+	if(fpsTimer.getTicks() < mMinTicksPerFrame)
 	{
-		SDL_Delay(mTicksPerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
+		SDL_Delay(mMinTicksPerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
 	}
 }
 

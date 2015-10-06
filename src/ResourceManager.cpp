@@ -36,28 +36,6 @@ ResourceManager::~ResourceManager()
 	clearShaders();
 }
 
-std::string ResourceManager::getFileContents(const std::string& filePath) // Returns the contents of the file
-{
-	std::ifstream in(filePath, std::ios::in | std::ios::binary);
-	if (in)
-	{
-		std::string contents;
-
-		in.seekg(0, std::ios::end);
-		contents.resize((int)in.tellg()); // ASCII?
-		in.seekg(0, std::ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return(contents);
-	} else
-	{
-		std::string crashLog = filePath;
-		crashLog += " cannot be opened!";
-		crash(crashLog);
-		return 0;
-	}
-}
-
 // Returns the full resource oath
 std::string ResourceManager::getFullResourcePath(const std::string& resourcePath)
 {
@@ -70,11 +48,7 @@ ResourceManager::shaderPointer ResourceManager::addShader(const std::string& sha
 	std::string vertexShaderPath = getFullResourcePath(vertexShaderFile); // All resources are in the resource dir
 	std::string fragmentShaderPath = getFullResourcePath(fragmentShaderFile);
 
-	std::string vertexShaderCode = getFileContents(vertexShaderPath);
-	std::string fragmentShaderCode = getFileContents(fragmentShaderPath);
-
-	shaderPointer shader(new Shader(shaderName, vertexShaderPath, vertexShaderCode,
-		fragmentShaderPath, fragmentShaderCode)); // Create a smart pointer of a shader instance
+	shaderPointer shader(new Shader(shaderName, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
 
 	shaderMapPair shaderPair(shaderName, shader);
 	std::pair<shaderMap::iterator, bool> newlyAddedPair = mShaders.insert(shaderPair);
