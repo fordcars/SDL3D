@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <Camera.h>
+#include <Camera.hpp>
 
 void Camera::init() // Called when constructed, private
 {

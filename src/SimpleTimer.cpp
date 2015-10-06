@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <SimpleTimer.h>
+#include <SimpleTimer.hpp>
 
 #include <SDL.h>
 

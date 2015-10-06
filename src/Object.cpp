@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <Object.h>
-#include <HelperFunctions.h> // For vector stuff and error messages
+#include <Object.hpp>
+#include <HelperFunctions.hpp> // For vector stuff and error messages
 
 #include <fstream> // For file stuff
 
@@ -31,7 +31,7 @@ Object::Object(GLfloatVector &vertices, shaderPointer shaderPointer) // Uses std
 	mShaderPointer = shaderPointer;
 
 	mVertexBuffer.bind(GL_ARRAY_BUFFER);
-	mVertexBuffer.setMutableData(GL_ARRAY_BUFFER, vertices, GL_DYNAMIC_DRAW);
+	mVertexBuffer.setMutableData(GL_ARRAY_BUFFER, vertices, GL_DYNAMIC_DRAW); // DYNAMIC_DRAW as a hint to OpenGL that we might change the vertices
 }
 
 Object::~Object()

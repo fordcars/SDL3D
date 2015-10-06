@@ -21,12 +21,12 @@
 #include <GLAD/glad.h>
 #include <SDL.h>
 
-#include <ResourceManager.h>
-#include <InputHandler.h>
-#include <Camera.h>
+#include <ResourceManager.hpp>
+#include <InputHandler.hpp>
+#include <Camera.hpp>
 
-#include <Object.h> // For testing
-#include <TexturedObject.h> // For testing
+#include <Object.hpp> // For testing
+#include <TexturedObject.hpp> // For testing
 
 class Game
 {

@@ -22,7 +22,7 @@
 #include <GLAD/glad.h>
 #include <string>
 
-#include <Definitions.h>
+#include <Definitions.hpp>
 
 class Shader
 {

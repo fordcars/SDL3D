@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <GLBuffer.h>
+#include <GLBuffer.hpp>
 
 template<typename bufferDataType>
 GLBuffer<bufferDataType>::GLBuffer()

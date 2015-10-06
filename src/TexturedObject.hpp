@@ -18,8 +18,8 @@
 #ifndef TEXTUREDOBJECT_H_
 #define TEXTUREDOBJECT_H_
 
-#include <Object.h>
-#include <Texture.h>
+#include <Object.hpp>
+#include <Texture.hpp>
 #include <memory> // For smart pointers
 
 class TexturedObject : public Object // Inherit! 'public' is required here

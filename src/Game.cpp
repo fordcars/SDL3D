@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <Game.h>
+#include <Game.hpp>
 
 #include <string> // No .h for c++
 
@@ -23,9 +23,9 @@
 #include <memory> // For smart pointers
 
 #include <glm/glm.hpp> // For matrices and all
-#include <HelperFunctions.h>
-#include <SimpleTimer.h> // For game loop
-#include <Definitions.h>
+#include <HelperFunctions.hpp>
+#include <SimpleTimer.hpp> // For game loop
+#include <Definitions.hpp>
 
 // With the help of:
 // https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_%28C_/_SDL%29

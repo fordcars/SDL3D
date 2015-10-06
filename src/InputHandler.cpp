@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <InputHandler.h>
+#include <InputHandler.hpp>
 
 #include <SDL.h>
-#include <HelperFunctions.h>
 #include <string>
+#include <HelperFunctions.hpp>
 
 InputHandler::InputHandler()
 {

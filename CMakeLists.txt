@@ -61,19 +61,19 @@ set(SOURCES
 
  # Show up in VisualStudio
 set(HEADERS
-    src/SDL3D.h
-	src/Game.h
-	src/HelperFunctions.h
-	src/Definitions.h
-	src/ResourceManager.h
-	src/InputHandler.h
-	src/SimpleTimer.h
-	src/Camera.h
-	src/Object.h
-	src/TexturedObject.h
-	src/Shader.h
-	src/Texture.h
-	src/GLBuffer.h
+    src/SDL3D.hpp
+	src/Game.hpp
+	src/HelperFunctions.hpp
+	src/Definitions.hpp
+	src/ResourceManager.hpp
+	src/InputHandler.hpp
+	src/SimpleTimer.hpp
+	src/Camera.hpp
+	src/Object.hpp
+	src/TexturedObject.hpp
+	src/Shader.hpp
+	src/Texture.hpp
+	src/GLBuffer.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

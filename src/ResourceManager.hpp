@@ -23,10 +23,10 @@
 
 #include <unordered_map>
 #include <memory> // For shared_ptr
-#include <Definitions.h>
+#include <Definitions.hpp>
 
-#include <Shader.h>
-#include <Texture.h>
+#include <Shader.hpp>
+#include <Texture.hpp>
 
 // All paths are prefixed with mResourceDir
 

@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <HelperFunctions.h>
-#include <Definitions.h>
+#include <HelperFunctions.hpp>
+#include <Definitions.hpp>
 
 #include <SDL.h>
 #include <fstream>

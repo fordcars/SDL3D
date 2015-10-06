@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <ResourceManager.h>
+#include <ResourceManager.hpp>
 #include <fstream>
-#include <HelperFunctions.h>
+#include <HelperFunctions.hpp>
 
 // Shaders must be ASCII
 // Reference: http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.2:-Shaders.html

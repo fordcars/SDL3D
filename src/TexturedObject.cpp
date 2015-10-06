@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <TexturedObject.h>
-#include <HelperFunctions.h>
+#include <TexturedObject.hpp>
+#include <HelperFunctions.hpp>
 
 // Uniforms:
 // - mat4 MVP

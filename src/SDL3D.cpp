@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include <memory> // For smart pointers. C++ libraries have no .h
 
-#include <Game.h>
-#include <SDL3D.h>
+#include <Game.hpp>
+#include <SDL3D.hpp>
 
 typedef std::unique_ptr<Game> gamePointer;
 

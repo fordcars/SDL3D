@@ -15,10 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <Shader.h>
-#include <HelperFunctions.h>
+#include <Shader.hpp>
+#include <HelperFunctions.hpp>
 
-#include <ResourceManager.h> // For getFileContents();
+#include <ResourceManager.hpp> // For getFileContents();
 
 using namespace HelperFunctions;
 

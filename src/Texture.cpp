@@ -15,10 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
-#include <Texture.h>
-#include <Definitions.h> // For various definitions
+#include <Texture.hpp>
+#include <Definitions.hpp> // For various definitions
 
-#include <HelperFunctions.h> // For log
+#include <HelperFunctions.hpp> // For log
 
 #include <fstream> // For files
 #include <vector>
