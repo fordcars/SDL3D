@@ -34,21 +34,21 @@
 class Object
 {
 protected: // Only accessible to this class and derived classes
-	typedef GLBuffer<GLfloat> GlfloatBuffer;
+	typedef GLBuffer<GLfloat> GLfloatBuffer;
 	typedef std::vector<GLfloat> GLfloatVector;
 	typedef std::shared_ptr<const Shader> shaderPointer; // Useful for derived classes, too
 
 	static void loadOBJData(const std::string& filePath);
 
 private:
-	GlfloatBuffer mVertexBuffer; // The OpenGL vertex buffer
+	GLfloatBuffer mVertexBuffer; // The OpenGL vertex buffer
 	shaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
 public:
 	Object(GLfloatVector &vertices, shaderPointer shaderPointer);
 	~Object();
 
-	GlfloatBuffer &getVertexBuffer();
+	GLfloatBuffer &getVertexBuffer();
 
 	void setShader(shaderPointer shaderPointer);
 	shaderPointer getShader();

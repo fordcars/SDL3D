@@ -28,16 +28,13 @@
 // - UV coords
 
 TexturedObject::TexturedObject(GLfloatVector vertices, GLfloatVector UVCoords, shaderPointer shader,
-							   constTexturePointer texture)
+							   constTexturePointer texturePointer)
 	: Object(vertices, shader) // Calls Object constructor with those arguments
 {
-	mTexture = texture;
+	mTexturePointer = texturePointer;
 
-	// Create a VBO. Done once per object
-	glGenBuffers(1, &mUVBuffer); // Generate 1 buffer
-	glBindBuffer(GL_ARRAY_BUFFER, mUVBuffer); // Say it's an array
-
-	glBufferData(GL_ARRAY_BUFFER, UVArraySize, UVData, GL_STATIC_DRAW); // Give it to OpenGL
+	mUVBuffer.bind(GL_ARRAY_BUFFER);
+	mUVBuffer.setMutableData(GL_ARRAY_BUFFER, UVCoords, GL_DYNAMIC_DRAW);
 }
 
 TexturedObject::~TexturedObject()
@@ -45,9 +42,14 @@ TexturedObject::~TexturedObject()
 	// Do nothing
 }
 
-void TexturedObject::setTexture(constTexturePointer texture)
+TexturedObject::GLfloatBuffer &TexturedObject::getUVBuffer()
 {
-	mTexture = texture;
+	return mUVBuffer;
+}
+
+void TexturedObject::setTexture(constTexturePointer texturePointer)
+{
+	mTexturePointer = texturePointer;
 }
 
 void TexturedObject::render(glm::mat4 MVP)
@@ -56,7 +58,7 @@ void TexturedObject::render(glm::mat4 MVP)
 
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now
-	glUniform1i(getShader()->findUniform("textureType"), mTexture->getType()); // Send the type over to the shader
+	glUniform1i(getShader()->findUniform("textureType"), mTexturePointer->getType()); // Send the type over to the shader
 
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, getVertexBuffer()); // All future function calls will modify this vertex buffer
@@ -83,7 +85,7 @@ void TexturedObject::render(glm::mat4 MVP)
 	);
 
 	glActiveTexture(GL_TEXTURE0); // Set the active texture unit, you can have more than 1 texture at once
-	glBindTexture(GL_TEXTURE_2D, mTexture->getID());
+	glBindTexture(GL_TEXTURE_2D, mTexturePointer->getID());
 
 	glDrawArrays(GL_TRIANGLES, 0, getNumberOfVertices()); // Draw!
 

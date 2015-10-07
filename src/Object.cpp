@@ -45,7 +45,7 @@ void Object::loadOBJData(const std::string& filePath)
 
 }
 
-Object::GlfloatBuffer &Object::getVertexBuffer()
+Object::GLfloatBuffer &Object::getVertexBuffer()
 {
 	return mVertexBuffer;
 }
