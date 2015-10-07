@@ -20,6 +20,7 @@
 
 #include <Object.hpp>
 #include <Texture.hpp>
+
 #include <memory> // For smart pointers
 
 class TexturedObject : public Object // Inherit! 'public' is required here
@@ -27,14 +28,16 @@ class TexturedObject : public Object // Inherit! 'public' is required here
 private:
 	typedef std::shared_ptr<const Texture> constTexturePointer; // We can't modify the texture
 
-	constTexturePointer mTexture; // Non-const so we can change the texture
-	GLuint mUVBuffer;
+	constTexturePointer mTexturePointer; // Non-const so we can change the texture
+	GLfloatBuffer mUVBuffer; // From Object
 
 public:
-	TexturedObject(GLfloatVector vertices, GLfloatVector UVCoords, shaderPointer shader, constTexturePointer texture);
+	TexturedObject(GLfloatVector vertices, GLfloatVector UVCoords, shaderPointer shader, constTexturePointer texturePointer);
 	~TexturedObject();
 
-	void setTexture(constTexturePointer texture);
+	GLfloatBuffer &getUVBuffer();
+
+	void setTexture(constTexturePointer texturePointer);
 	void render(glm::mat4 MVP); // Overloading
 };
 
