@@ -34,8 +34,7 @@
 using namespace HelperFunctions;
 
 Game::Game(const std::string& gameName, int width, int height, int maxFrameRate, const std::string& resourceDir)
-	: mGameSpeedDivider(16),
-	mResourceManager(resourceDir) // Constructor
+	: mResourceManager(resourceDir) // Constructor
 {
 	mGameName = gameName; // Copy string
 
@@ -44,6 +43,7 @@ Game::Game(const std::string& gameName, int width, int height, int maxFrameRate,
 	mMinTicksPerFrame = (int)(1000 / maxFrameRate); // Trucation
 
 	mLastFrameTime = 0;
+	mGameSpeedDivider = 16; // Delta is divided by this. Setting this to 16 makes delta 1 (per frame) at 60fps.
 
 	mQuitting = false;
 }
@@ -87,7 +87,7 @@ void Game::checkCompability() // Checks if the game will work on the user's setu
 	}
 
 	if(isCompatible)
-		info("Your system seems to be compatible with the game!");
+		logprint("Your system seems to be compatible with the game!");
 	else
 		crash("Your system is not compatible with the game. Please take a look at the generated warnings.");
 }
@@ -111,96 +111,19 @@ void Game::preMainLoopInit() // A few initializations before the main game loop
 	// Shaders
 	mResourceManager.addShader("Textured", "textured.v.glsl", "textured.f.glsl");
 	mResourceManager.addTexture("Test.bmp", BMP_TEXTURE);
-	mResourceManager.addTexture("TestDDS", "Test.dds", DDS_TEXTURE);
+	mResourceManager.addTexture("Building.DDS", DDS_TEXTURE);
 
 	const std::string uniforms[] = {"MVP", "textureSampler", "textureType"};
 	mResourceManager.findShader("Textured")->addUniforms(uniforms, 3);
 
+	
 	// Test (Game.h, render() and here)
-	GLfloatArray vertices = {
-		-1.0f,-1.0f,-1.0f, // triangle 1 : begin
-		-1.0f,-1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f, // triangle 1 : end
-		1.0f, 1.0f,-1.0f, // triangle 2 : begin
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f, // triangle 2 : end
-		1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		1.0f,-1.0f,-1.0f,
-		1.0f, 1.0f,-1.0f,
-		1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		1.0f,-1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f,-1.0f,-1.0f,
-		1.0f, 1.0f,-1.0f,
-		1.0f,-1.0f,-1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f,-1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f,
-		1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		1.0f,-1.0f, 1.0f
-	};
-
-	// Two UV coordinatesfor each vertex. They were created with Blender. You'll learn shortly how to do this yourself.
-	GLfloatArray UVCoords = {
-		0.000059f, 1.0f-0.000004f,
-		0.000103f, 1.0f-0.336048f,
-		0.335973f, 1.0f-0.335903f,
-		1.000023f, 1.0f-0.000013f,
-		0.667979f, 1.0f-0.335851f,
-		0.999958f, 1.0f-0.336064f,
-		0.667979f, 1.0f-0.335851f,
-		0.336024f, 1.0f-0.671877f,
-		0.667969f, 1.0f-0.671889f,
-		1.000023f, 1.0f-0.000013f,
-		0.668104f, 1.0f-0.000013f,
-		0.667979f, 1.0f-0.335851f,
-		0.000059f, 1.0f-0.000004f,
-		0.335973f, 1.0f-0.335903f,
-		0.336098f, 1.0f-0.000071f,
-		0.667979f, 1.0f-0.335851f,
-		0.335973f, 1.0f-0.335903f,
-		0.336024f, 1.0f-0.671877f,
-		1.000004f, 1.0f-0.671847f,
-		0.999958f, 1.0f-0.336064f,
-		0.667979f, 1.0f-0.335851f,
-		0.668104f, 1.0f-0.000013f,
-		0.335973f, 1.0f-0.335903f,
-		0.667979f, 1.0f-0.335851f,
-		0.335973f, 1.0f-0.335903f,
-		0.668104f, 1.0f-0.000013f,
-		0.336098f, 1.0f-0.000071f,
-		0.000103f, 1.0f-0.336048f,
-		0.000004f, 1.0f-0.671870f,
-		0.336024f, 1.0f-0.671877f,
-		0.000103f, 1.0f-0.336048f,
-		0.336024f, 1.0f-0.671877f,
-		0.335973f, 1.0f-0.335903f,
-		0.667969f, 1.0f-0.671889f,
-		1.000004f, 1.0f-0.671847f,
-		0.667979f, 1.0f-0.335851f
-	};
 
 	mCamera.setAspectRatio((float)(mGameWidth/mGameHeight));
 	mCamera.setFieldOfView(90);
-	mCamera.setPos(glm::vec3(4.0f, 3.0f, 3.0f));
+	mCamera.setPos(glm::vec3(10.0f, 8.0f, 3.0f));
 
-	test = new TexturedObject(vertices, 12 * 3, UVCoords, mResourceManager.findShader("Textured"), mResourceManager.findTexture("TestDDS")); // Obviously a test
+	test = new TexturedObject(mResourceManager.getFullResourcePath("Building.obj"), mResourceManager.findShader("Textured"), mResourceManager.findTexture("Building")); // Obviously a test
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -208,6 +131,9 @@ void Game::cleanUp() // Cleans up everything. Call before quitting
 	SDL_GL_DeleteContext(mMainContext);
 	SDL_DestroyWindow(mMainWindow);
 	SDL_Quit();
+
+	logprint("Game quit successfully.");
+	closeLogFile();
 }
 
 void Game::doEvents()
@@ -333,7 +259,7 @@ void Game::init() // Starts the game
 	std::string glVersion;
 	glVersion = (const char *)glGetString(GL_VERSION);
 	glVersion = "Graphics: " + glVersion;
-	info(glVersion);
+	logprint(glVersion);
 	
 	checkCompability();
 }
@@ -348,7 +274,6 @@ void Game::mainLoop() // Starts the main loop
 	}
 
 	cleanUp();
-	info("Game quit successfully.");
 
 	return; // Quit!
 }

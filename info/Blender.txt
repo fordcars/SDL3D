@@ -1,0 +1,11 @@
+To paint, unwrap UVs, go in Texture paint mode (bottom) and then click on Slots (left) and set painting mode to canvas.
+Press numpad 5 to toggle orthogonal view. Also, if needed, on the bottom of edit mode, you click the button that says (when mouse hovers above it): 'limit selection to visible'.
+
+Pressing 'B' well let you drag a box to select.
+To paint in UV/Image editor mode, click on the small menu on the bottom that says 'View' and select 'Paint'.
+
+To make Simple UV coords, right click on the model (edit mode) and click on Smart UV project.
+
+Press 'F' to resize the bursh size.
+
+You can save the image as something else (like png) by clicking on the folder icon next to the image name (bottom).

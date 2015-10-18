@@ -24,7 +24,10 @@
 
 #include <GLAD/glad.h>
 #include <glm/glm.hpp>
-#include <memory>
+#include <memory> // For smart pointers
+
+#include <string>
+#include <vector>
 
 #include <Shader.hpp>
 #include <Definitions.hpp>
@@ -34,24 +37,31 @@
 class Object
 {
 protected: // Only accessible to this class and derived classes
-	typedef GLBuffer<GLfloat> GLfloatBuffer;
-	typedef std::vector<GLfloat> GLfloatVector;
-	typedef std::shared_ptr<const Shader> shaderPointer; // Useful for derived classes, too
+	typedef GLBuffer<glm::vec2> vec2Buffer;
+	typedef GLBuffer<glm::vec3> vec3Buffer;
+	typedef std::vector<glm::vec2> vec2Vector;
+	typedef std::vector<glm::vec3> vec3Vector;
+	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
 
-	static void loadOBJData(const std::string& filePath);
+	static bool loadOBJData(const std::string& filePath,
+						 std::vector<glm::vec3>& outVertices,
+						 std::vector<glm::vec2>& outUVs,
+						 std::vector<glm::vec3>& outNormals);
 
 private:
-	GLfloatBuffer mVertexBuffer; // The OpenGL vertex buffer
-	shaderPointer mShaderPointer; // The shader used to render this object, pointer.
+	vec3Buffer mVertexBuffer; // The OpenGL vertex buffer
+	constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
 public:
-	Object(GLfloatVector &vertices, shaderPointer shaderPointer);
+	Object(constShaderPointer shaderPointer);
+	Object(vec3Vector& vertices, constShaderPointer shaderPointer);
+	Object(const std::string& objectPath, constShaderPointer shaderPointer);
 	~Object();
 
-	GLfloatBuffer &getVertexBuffer();
+	vec3Buffer& getVertexBuffer();
 
-	void setShader(shaderPointer shaderPointer);
-	shaderPointer getShader();
+	void setShader(constShaderPointer shaderPointer);
+	constShaderPointer getShader();
 
 	virtual void render(glm::mat4 MVP); // Overload this if you need to!
 };

@@ -26,8 +26,8 @@
 class Texture
 {
 private:
-	const std::string mName; // May be useful, for error messages for example
-	const int mType;
+	std::string mName; // May be useful, for error messages for example
+	int mType;
 
 	GLuint mID;
 

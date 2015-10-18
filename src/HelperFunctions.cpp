@@ -23,49 +23,40 @@
 
 #include <sstream> // For std::getLine()
 
+// This set of functions make it easy to logprint wherever you are in the code.
+
 namespace HelperFunctions
 {
-	// String splitting
-	std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems) {
-		std::stringstream ss(s);
-		std::string item;
-		while (std::getline(ss, item, delim)) {
-			elems.push_back(item);
-		}
-		return elems;
-	}
+	std::ofstream gLogFile(LOG_FILE, std::ios::app); // Evil global
 
-	std::vector<std::string> split(const std::string& s, char delim) {
-		std::vector<std::string> elems;
-		split(s, delim, elems);
-		return elems;
-	}
-
-	// The size of the vector's data, in bytes
-	template<typename T>
-	std::size_t sizeOfVectorData(const typename std::vector<T> &vec)
+	void closeLogFile() // Log file opens by itself, but doesn't close by itself
 	{
-		return sizeof(T) * vec.size();
+		gLogFile.close();
 	}
 
 	void clearDataOutput()
 	{
+		if(gLogFile.is_open()) // Close the file
+		{
+			gLogFile.close();
+		}
+
 		std::ofstream dataFile(LOG_FILE); // No error checking necessairy
 		dataFile << "";
 		dataFile.close();
+
+		gLogFile.open(LOG_FILE, std::ios::app); // Reopen the file
 	}
 
-	void info(const std::string& msg)
+	void logprint(const std::string& msg)
 	{
-		std::ofstream dataFile(LOG_FILE, std::ios::app); // No error checking necessairy
-		dataFile << msg << '\n';
-		dataFile.close();
+		gLogFile << msg << '\n';
 	}
 
 	void warn(const std::string& msg)
 	{
 		std::string fullString = "Warning: " + msg; // Concentenate
-		info(fullString);
+		logprint(fullString);
 	}
 
 	void crash(const std::string& msg) // This quits the game, so don't expect to be able to do other things after calling this!
@@ -77,8 +68,9 @@ namespace HelperFunctions
 		if(sdlError.length()>0)
 			fullString += "\nSDL error: " + sdlError; // Info adds a newline at the end of the string
 
-		info(fullString);
+		logprint(fullString);
 
+		closeLogFile();
 		SDL_Quit();
 		exit(1); // Not the best
 	}
@@ -125,17 +117,21 @@ namespace HelperFunctions
 		}
 	}
 
-	template<typename Type> // Type is used to represent a single datatype. This line is part of the function definition
-	int findInArray(Type element, Type array[], int numberOfElements) // Uses comparision "==" and returns the index of the first instance of the element.
+	// String splitting
+	std::vector<std::string>& splitString(const std::string& s, char delim, std::vector<std::string>& elems)
 	{
-		for(int i = 0; i < numberOfElements; i++)
-		{
-			if(array[i] == element)
-			{
-				return i;
-			}
+		std::stringstream ss(s);
+		std::string item;
+		while (std::getline(ss, item, delim)) {
+			elems.push_back(item);
 		}
+		return elems;
+	}
 
-		return -1; // Thank god indexes can't be negative!
+	std::vector<std::string> splitString(const std::string& s, char delim)
+	{
+		std::vector<std::string> elems;
+		splitString(s, delim, elems);
+		return elems;
 	}
 }

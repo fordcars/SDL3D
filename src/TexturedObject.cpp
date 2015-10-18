@@ -24,17 +24,31 @@
 // - int textureType
 
 // In:
-// - vertex position in modelspace
-// - UV coords
+// - layout location 0: vertex position in modelspace
+// - layout location 1: UV coord
 
-TexturedObject::TexturedObject(GLfloatVector vertices, GLfloatVector UVCoords, shaderPointer shader,
+TexturedObject::TexturedObject(vec3Vector &vertices, vec2Vector &UVCoords, constShaderPointer shader,
 							   constTexturePointer texturePointer)
 	: Object(vertices, shader) // Calls Object constructor with those arguments
 {
 	mTexturePointer = texturePointer;
 
-	mUVBuffer.bind(GL_ARRAY_BUFFER);
-	mUVBuffer.setMutableData(GL_ARRAY_BUFFER, UVCoords, GL_DYNAMIC_DRAW);
+	mUVBuffer.setMutableData(UVCoords, GL_DYNAMIC_DRAW);
+}
+
+TexturedObject::TexturedObject(const std::string& objectPath, constShaderPointer shader, constTexturePointer texturePointer)
+	: Object(shader)
+{
+	mTexturePointer = texturePointer;
+
+	vec3Buffer &vertexBuffer = getVertexBuffer();
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> UVs;
+	std::vector<glm::vec3> normals;
+	loadOBJData(objectPath, vertices, UVs, normals);
+
+	vertexBuffer.setMutableData(vertices, GL_DYNAMIC_DRAW);
+	mUVBuffer.setMutableData(UVs, GL_DYNAMIC_DRAW);
 }
 
 TexturedObject::~TexturedObject()
@@ -42,7 +56,7 @@ TexturedObject::~TexturedObject()
 	// Do nothing
 }
 
-TexturedObject::GLfloatBuffer &TexturedObject::getUVBuffer()
+TexturedObject::vec2Buffer &TexturedObject::getUVBuffer()
 {
 	return mUVBuffer;
 }
@@ -61,7 +75,7 @@ void TexturedObject::render(glm::mat4 MVP)
 	glUniform1i(getShader()->findUniform("textureType"), mTexturePointer->getType()); // Send the type over to the shader
 
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, getVertexBuffer()); // All future function calls will modify this vertex buffer
+	getVertexBuffer().bind(GL_ARRAY_BUFFER);
 
 	glVertexAttribPointer(
 		0,					// Attribute 0, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
@@ -73,7 +87,7 @@ void TexturedObject::render(glm::mat4 MVP)
 	);	
 
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, mUVBuffer); // All future function calls will modify this vertex buffer
+	mUVBuffer.bind(GL_ARRAY_BUFFER);
 
 	glVertexAttribPointer(
 		1,					// Attribute 1, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
@@ -87,8 +101,7 @@ void TexturedObject::render(glm::mat4 MVP)
 	glActiveTexture(GL_TEXTURE0); // Set the active texture unit, you can have more than 1 texture at once
 	glBindTexture(GL_TEXTURE_2D, mTexturePointer->getID());
 
-	glDrawArrays(GL_TRIANGLES, 0, getNumberOfVertices()); // Draw!
-
+	glDrawArrays(GL_TRIANGLES, 0, getVertexBuffer().getLength()); // Draw!
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 }

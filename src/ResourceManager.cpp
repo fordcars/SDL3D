@@ -19,10 +19,12 @@
 #include <fstream>
 #include <HelperFunctions.hpp>
 
-// Shaders must be ASCII
+// Shaders must be ASCII or UTF-8
 // Reference: http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.2:-Shaders.html
 
 // OpenGL IDs are constant
+
+// Texture and shader names are also kept in their instances
 
 using namespace HelperFunctions;
 
@@ -85,7 +87,7 @@ void ResourceManager::clearShaders() // For freeing memory, you don't have to ca
 	mShaders.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
 }
 
-ResourceManager::texturePointer ResourceManager::addTexture(const std::string& name, const std::string& textureFile, int type)
+ResourceManager::texturePointer ResourceManager::addTexture(const std::string& textureFile, const std::string& name, int type)
 {
 	std::string path = getFullResourcePath(textureFile);
 
@@ -117,7 +119,7 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 	else
 		name = textureFile.substr(0, firstDot); // The index of the first dot aka the length of the name
 
-	return addTexture(name, textureFile, type); // Create the texture and return it
+	return addTexture(textureFile, name, type); // Create the texture and return it
 }
 
 ResourceManager::texturePointer ResourceManager::findTexture(const std::string& textureName)

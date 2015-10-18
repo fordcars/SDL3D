@@ -24,19 +24,39 @@
 
 namespace HelperFunctions
 {
-	std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems);
-	std::vector<std::string> split(const std::string& s, char delim);
-
-	template<typename T> std::size_t sizeOfVectorData(const typename std::vector<T> &vec);
-
+	void closeLogFile();
 	void clearDataOutput();
-	void info(const std::string& msg);
+	void logprint(const std::string& msg);
 	void warn(const std::string& msg);
 	void crash(const std::string& msg);
 	void checkSDLError(int line = -1);
 
 	std::string getFileContents(const std::string& filePath);
-	template<typename Type> int findInArray(Type element, Type array[], int numberOfElements);
+
+	std::vector<std::string>& splitString(const std::string& s, char delim, std::vector<std::string>& elems);
+	std::vector<std::string> splitString(const std::string& s, char delim);
+
+	// Templates
+	// The size of the vector's data, in bytes
+	template<typename T>
+	std::size_t getSizeOfVectorData(const typename std::vector<T> &vec)
+	{
+		return sizeof(T) * vec.size();
+	}
+
+	template<typename T> // Type is used to represent a single datatype. This line is part of the function definition
+	int findInArray(T element, T array[], int numberOfElements) // Uses comparision "==" and returns the index of the first instance of the element.
+	{
+		for(int i = 0; i < numberOfElements; i++)
+		{
+			if(array[i] == element)
+			{
+				return i;
+			}
+		}
+
+		return -1; // Thank god indexes can't be negative!
+	}
 }
 
 #endif /* HELPERFUNCTIONS_H_ */

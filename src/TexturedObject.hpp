@@ -29,13 +29,14 @@ private:
 	typedef std::shared_ptr<const Texture> constTexturePointer; // We can't modify the texture
 
 	constTexturePointer mTexturePointer; // Non-const so we can change the texture
-	GLfloatBuffer mUVBuffer; // From Object
+	vec2Buffer mUVBuffer; // From Object
 
 public:
-	TexturedObject(GLfloatVector vertices, GLfloatVector UVCoords, shaderPointer shader, constTexturePointer texturePointer);
+	TexturedObject(vec3Vector& vertices, vec2Vector& UVCoords, constShaderPointer shader, constTexturePointer texturePointer);
+	TexturedObject(const std::string& objectPath, constShaderPointer shader, constTexturePointer texturePointer);
 	~TexturedObject();
 
-	GLfloatBuffer &getUVBuffer();
+	vec2Buffer& getUVBuffer();
 
 	void setTexture(constTexturePointer texturePointer);
 	void render(glm::mat4 MVP); // Overloading

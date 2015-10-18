@@ -53,7 +53,6 @@ set(SOURCES
 	src/TexturedObject.cpp
 	src/Shader.cpp
 	src/Texture.cpp
-	src/GLBuffer.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c

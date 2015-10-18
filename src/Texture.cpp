@@ -27,8 +27,10 @@
 using namespace HelperFunctions;
 
 Texture::Texture(const std::string& name, const std::string& texturePath, int type)
-	: mName(name), mType(type)
 {
+	mName = name;
+	mType = type;
+
 	switch(type)
 	{
 	case BMP_TEXTURE:

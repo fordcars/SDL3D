@@ -32,7 +32,6 @@
 
 class ResourceManager
 {
-
 private:
 	typedef std::shared_ptr<Shader> shaderPointer;
 	typedef std::shared_ptr<Texture> texturePointer;
@@ -59,7 +58,7 @@ public:
 	shaderPointer findShader(const std::string& shaderName);
 	void clearShaders();
 
-	texturePointer addTexture(const std::string& name, const std::string& textureFile, int type);
+	texturePointer addTexture(const std::string& textureFile, const std::string& name, int type);
 	texturePointer addTexture(const std::string& textureFile, int type);
 	texturePointer findTexture(const std::string& textureName);
 	void clearTextures();

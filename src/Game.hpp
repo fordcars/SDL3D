@@ -39,7 +39,7 @@ private:
 	int mMinTicksPerFrame;
 	
 	int mLastFrameTime; // Time at last frame
-	const int mGameSpeedDivider; // Delta is divided by this. Setting this to 16 makes delta 1 (per frame) at 60fps.
+	int mGameSpeedDivider;
 
 	SDL_Window *mMainWindow;
 	SDL_GLContext mMainContext; // OpenGl context
@@ -64,7 +64,7 @@ private:
 	void update();
 
 	// Test
-	TexturedObject *test;
+	Object *test;
 
 public:
 	Game(const std::string& gameName, int width, int height, int frameRate, const std::string& resourceDir);

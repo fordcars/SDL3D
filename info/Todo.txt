@@ -1,18 +1,19 @@
--do UVCoords and else to convert TexturedObject
--Load object
-
--Use std::vector for loading objects points
+-Keep track of all objects!! (Load all objects once etc) and name in Object class (+ error messages while loading)
+-Use std::vector for loading objects points?
 -Base class entity that handles lighting etc (do tutorial)
 
 -Support events in input and have handleInput() in Game
 
--Levels/enemies
+------------------------------------
+-No need of particles, but billboards would be useful for trees, see tutorial 18.
+-Lightmaps is when Blender creates static shadows in textures
+-BIG! Level editor?!??!?! + list of objects!!!!!! + textures and all of course (in the same file, 1 per object or whatever)
+
 -3d animations: Either vertex shader or CPU for moving vertices
 -Do something with v-sync like that the frame rate doesn't drop to 30?
 
-Maybe I should of had a Display class? Oh well
-
--Sometimes stays alive for a while after quitting?
-
 -Update arrays (uniforms and keys) to std::vectors (VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)
--Make array for texture loading (with one call)
+
+-Advanced tutorials:
+-VBO Indexing
+-2D Text (+2d textures)

@@ -27,10 +27,10 @@
 class Shader
 {
 private:
+	std::string mName; // Useful for error messages
+
 	GLuint mID; // the ID of the shader, give this to OpenGL stuff. Could be const, but I left it non-const to make things easier.
 	GLuintMap mUniforms; // Uniform variables, uniforms[uniformName] = uniform location
-
-	const std::string mName; // Useful for error messages
 
 	// Static because they donnot need an instance to work
 	static GLuint compileShader(const std::string& shaderPath, const std::string& shaderCode, GLenum type);

@@ -26,8 +26,9 @@ using namespace HelperFunctions;
 Shader::Shader(const std::string& name,
 			   const std::string& vertexShaderPath,
 			   const std::string& fragmentShaderPath)
-	: mName(name) // Keep track of the const name
 {
+	mName = name;
+
 	std::string vertexShaderCode = getFileContents(vertexShaderPath);
 	std::string fragmentShaderCode = getFileContents(fragmentShaderPath);
 
@@ -76,10 +77,10 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 		std::string error = "Failed to compile shader '";
 		error = error + shaderPath + "'.";
 		
-		std::string glLog = getGLShaderDebugLog(shader, glGetShaderiv, glGetShaderInfoLog); // Give it the right functions
+		std::string shaderLog = getGLShaderDebugLog(shader, glGetShaderiv, glGetShaderInfoLog); // Give it the right functions
 		glDeleteProgram(shader);
 
-		info(glLog);
+		logprint(shaderLog);
 		crash(error);
 		return 0;
 	}
@@ -103,10 +104,10 @@ GLuint Shader::linkShaderProgram(const std::string& shaderProgramName, GLuint ve
 		std::string error = "Failed to link shader program'";
 		error = error + shaderProgramName + "'.";
 		
-		std::string glLog = getGLShaderDebugLog(program, glGetProgramiv, glGetProgramInfoLog); // Give it the right functions
+		std::string shaderLog = getGLShaderDebugLog(program, glGetProgramiv, glGetProgramInfoLog); // Give it the right functions
 		glDeleteProgram(program);
 
-		info(glLog);
+		logprint(shaderLog);
 		crash(error);
 		return 0;
 	}
