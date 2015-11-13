@@ -1,26 +1,26 @@
-// Copyright 2015 Carl Hewett
-
-// This file is part of SDL3D.
-
-// SDL3D is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// SDL3D is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+//// Copyright 2015 Carl Hewett
+////
+//// This file is part of SDL3D.
+////
+//// SDL3D is free software: you can redistribute it and/or modify
+//// it under the terms of the GNU General Public License as published by
+//// the Free Software Foundation, either version 3 of the License, or
+//// (at your option) any later version.
+////
+//// SDL3D is distributed in the hope that it will be useful,
+//// but WITHOUT ANY WARRANTY; without even the implied warranty of
+//// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//// GNU General Public License for more details.
+////
+//// You should have received a copy of the GNU General Public License
+//// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 #include <Shader.hpp>
-#include <HelperFunctions.hpp>
+#include <Utils.hpp>
 
 #include <ResourceManager.hpp> // For getFileContents();
-
-using namespace HelperFunctions;
 
 // Takes the shader paths for better error logs
 Shader::Shader(const std::string& name,
@@ -29,8 +29,8 @@ Shader::Shader(const std::string& name,
 {
 	mName = name;
 
-	std::string vertexShaderCode = getFileContents(vertexShaderPath);
-	std::string fragmentShaderCode = getFileContents(fragmentShaderPath);
+	std::string vertexShaderCode = Utils::getFileContents(vertexShaderPath);
+	std::string fragmentShaderCode = Utils::getFileContents(fragmentShaderPath);
 
 	GLuint vertexShader = compileShader(vertexShaderPath, vertexShaderCode, GL_VERTEX_SHADER); // Is this length stuff right?
 	GLuint fragmentShader = compileShader(fragmentShaderPath, fragmentShaderCode, GL_FRAGMENT_SHADER);
@@ -55,7 +55,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 
 	if(length>INT_MAX)
 	{
-		crash("Overflow! Shader too long! How is this possible?!");
+		Utils::crash("Overflow! Shader too long! How is this possible?!", __LINE__, __FILE__);
 		return 0;
 	}
 
@@ -65,7 +65,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 	const int shaderFilesLength[] = {shaderLength}; // Array
 
 	if(shaderLength==0) // If there is no source
-		crash("No shader source found!");
+		Utils::crash("No shader source found!", __LINE__, __FILE__);
 	
 	glShaderSource(shader, 1, shaderFiles, shaderFilesLength);
 	glCompileShader(shader);
@@ -80,8 +80,8 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 		std::string shaderLog = getGLShaderDebugLog(shader, glGetShaderiv, glGetShaderInfoLog); // Give it the right functions
 		glDeleteProgram(shader);
 
-		logprint(shaderLog);
-		crash(error);
+		Utils::logprint(shaderLog);
+		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}
 
@@ -107,8 +107,8 @@ GLuint Shader::linkShaderProgram(const std::string& shaderProgramName, GLuint ve
 		std::string shaderLog = getGLShaderDebugLog(program, glGetProgramiv, glGetProgramInfoLog); // Give it the right functions
 		glDeleteProgram(program);
 
-		logprint(shaderLog);
-		crash(error);
+		Utils::logprint(shaderLog);
+		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}
 	
@@ -144,18 +144,18 @@ const GLuint Shader::addUniform(const std::string& uniformName) // Uniform name 
 	{
 		GLuintMapPair uniformPair(uniformName, uniformLocation);
 
-		std::pair<GLuintMap::iterator, bool> newlyAddedPair = mUniforms.insert(uniformPair); // Insert in map
+		std::pair<GLuintMap::iterator, bool> newlyAddedPair = mUniformMap.insert(uniformPair); // Insert in map
 	
 		if(newlyAddedPair.second == false) // Already exists!
 		{
 			std::string error = "Uniform '" + uniformName + "' in shader '" + mName + "' already exists and cannot be added again!";
-			crash(error);
+			Utils::crash(error, __LINE__, __FILE__);
 			return newlyAddedPair.first->second; // Returns the uniform that was there before
 		}
 	} else // Invalid uniform
 	{
 			std::string error = "Uniform '" + uniformName + "' does not exist or is invalid in shader '" + mName + "'!";
-			crash(error);
+			Utils::crash(error, __LINE__, __FILE__);
 	}
 
 	return uniformLocation; // Return the newly added uniform location
@@ -171,13 +171,13 @@ void Shader::addUniforms(const std::string uniformNames[], int length)
 
 const GLuint Shader::findUniform(const std::string& uniformName) const // Returns a read only int
 {
-	GLuintMap::const_iterator got = mUniforms.find(uniformName); // Const iterator, we should not need to change this GLuint
+	GLuintMap::const_iterator got = mUniformMap.find(uniformName); // Const iterator, we should not need to change this GLuint
 
-	if(got==mUniforms.end())
+	if(got==mUniformMap.end())
 	{
 		std::string error = uniformName;
 		error = "Uniform '" + error + "' not found!";
-		HelperFunctions::crash(error);
+		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}
 

@@ -1,22 +1,27 @@
-// Copyright 2015 Carl Hewett
+//// Copyright 2015 Carl Hewett
+////
+//// This file is part of SDL3D.
+////
+//// SDL3D is free software: you can redistribute it and/or modify
+//// it under the terms of the GNU General Public License as published by
+//// the Free Software Foundation, either version 3 of the License, or
+//// (at your option) any later version.
+////
+//// SDL3D is distributed in the hope that it will be useful,
+//// but WITHOUT ANY WARRANTY; without even the implied warranty of
+//// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//// GNU General Public License for more details.
+////
+//// You should have received a copy of the GNU General Public License
+//// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
-// This file is part of SDL3D.
+// A simple general auto-binding OpenGL buffer wrapper
+// Useful for using as an interface for other classes (retun this instead of writing an interface)
 
-// SDL3D is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// SDL3D is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
-
-#ifndef GLBUFFER_H_
-#define GLBUFFER_H_
+#ifndef GLBUFFER_HPP_
+#define GLBUFFER_HPP_
 
 #include <GLAD/glad.h>
 #include <vector>
@@ -24,7 +29,7 @@
 #include <cstdlib> // For size_t
 
 template<typename bufferDataType>
-class GLBuffer // A simple general auto-binding OpenGL buffer wrapper
+class GLBuffer
 {
 private:
 	GLuint mID; // OpenGL handle
@@ -36,8 +41,8 @@ public:
 	GLBuffer(bool autoBind = true, GLenum target = GL_ARRAY_BUFFER)
 	{
 		mAutoBind = autoBind;
-
 		setTarget(target);
+
 		glGenBuffers(1, &mID); // 1 for 1 buffer
 	}
 
@@ -52,16 +57,31 @@ public:
 		// For newer OpenGL versions: int oldCopyWriteBuffer = glGetIntegerv(GL_COPY_WRITE_BUFFER_BINDING);
 		// int oldCopyReadBuffer = glGetIntegerv(GL_COPY_READ_BUFFER_BINDING);
 
-		glGenBuffers(1, &mID); // Create a buffer
-		bind(GL_COPY_WRITE_BUFFER); // Bind it as the write buffer
+		mAutoBind = other.mAutoBind;
+		setTarget(other.mTarget);
+		
+		glGenBuffers(1, &mID);
 
-		other.bind(GL_COPY_READ_BUFFER);
+		// Code to make sure the data and the flags are the same
+		GLint isImmutable;
+		other.bind();
+		glGetBufferParameteriv(other.mTarget, GL_BUFFER_IMMUTABLE_STORAGE, &isImmutable);
+		
+		if(isImmutable)
+		{
+			GLint immutableFlags;
+			other.bind();
+			glGetBufferParameteriv(other.mTarget, GL_BUFFER_STORAGE_FLAGS, &immutableFlags);
+			
+			setImmutableData(other.readData(), immutableFlags);
+		} else
+		{
+			GLint usage;
+			other.bind();
+			glGetBufferParameteriv(other.mTarget, GL_BUFFER_USAGE, &usage);
 
-		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, other.getSize()); // Let OpenGL copy it
-
-		// Unbind them for cleanliness
-		glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
-		glBindBuffer(GL_COPY_READ_BUFFER, 0);
+			setMutableData(other.readData(), usage);
+		}
 	}
 
 	const GLuint getID()
@@ -105,7 +125,7 @@ public:
 	void setMutableData(const std::vector<bufferDataType>& data, GLenum usage)
 	{
 		bind();
-		glBufferData(mTarget, sizeof(bufferDataType) * data.size(), &data[0], usage);
+		glBufferData(mTarget, sizeof(bufferDataType) * data.size(), &data[0], usage); // vector.size() returns the amount of elements
 	}
 
 	void setImmutableData(const std::vector<bufferDataType>& data, GLenum immutableFlags) // immutableFlags being a bitwise operation
@@ -116,10 +136,8 @@ public:
 
 	std::vector<bufferDataType> readData(GLintptr offset, GLsizeiptr size) const
 	{
-		std::vector<bufferDataType> data;
-
-		bind();
-		glGetBufferSubData(mTarget, offset, getSize(), &data[0]);
+		std::vector<bufferDataType> data(size / sizeof(bufferDataType)); // Allocate
+		glGetBufferSubData(mTarget, offset, size, &data[0]);
 
 		return data;
 	}
@@ -127,15 +145,15 @@ public:
 	// Read all of the data
 	std::vector<bufferDataType> readData() const
 	{
-		return readData(mTarget, 0, getSize());
+		return readData(0, getSize());
 	}
 
 	// If the buffer is immutable, make sure you gave the right immutableFlags to make it changeable
 	void modifyData(GLintptr offset, const std::vector<bufferDataType>& data)
 	{
 		bind();
-		glBufferSubData(mTarget, offset, HelperFunctions::getSizeOfVectorData(vertices), &data[0]);
+		glBufferSubData(mTarget, offset, Utils::getSizeOfVectorData(vertices), &data[0]);
 	}
 };
 
-#endif /* GLBUFFER_H_ */
+#endif /* GLBUFFER_HPP_ */

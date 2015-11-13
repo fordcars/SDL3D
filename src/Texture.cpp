@@ -1,30 +1,30 @@
-// Copyright 2015 Carl Hewett
-
-// This file is part of SDL3D.
-
-// SDL3D is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// SDL3D is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+//// Copyright 2015 Carl Hewett
+////
+//// This file is part of SDL3D.
+////
+//// SDL3D is free software: you can redistribute it and/or modify
+//// it under the terms of the GNU General Public License as published by
+//// the Free Software Foundation, either version 3 of the License, or
+//// (at your option) any later version.
+////
+//// SDL3D is distributed in the hope that it will be useful,
+//// but WITHOUT ANY WARRANTY; without even the implied warranty of
+//// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//// GNU General Public License for more details.
+////
+//// You should have received a copy of the GNU General Public License
+//// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 #include <Texture.hpp>
 #include <Definitions.hpp> // For various definitions
 
-#include <HelperFunctions.hpp> // For log
+#include <Utils.hpp> // For log
 
 #include <fstream> // For files
 #include <vector>
 #include <cstring> // For strncmp
-
-using namespace HelperFunctions;
 
 Texture::Texture(const std::string& name, const std::string& texturePath, int type)
 {
@@ -69,7 +69,7 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 	if(!file)
 	{
 		std::string error = "BMP image '" + texturePath + "' could not be opened!";
-		crash(error);
+		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}
 
@@ -78,7 +78,7 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 	if(file.gcount() != 54) // If it's not 54 bytes, crash!
 	{
 		std::string error = "BMP image '" + texturePath + "' is not a correct BMP file! (Header is not 54 bytes)";
-		crash(error);
+		Utils::crash(error, __LINE__, __FILE__);
 		file.close();
 
 		return 0;
@@ -87,7 +87,7 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 	if(header[0] != 'B' || header[1] != 'M') // Not BMP file?
 	{
 		std::string error = "BMP image '" + texturePath + "' is not a correct BMP file! (No 'BM' present in header)";
-		crash(error);
+		Utils::crash(error, __LINE__, __FILE__);
 		file.close();
 
 		return 0;
@@ -145,7 +145,7 @@ const GLuint Texture::loadDDSTexture(const std::string& texturePath)
 	if(!file)
 	{
 		std::string error = "Texture '" + texturePath + "' cannot be opened!";
-		crash(error);
+		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}
 
@@ -158,7 +158,7 @@ const GLuint Texture::loadDDSTexture(const std::string& texturePath)
 		file.close();
 
 		std::string error = "DDS file '" + texturePath + "' is not a correct DDS file!";
-		crash(error);
+		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}
 
@@ -202,7 +202,7 @@ const GLuint Texture::loadDDSTexture(const std::string& texturePath)
 
 	default:
 		std::string error = "DDS file '" + texturePath + "' cannot be loaded as DDS file!";
-		crash(error);
+		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}
 

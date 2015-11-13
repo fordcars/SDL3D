@@ -44,15 +44,16 @@ set(GLAD_DIR ${LIB_DIR}/glad)
 set(SOURCES
     src/SDL3D.cpp
 	src/Game.cpp
-	src/HelperFunctions.cpp
+	src/Utils.cpp
 	src/ResourceManager.cpp
 	src/InputHandler.cpp
 	src/SimpleTimer.cpp
 	src/Camera.cpp
-	src/Object.cpp
+	src/ObjectTemplate.cpp
 	src/TexturedObject.cpp
 	src/Shader.cpp
 	src/Texture.cpp
+	src/BasicObject.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -62,17 +63,18 @@ set(SOURCES
 set(HEADERS
     src/SDL3D.hpp
 	src/Game.hpp
-	src/HelperFunctions.hpp
+	src/Utils.hpp
 	src/Definitions.hpp
 	src/ResourceManager.hpp
 	src/InputHandler.hpp
 	src/SimpleTimer.hpp
 	src/Camera.hpp
-	src/Object.hpp
+	src/ObjectTemplate.hpp
 	src/TexturedObject.hpp
 	src/Shader.hpp
 	src/Texture.hpp
 	src/GLBuffer.hpp
+	src/BasicObject.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

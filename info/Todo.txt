@@ -1,5 +1,5 @@
--Keep track of all objects!! (Load all objects once etc) and name in Object class (+ error messages while loading)
--Use std::vector for loading objects points?
+-Repair stack corruption (got->second? in findObjectTemplate)
+-Keep track of shared pointers of ObjectTemplate (still copy object templates when making objects, though)
 -Base class entity that handles lighting etc (do tutorial)
 
 -Support events in input and have handleInput() in Game

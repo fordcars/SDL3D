@@ -17,21 +17,28 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef DEFINITIONS_HPP_
-#define DEFINITIONS_HPP_
+#ifndef BASICOBJECT_HPP_
+#define BASICOBJECT_HPP_
 
-#define LOG_FILE "Log.txt"
+#include <ObjectTemplate.hpp>
+#include <glm/glm.hpp>
+#include <GLAD/glad.h> // OpenGL, rendering and all
 
-// Texture types
-#define BMP_TEXTURE 1
-#define DDS_TEXTURE 2
+class BasicObject : public ObjectTemplate
+{
+protected:
+	constShaderPointer getShader();
 
-#include <GLAD/glad.h>
-#include <array>
-#include <unordered_map>
+private:
+	constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
-// Useful typedefs
-typedef std::unordered_map<std::string, GLuint> GLuintMap;
-typedef std::pair<std::string, GLuint> GLuintMapPair;
+public:
+	BasicObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer);
+	~BasicObject();
 
-#endif /* DEFINITIONS_HPP_ */
+	void setShader(constShaderPointer shaderPointer);
+
+	virtual void render(glm::mat4 MVP); // Overload this if you need to!
+};
+
+#endif /* BASICOBJECT_HPP_ */

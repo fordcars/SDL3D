@@ -1,23 +1,25 @@
-// Copyright 2015 Carl Hewett
-
-// This file is part of SDL3D.
-
-// SDL3D is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// SDL3D is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+//// Copyright 2015 Carl Hewett
+////
+//// This file is part of SDL3D.
+////
+//// SDL3D is free software: you can redistribute it and/or modify
+//// it under the terms of the GNU General Public License as published by
+//// the Free Software Foundation, either version 3 of the License, or
+//// (at your option) any later version.
+////
+//// SDL3D is distributed in the hope that it will be useful,
+//// but WITHOUT ANY WARRANTY; without even the implied warranty of
+//// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//// GNU General Public License for more details.
+////
+//// You should have received a copy of the GNU General Public License
+//// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 #include <ResourceManager.hpp>
 #include <fstream>
-#include <HelperFunctions.hpp>
+#include <Utils.hpp>
 
 // Shaders must be ASCII or UTF-8
 // Reference: http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.2:-Shaders.html
@@ -25,8 +27,6 @@
 // OpenGL IDs are constant
 
 // Texture and shader names are also kept in their instances
-
-using namespace HelperFunctions;
 
 ResourceManager::ResourceManager(const std::string& resourceDir)
 {
@@ -36,6 +36,18 @@ ResourceManager::ResourceManager(const std::string& resourceDir)
 ResourceManager::~ResourceManager()
 {
 	clearShaders();
+}
+
+// Static
+// Get the name of the file before the dot '.'
+std::string ResourceManager::getBasename(const std::string& file)
+{
+	std::size_t firstDot = file.find('.'); // Returns the index of the first found dot
+
+	if(firstDot == std::string::npos) // No dot in this file
+		return file; // Set the name as the whole file name
+	else
+		return file.substr(0, firstDot); // The index of the first dot aka the length of the name
 }
 
 // Returns the full resource oath
@@ -53,13 +65,12 @@ ResourceManager::shaderPointer ResourceManager::addShader(const std::string& sha
 	shaderPointer shader(new Shader(shaderName, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
 
 	shaderMapPair shaderPair(shaderName, shader);
-	std::pair<shaderMap::iterator, bool> newlyAddedPair = mShaders.insert(shaderPair);
+	std::pair<shaderMap::iterator, bool> newlyAddedPair = mShaderMap.insert(shaderPair);
 	
 	if(newlyAddedPair.second == false) // It already exists in the map
 	{
-		std::string error = shaderName;
-		error = "Shader '" + error + "' already exists and cannot be added again!";
-		crash(error);
+		std::string error = "Shader '" + shaderName + "' already exists and cannot be added again!";;
+		Utils::crash(error, __LINE__, __FILE__);
 		return newlyAddedPair.first->second; // Returns a reference to the shader that was there before
 	}
 
@@ -69,13 +80,12 @@ ResourceManager::shaderPointer ResourceManager::addShader(const std::string& sha
 ResourceManager::shaderPointer ResourceManager::findShader(const std::string& shaderName) // Returns an lvalue reference, so you can modify it in the map. Make sure you keep it in the map though!
 {
 	// http://www.cplusplus.com/reference/unordered_map/unordered_map/find/
-	shaderMap::iterator got = mShaders.find(shaderName); // Non-const iterator, since we want a non-const reference!
+	shaderMap::iterator got = mShaderMap.find(shaderName); // Non-const iterator, since we want a non-const reference!
 
-	if(got==mShaders.end())
+	if(got==mShaderMap.end())
 	{
-		std::string error = shaderName;
-		error = "Shader '" + error + "' not found!";
-		crash(error);
+		std::string error = "Shader '" + shaderName + "' not found!";;
+		Utils::crash(error, __LINE__, __FILE__);
 		return got->second; // Can't return nothing here!
 	}
 
@@ -84,7 +94,7 @@ ResourceManager::shaderPointer ResourceManager::findShader(const std::string& sh
 
 void ResourceManager::clearShaders() // For freeing memory, you don't have to call this when quitting
 {
-	mShaders.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
+	mShaderMap.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
 }
 
 ResourceManager::texturePointer ResourceManager::addTexture(const std::string& textureFile, const std::string& name, int type)
@@ -94,50 +104,90 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 	texturePointer texture(new Texture(name, path, type));
 	textureMapPair texturePair(name, texture);
 
-	std::pair<textureMap::iterator, bool> newlyAddedPair = mTextures.insert(texturePair); // Insert in map
+	std::pair<textureMap::iterator, bool> newlyAddedPair = mTextureMap.insert(texturePair); // Insert in map
 	
 	if(newlyAddedPair.second == false)
 	{
-		std::string error = name;
-		error = "Texture '" + error + "' already exists and cannot be added again!";
-		crash(error);
+		std::string error = "Texture '" + name + "' already exists and cannot be added again!";;
+		Utils::crash(error, __LINE__, __FILE__);
 		return newlyAddedPair.first->second; // Returns a reference to the texture that was there before
 	}
 
-	return newlyAddedPair.first->second; // Returns a reference to the texture
+	return newlyAddedPair.first->second;
 }
 
 // The texture will take the name of the texture file (characters before the first dot). This will make it easier to add many textures.
 ResourceManager::texturePointer ResourceManager::addTexture(const std::string& textureFile, int type)
 {
 	std::string path = getFullResourcePath(textureFile);
-	std::string name;
-	std::size_t firstDot = textureFile.find('.'); // Returns the index of the first found dot
-
-	if(firstDot == std::string::npos) // No dot in this file
-		name = textureFile; // Set the name as the whole file name
-	else
-		name = textureFile.substr(0, firstDot); // The index of the first dot aka the length of the name
+	std::string name = getBasename(textureFile);
 
 	return addTexture(textureFile, name, type); // Create the texture and return it
 }
 
 ResourceManager::texturePointer ResourceManager::findTexture(const std::string& textureName)
 {
-	textureMap::iterator got = mTextures.find(textureName); // Const iterator, we should not need to change this GLuint
+	textureMap::iterator got = mTextureMap.find(textureName);
 
-	if(got == mTextures.end())
+	if(got == mTextureMap.end())
 	{
-		std::string error = textureName;
-		error = "Texture '" + error + "' not found!";
-		crash(error);
+		std::string error = "Texture '" + textureName + "' not found!";;
+		Utils::crash(error, __LINE__, __FILE__);
 		return got->second;
 	}
 
 	return got->second;
 }
 
-void ResourceManager::clearTextures() // For free memory
+void ResourceManager::clearTextures()
 {
-	mTextures.clear();
+	mTextureMap.clear();
+}
+
+// Objects are copied to make them easily modifiable
+ObjectTemplate ResourceManager::addObjectTemplate(const std::string& objectFile, const std::string& name)
+{
+	std::string path = getFullResourcePath(objectFile);
+
+	ObjectTemplate objectTemplate(name, path);
+	objectTemplateMapPair objectTemplatePair(name, objectTemplate);
+
+	std::pair<objectTemplateMap::iterator, bool> newlyAddedPair = mObjectTemplateMap.insert(objectTemplatePair); // Insert in map
+	
+	if(newlyAddedPair.second == false)
+	{
+		std::string error = name;
+		error = "Object template '" + error + "' already exists and cannot be added again!";
+		Utils::crash(error, __LINE__, __FILE__);
+		return newlyAddedPair.first->second; // Returns a reference to the texture that was there before
+	}
+
+	return newlyAddedPair.first->second;
+}
+
+ObjectTemplate ResourceManager::addObjectTemplate(const std::string& objectFile)
+{
+	std::string path = getFullResourcePath(objectFile);
+	std::string name = getBasename(objectFile);
+
+	return addObjectTemplate(objectFile, name);
+}
+
+ObjectTemplate ResourceManager::findObjectTemplate(const std::string& objectName) // Copies the object
+{
+	objectTemplateMap::iterator got = mObjectTemplateMap.find(objectName);
+
+	if(got == mObjectTemplateMap.end()) // end() is past-the-end element iterator, so not found in the map!
+	{
+		std::string error = "Object template '" + objectName + "' not found!";;
+		Utils::crash(error, __LINE__, __FILE__);
+		return got->second;
+	}
+	
+	return got->second;
+}
+
+void ResourceManager::clearObjectTemplates()
+{
+	mObjectTemplateMap.clear();
 }

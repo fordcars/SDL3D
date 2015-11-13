@@ -1,25 +1,27 @@
-#ifndef RESOURCEMANAGER_H_
-#define RESOURCEMANAGER_H_
+//// Copyright 2015 Carl Hewett
+////
+//// This file is part of SDL3D.
+////
+//// SDL3D is free software: you can redistribute it and/or modify
+//// it under the terms of the GNU General Public License as published by
+//// the Free Software Foundation, either version 3 of the License, or
+//// (at your option) any later version.
+////
+//// SDL3D is distributed in the hope that it will be useful,
+//// but WITHOUT ANY WARRANTY; without even the implied warranty of
+//// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//// GNU General Public License for more details.
+////
+//// You should have received a copy of the GNU General Public License
+//// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+
+#ifndef RESOURCEMANAGER_HPP_
+#define RESOURCEMANAGER_HPP_
 
 #include <GLAD/glad.h>
 #include <string>
-
-// Copyright 2015 Carl Hewett
-
-// This file is part of SDL3D.
-
-// SDL3D is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// SDL3D is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 
 #include <unordered_map>
 #include <memory> // For shared_ptr
@@ -27,6 +29,7 @@
 
 #include <Shader.hpp>
 #include <Texture.hpp>
+#include <ObjectTemplate.hpp>
 
 // All paths are prefixed with mResourceDir
 
@@ -43,10 +46,17 @@ private:
 
 	typedef std::unordered_map<std::string, texturePointer> textureMap;
 	typedef std::pair<std::string, texturePointer> textureMapPair;
-	shaderMap mShaders; // Map, faster access: shaders[shaderName] = shaderID etc
-	textureMap mTextures;
+
+	typedef std::unordered_map<std::string, ObjectTemplate> objectTemplateMap; // The objects directly, it will copy them
+	typedef std::pair<std::string, ObjectTemplate> objectTemplateMapPair;
+
+	shaderMap mShaderMap; // Map, faster access: shaders[shaderName] = shaderID etc
+	textureMap mTextureMap;
+	objectTemplateMap mObjectTemplateMap;
 
 	std::string mResourceDir;
+
+	static std::string getBasename(const std::string& file);
 
 public:
 	ResourceManager(const std::string& resourceDir);
@@ -62,6 +72,11 @@ public:
 	texturePointer addTexture(const std::string& textureFile, int type);
 	texturePointer findTexture(const std::string& textureName);
 	void clearTextures();
+
+	ObjectTemplate addObjectTemplate(const std::string& objectFile);
+	ObjectTemplate addObjectTemplate(const std::string& objectFile, const std::string& name);
+	ObjectTemplate findObjectTemplate(const std::string& objectName);
+	void clearObjectTemplates();
 };
 
-#endif /* RESOURCEMANAGER_H_ */
+#endif /* RESOURCEMANAGER_HPP_ */
