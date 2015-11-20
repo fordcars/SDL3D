@@ -39,7 +39,7 @@ ResourceManager::~ResourceManager()
 }
 
 // Static
-// Get the name of the file before the dot '.'
+// Get the name of the file before the first dot '.'
 std::string ResourceManager::getBasename(const std::string& file)
 {
 	std::size_t firstDot = file.find('.'); // Returns the index of the first found dot
@@ -62,9 +62,9 @@ ResourceManager::shaderPointer ResourceManager::addShader(const std::string& sha
 	std::string vertexShaderPath = getFullResourcePath(vertexShaderFile); // All resources are in the resource dir
 	std::string fragmentShaderPath = getFullResourcePath(fragmentShaderFile);
 
-	shaderPointer shader(new Shader(shaderName, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
+	shaderPointer shaderPointer(new Shader(shaderName, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
 
-	shaderMapPair shaderPair(shaderName, shader);
+	shaderMapPair shaderPair(shaderName, shaderPointer);
 	std::pair<shaderMap::iterator, bool> newlyAddedPair = mShaderMap.insert(shaderPair);
 	
 	if(newlyAddedPair.second == false) // It already exists in the map
@@ -101,8 +101,8 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 {
 	std::string path = getFullResourcePath(textureFile);
 
-	texturePointer texture(new Texture(name, path, type));
-	textureMapPair texturePair(name, texture);
+	texturePointer texturePointer(new Texture(name, path, type));
+	textureMapPair texturePair(name, texturePointer);
 
 	std::pair<textureMap::iterator, bool> newlyAddedPair = mTextureMap.insert(texturePair); // Insert in map
 	
@@ -116,7 +116,7 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 	return newlyAddedPair.first->second;
 }
 
-// The texture will take the name of the texture file (characters before the first dot). This will make it easier to add many textures.
+// The texture will take the name of the texture file (characters before the first dot). This will make it easier to add many textures since you would probably name them the same anyway.
 ResourceManager::texturePointer ResourceManager::addTexture(const std::string& textureFile, int type)
 {
 	std::string path = getFullResourcePath(textureFile);
@@ -144,25 +144,25 @@ void ResourceManager::clearTextures()
 	mTextureMap.clear();
 }
 
-// Objects are copied to make them easily modifiable
+// Objects are copied to make them easily modifiable. They are, however, stored as shared pointers for efficiency.
 ObjectTemplate ResourceManager::addObjectTemplate(const std::string& objectFile, const std::string& name)
 {
 	std::string path = getFullResourcePath(objectFile);
 
-	ObjectTemplate objectTemplate(name, path);
-	objectTemplateMapPair objectTemplatePair(name, objectTemplate);
+	objectTemplatePointer objectTemplatePointer(new ObjectTemplate(name, path));
+	objectTemplateMapPair objectTemplatePair(name, objectTemplatePointer);
 
-	std::pair<objectTemplateMap::iterator, bool> newlyAddedPair = mObjectTemplateMap.insert(objectTemplatePair); // Insert in map
+	std::pair<objectTemplateMap::iterator, bool> newlyAddedPair = mObjectTemplateMap.insert(objectTemplatePair);
 	
 	if(newlyAddedPair.second == false)
 	{
 		std::string error = name;
 		error = "Object template '" + error + "' already exists and cannot be added again!";
 		Utils::crash(error, __LINE__, __FILE__);
-		return newlyAddedPair.first->second; // Returns a reference to the texture that was there before
+		return *(newlyAddedPair.first->second); // Parenthesis for clarity
 	}
 
-	return newlyAddedPair.first->second;
+	return *(newlyAddedPair.first->second);
 }
 
 ObjectTemplate ResourceManager::addObjectTemplate(const std::string& objectFile)
@@ -181,10 +181,10 @@ ObjectTemplate ResourceManager::findObjectTemplate(const std::string& objectName
 	{
 		std::string error = "Object template '" + objectName + "' not found!";;
 		Utils::crash(error, __LINE__, __FILE__);
-		return got->second;
+		return *got->second;
 	}
 	
-	return got->second;
+	return *got->second;
 }
 
 void ResourceManager::clearObjectTemplates()

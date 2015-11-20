@@ -37,7 +37,7 @@ public:
 	~TexturedObject();
 
 	void setTexture(constTexturePointer texturePointer);
-	void render(glm::mat4 MVP); // Overloading
+	void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overloading
 };
 
 #endif /* TEXTURED_OBJECT_HPP_ */

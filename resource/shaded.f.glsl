@@ -19,14 +19,42 @@
 
 #version 330 core
 
+out vec3 color;
+
 // Interpolated values from the vertex shader
 in vec2 UV;
-out vec3 color;
+in vec3 fPosition;
+in vec3 fNormal;
 
 // Values that stay constant for the whole mesh
 uniform sampler2D textureSampler;
-void main()
+
+// lightDir, lightIntensity, Ka, Kd, Ks, shininess
+vec2 blinnPhongDir(vec3 lightDir, float lightIntensity, float diffuseIntensity, float diffuseBrightness, float specularIntensity, float shininess)
 {
-	// Ouput color = color at that specific UV
-	color = texture(textureSampler, UV).rgb;
+	vec3 s = normalize(lightDir);
+	vec3 v = normalize(-fPosition);
+	vec3 n = normalize(fNormal);
+	vec3 h = normalize(v + s);
+	
+	float diffuse = diffuseIntensity + diffuseBrightness * lightIntensity * max(0.0, dot(n, s));
+	float specular = specularIntensity * pow(max(0.0, dot(n, h)), shininess);
+	
+	return vec2(diffuse, specular);
+}
+
+void main()
+{	
+	// DEBUG for now
+	vec3 lightDir = vec3(0.1, 2.5, 5.0);
+	float lightIntensity = 1.0;
+	float diffuseIntensity = 0.1;
+	float diffuseBrightness = 1.0;
+	float specularIntensity = 1.5;
+	float shininess = 10.0;
+	
+	vec2 light = blinnPhongDir(lightDir, lightIntensity, diffuseIntensity, diffuseBrightness, specularIntensity, shininess);
+	vec3 textureColor = texture(textureSampler, UV).rgb;
+	
+	color = textureColor * vec3(light, 1.0);
 }

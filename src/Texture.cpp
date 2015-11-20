@@ -29,7 +29,6 @@
 Texture::Texture(const std::string& name, const std::string& texturePath, int type)
 {
 	mName = name;
-	mType = type;
 
 	switch(type)
 	{
@@ -42,6 +41,8 @@ Texture::Texture(const std::string& name, const std::string& texturePath, int ty
 		break;
 
 	default:
+		std::string warning = "No texture type specified for textue '" + name + "'! Assuming it is bipmap";
+		Utils::warn(warning);
 		break;
 	}
 }
@@ -120,7 +121,8 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, &data[0]); // Change the second GL_RGB for GL_BGR if the colors are inverted
+	// The second color format (GL_RGB or GL_BGR) can be changed to invert colors
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, &data[0]);
 
 	// When we stretch (magnify) the image, use linear filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

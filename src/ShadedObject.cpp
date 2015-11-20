@@ -17,45 +17,55 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <TexturedObject.hpp>
+#include <ShadedObject.hpp>
 #include <Utils.hpp>
 
 // In:
 // - layout location 0: vertex position in modelspace
 // - layout location 1: UV coord
+// - layout location 2: normal
 
 // Uniforms:
 // - mat4 MVP
+// - mat4 modelViewMatrix
+// - mat4 normalMatrix
 // - sampler2D textureSampler
 
-TexturedObject::TexturedObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer, constTexturePointer texturePointer)
-	: BasicObject(objectTemplate, shaderPointer) // Calls Object constructor with those arguments
+ShadedObject::ShadedObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer, constTexturePointer texturePointer)
+	: BasicObject(objectTemplate, shaderPointer)
 {
 	mTexturePointer = texturePointer;
 }
 
-TexturedObject::~TexturedObject()
+ShadedObject::~ShadedObject()
 {
 	// Do nothing
 }
 
-void TexturedObject::setTexture(constTexturePointer texturePointer)
+void ShadedObject::setTexture(constTexturePointer texturePointer)
 {
 	mTexturePointer = texturePointer;
 }
 
-void TexturedObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+void ShadedObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
+	glm::mat4 modelViewMatrix =viewMatrix * modelMatrix;
+	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
 
 	vec3Buffer& vertexBuffer = getVertexBuffer();
 	vec2Buffer& UVBuffer = getUVBuffer();
+	vec3Buffer& normalBuffer = getNormalBuffer();
 	
 	glUseProgram(getShader()->getID());
 
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(getShader()->findUniform("modelViewMatrix"), 1, GL_FALSE, &modelViewMatrix[0][0]);
+	glUniformMatrix4fv(getShader()->findUniform("normalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
+
 	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now
 
+	// Attribute 0
 	glEnableVertexAttribArray(0);
 	vertexBuffer.bind(GL_ARRAY_BUFFER);
 	
@@ -68,16 +78,30 @@ void TexturedObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::ma
 		(void*)0			// Array buffer offset
 	);
 
+	// Attribute 1
 	glEnableVertexAttribArray(1);
 	UVBuffer.bind(GL_ARRAY_BUFFER);
 
 	glVertexAttribPointer(
-		1,					// Attribute 1, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
-		2,					// Size. Number of values per cell, must be 1, 2, 3 or 4.
-		GL_FLOAT,			// Type of data (GLfloats)
-		GL_FALSE,			// Normalized?
-		0,					// Stride
-		(void*)0			// Array buffer offset
+		1,                // Attribute
+		2,                // Size (values per vertex)
+		GL_FLOAT,         // Type
+		GL_FALSE,         // Normalize?
+		0,                // Stride
+		(void*)0          // Array buffer offset
+	);
+
+	// Attribute 2
+	glEnableVertexAttribArray(2);
+	normalBuffer.bind(GL_ARRAY_BUFFER);
+
+	glVertexAttribPointer(
+		2,                // Attribute
+		3,                // Size (values per vertex)
+		GL_FLOAT,         // Type
+		GL_FALSE,         // Normalize?
+		0,                // Stride
+		(void*)0          // Array buffer offset
 	);
 
 	glActiveTexture(GL_TEXTURE0); // Set the active texture unit, you can have more than 1 texture at once
@@ -86,4 +110,5 @@ void TexturedObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::ma
 	glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.getLength()); // Draw!
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 }

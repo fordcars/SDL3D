@@ -38,7 +38,7 @@ public:
 
 	void setShader(constShaderPointer shaderPointer);
 
-	virtual void render(glm::mat4 MVP); // Overload this if you need to!
+	virtual void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overload this if you need to!
 };
 
 #endif /* BASICOBJECT_HPP_ */

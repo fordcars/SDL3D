@@ -17,21 +17,27 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef DEFINITIONS_HPP_
-#define DEFINITIONS_HPP_
+#ifndef SHADEDOBJECT_HPP_
+#define SHADEDOBJECT_HPP_
 
-#define LOG_FILE "Log.txt"
+#include <BasicObject.hpp>
+#include <ObjectTemplate.hpp>
+#include <Texture.hpp>
 
-// Texture types
-#define BMP_TEXTURE 0
-#define DDS_TEXTURE 1
+#include <memory> // For smart pointers
 
-#include <GLAD/glad.h>
-#include <array>
-#include <unordered_map>
+class ShadedObject : public BasicObject // Inherit! 'public' is required here
+{
+private:
+	typedef std::shared_ptr<const Texture> constTexturePointer; // We can't modify the texture
+	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
 
-// Useful typedefs
-typedef std::unordered_map<std::string, GLuint> GLuintMap;
-typedef std::pair<std::string, GLuint> GLuintMapPair;
+public:
+	ShadedObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer, constTexturePointer texturePointer);
+	~ShadedObject();
 
-#endif /* DEFINITIONS_HPP_ */
+	void setTexture(constTexturePointer texturePointer);
+	void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overloading
+};
+
+#endif /* SHADEDOBJECT_HPP_ */

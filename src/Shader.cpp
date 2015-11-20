@@ -74,8 +74,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 
 	if(!shaderOk)
 	{
-		std::string error = "Failed to compile shader '";
-		error = error + shaderPath + "'.";
+		std::string error = "Failed to compile shader '" + shaderPath + "'.";
 		
 		std::string shaderLog = getGLShaderDebugLog(shader, glGetShaderiv, glGetShaderInfoLog); // Give it the right functions
 		glDeleteProgram(shader);
@@ -136,7 +135,7 @@ std::string Shader::getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGe
 }
 
 // A uniform is attached to a shader, but can be modified whenever
-const GLuint Shader::addUniform(const std::string& uniformName) // Uniform name is the name as in the shader
+const GLuint Shader::registerUniform(const std::string& uniformName) // Uniform name is the name as in the shader
 {
 	GLuint uniformLocation = glGetUniformLocation(mID, uniformName.c_str()); // Returns the "index" of the variable in the shader.
 	
@@ -154,18 +153,18 @@ const GLuint Shader::addUniform(const std::string& uniformName) // Uniform name 
 		}
 	} else // Invalid uniform
 	{
-			std::string error = "Uniform '" + uniformName + "' does not exist or is invalid in shader '" + mName + "'!";
+			std::string error = "Uniform '" + uniformName + "' does not exist or is invalid in shader '" + mName + "'! Are you sure it is active (contributing to the output)?";
 			Utils::crash(error, __LINE__, __FILE__);
 	}
 
 	return uniformLocation; // Return the newly added uniform location
 }
 
-void Shader::addUniforms(const std::string uniformNames[], int length)
+void Shader::registerUniforms(const std::string uniformNames[], int length)
 {
 	for(int i=0; i<length; i++)
 	{
-		addUniform(uniformNames[i]); // Give it the actual value (dereferenced using [i])
+		registerUniform(uniformNames[i]); // Give it the actual value (dereferenced using [i])
 	}
 }
 
@@ -176,7 +175,7 @@ const GLuint Shader::findUniform(const std::string& uniformName) const // Return
 	if(got==mUniformMap.end())
 	{
 		std::string error = uniformName;
-		error = "Uniform '" + error + "' not found!";
+		error = "Uniform '" + error + "' was not registered for shader '" + mName + "'!";
 		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}

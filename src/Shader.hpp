@@ -45,8 +45,8 @@ public:
 	const GLuint getID() const;
 	static std::string getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog);
 
-	const GLuint addUniform(const std::string& uniformName);
-	void addUniforms(const std::string uniformNames[], int length); // Const variable, non-const pointer
+	const GLuint registerUniform(const std::string& uniformName);
+	void registerUniforms(const std::string uniformNames[], int length); // Const variable, non-const pointer
 	const GLuint findUniform(const std::string& uniformName) const;
 };
 

@@ -19,11 +19,11 @@
 
 // BaseObject: A simple textureless object, useful as a base class for more complex type
 
-// Uniforms:
-// - mat4 MVP
-
 // In:
 // - layout location 0: vertex position in modelspace
+
+// Uniforms:
+// - mat4 MVP
 
 #include <BasicObject.hpp>
 
@@ -50,8 +50,10 @@ void BasicObject::setShader(constShaderPointer shaderPointer)
 }
 
 // Virtual
-void BasicObject::render(glm::mat4 MVP)
+void BasicObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
+	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
+
 	vec3Buffer& vertexBuffer = getVertexBuffer();
 
 	glUseProgram(mShaderPointer->getID());

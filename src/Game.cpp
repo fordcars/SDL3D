@@ -110,12 +110,12 @@ void Game::mainLoopPreparation() // Initialize a few things before the main loop
 	glEnable(GL_CULL_FACE);
 
 	// Shaders
-	mResourceManager.addShader("textured", "textured.v.glsl", "textured.f.glsl");
+	mResourceManager.addShader("shaded", "shaded.v.glsl", "shaded.f.glsl");
 	mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
-	mResourceManager.addTexture("building.DDS", DDS_TEXTURE);
+	mResourceManager.addTexture("building.dds", DDS_TEXTURE);
 
-	const std::string uniforms[] = {"MVP", "textureSampler", "textureType"};
-	mResourceManager.findShader("textured")->addUniforms(uniforms, 3);
+	const std::string uniforms[] = {"MVP", "modelViewMatrix", "normalMatrix", "textureSampler"};
+	mResourceManager.findShader("shaded")->registerUniforms(uniforms, 4);
 	
 	// Test (Game.h, render() and here)
 	mResourceManager.addObjectTemplate("building.obj");
@@ -124,7 +124,7 @@ void Game::mainLoopPreparation() // Initialize a few things before the main loop
 	mCamera.setFieldOfView(90);
 	mCamera.setPos(glm::vec3(10.0f, 8.0f, 3.0f));
 
-	test = new TexturedObject(mResourceManager.findObjectTemplate("building"), mResourceManager.findShader("textured"), mResourceManager.findTexture("building")); // Obviously a test
+	test = new ShadedObject(mResourceManager.findObjectTemplate("building"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("building")); // Obviously a test
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -157,9 +157,8 @@ void Game::render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
 
 	glm::mat4 model = glm::mat4(1.0f); // Normally would have rotation/translation/scaling
-	glm::mat4 MVP = mCamera.getProjectionMatrix() * mCamera.getViewMatrix() * model; // Yey
 	
-	test->render(MVP);
+	test->render(model, mCamera.getViewMatrix(), mCamera.getProjectionMatrix());
 	
 	SDL_GL_SwapWindow(mMainWindow);
 }

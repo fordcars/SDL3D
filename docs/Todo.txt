@@ -1,0 +1,29 @@
+-Load all files at the same place?
+-Seperate resources in directories? Textures, objects, etc
+
+-Make blinn-phong lighting -  always specify after the variable in which space it is! (ex: var_modelspace)
+
+-Update to VS 2015 to:
+->>Update arrays (uniforms and keys) to std::arrays(VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)
+
+-No need of particles, but billboards would be useful for trees, see tutorial 18. Call them sprites.
+
+-Settings class? Include max fps, field of view and aspect ratio
+
+-Lua API?
+-Level editor? (specifying textures, probably not shaders)
+
+-3d animations: Either vertex shader or CPU for moving vertices
+------------------------------------
+-Do something with v-sync like that the frame rate doesn't drop to 30?
+
+-Support events in input and have handleInput() in Game
+
+------------------------------------
+
+-Advanced tutorials:
+-VBO Indexing
+-2D Text (+2d textures)
+
+FUTURE:
+-Dynamic shadows (static shadows are made in 3d modeling program)

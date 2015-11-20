@@ -17,21 +17,35 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef DEFINITIONS_HPP_
-#define DEFINITIONS_HPP_
+// Based of default script of: http://shdr.bkcore.com/
 
-#define LOG_FILE "Log.txt"
+#version 330 core
 
-// Texture types
-#define BMP_TEXTURE 0
-#define DDS_TEXTURE 1
+// Input vertex data, different for all executions
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 1) in vec3 vertexNormal;
 
-#include <GLAD/glad.h>
-#include <array>
-#include <unordered_map>
+// Values that stay constant for the whole mesh
+uniform mat4 MVP;
+uniform mat4 modelViewMatrix;
+uniform mat4 normalMatrix;
 
-// Useful typedefs
-typedef std::unordered_map<std::string, GLuint> GLuintMap;
-typedef std::pair<std::string, GLuint> GLuintMapPair;
+// Output data
+out vec2 UV; // Proxy, sends UV coord to fragment shader
+out vec3 fPosition;
+out vec3 fNormal; // Proxy
 
-#endif /* DEFINITIONS_HPP_ */
+void main()
+{
+	vec4 pos = modelViewMatrix * vec4(vertexPosition_modelspace, 1.0);
+	vec4 normal = normalize(normalMatrix * vec4(vertexNormal, 0.0));
+
+	// UV of the vertex
+	UV = vertexUV;
+	fPosition = pos.xyz; // Fragment position
+	fNormal = normal.xyz;
+	
+	// Output position of the vertex
+	gl_Position = MVP * vec4(vertexPosition_modelspace, 1);
+}

@@ -28,7 +28,7 @@
 #include <Camera.hpp>
 
 #include <BasicObject.hpp> // For testing
-#include <TexturedObject.hpp> // For testing
+#include <ShadedObject.hpp> // For testing
 
 class Game
 {
