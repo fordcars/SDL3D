@@ -1,17 +1,24 @@
+-Don't make uniforms obligatory
+
 -Load all files at the same place?
 -Seperate resources in directories? Textures, objects, etc
-
--Make blinn-phong lighting -  always specify after the variable in which space it is! (ex: var_modelspace)
 
 -Update to VS 2015 to:
 ->>Update arrays (uniforms and keys) to std::arrays(VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)
 
 -No need of particles, but billboards would be useful for trees, see tutorial 18. Call them sprites.
 
--Settings class? Include max fps, field of view and aspect ratio
+-Settings class? Include max fps, field of view and resolution
+--->> Can the field of view be anything else than numbers power of ten?
 
 -Lua API?
--Level editor? (specifying textures, probably not shaders)
+-Level editor? (specifying textures, probably not shaders) TRY USING BLENDER! - multiple objects per .obj (use tiny loader)
+->>>> CHECK OUT TUTORIAL 15 lightmaps! It talks about that (obj, etc) = join all objects
+--INFO: Lightmap = texture
+--When joining objects, they will still be independant in the engine (only if I split all objects using tinyloader)
+--1 uv map, and you can have 1 texture!!!
+--THIS IS AWESOME!!! YOU COULD MAKE YOUR WHOLE LEVEL IN BLENDER, AND SAVE AS .obj and 1 texture with fancy static shadows! You can write a script to program roads or whatever.
+
 
 -3d animations: Either vertex shader or CPU for moving vertices
 ------------------------------------

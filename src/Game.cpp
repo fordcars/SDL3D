@@ -112,19 +112,19 @@ void Game::mainLoopPreparation() // Initialize a few things before the main loop
 	// Shaders
 	mResourceManager.addShader("shaded", "shaded.v.glsl", "shaded.f.glsl");
 	mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
-	mResourceManager.addTexture("building.dds", DDS_TEXTURE);
+	mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
 
-	const std::string uniforms[] = {"MVP", "modelViewMatrix", "normalMatrix", "textureSampler"};
-	mResourceManager.findShader("shaded")->registerUniforms(uniforms, 4);
+	const std::string uniforms[] = {"MVP", "modelMatrix", "viewMatrix", "normalMatrix", "textureSampler"};
+	mResourceManager.findShader("shaded")->registerUniforms(uniforms, 5);
 	
 	// Test (Game.h, render() and here)
-	mResourceManager.addObjectTemplate("building.obj");
+	mResourceManager.addObjectTemplate("suzanne.obj");
 
 	mCamera.setAspectRatio((float)(mGameWidth/mGameHeight));
-	mCamera.setFieldOfView(90);
-	mCamera.setPos(glm::vec3(10.0f, 8.0f, 3.0f));
+	mCamera.setFieldOfView(120.0f); // Divided by: horizontal fov to vertical fov
+	mCamera.setPos(glm::vec3(10.0f, 0.0f, 3.0f));
 
-	test = new ShadedObject(mResourceManager.findObjectTemplate("building"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("building")); // Obviously a test
+	test = new ShadedObject(mResourceManager.findObjectTemplate("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")); // Obviously a test
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -153,10 +153,10 @@ void Game::render()
 {
 	mCamera.updateMatrices();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set clear color
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Set clear color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
 
-	glm::mat4 model = glm::mat4(1.0f); // Normally would have rotation/translation/scaling
+	glm::mat4 model = glm::mat4(1.0f);
 	
 	test->render(model, mCamera.getViewMatrix(), mCamera.getProjectionMatrix());
 	

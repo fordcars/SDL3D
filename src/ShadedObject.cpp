@@ -26,8 +26,10 @@
 // - layout location 2: normal
 
 // Uniforms:
-// - mat4 MVP
-// - mat4 modelViewMatrix
+// - mat4 MVP (precalculated)
+// - mat4 modelMatrix
+// - mat4 viewMatrix
+// - mat4 projectionMatrix
 // - mat4 normalMatrix
 // - sampler2D textureSampler
 
@@ -50,17 +52,19 @@ void ShadedObject::setTexture(constTexturePointer texturePointer)
 void ShadedObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
-	glm::mat4 modelViewMatrix =viewMatrix * modelMatrix;
+	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
 
 	vec3Buffer& vertexBuffer = getVertexBuffer();
 	vec2Buffer& UVBuffer = getUVBuffer();
 	vec3Buffer& normalBuffer = getNormalBuffer();
-	
+
 	glUseProgram(getShader()->getID());
 
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
-	glUniformMatrix4fv(getShader()->findUniform("modelViewMatrix"), 1, GL_FALSE, &modelViewMatrix[0][0]);
+	glUniformMatrix4fv(getShader()->findUniform("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]);
+	glUniformMatrix4fv(getShader()->findUniform("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);
+	//glUniformMatrix4fv(getShader()->findUniform("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(getShader()->findUniform("normalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 
 	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now

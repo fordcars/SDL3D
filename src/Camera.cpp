@@ -18,6 +18,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 #include <Camera.hpp>
+#include <math.h>
 
 void Camera::init() // Called when constructed, private
 {
@@ -29,7 +30,7 @@ void Camera::init() // Called when constructed, private
 	mTarget = glm::vec4(0, 0, 0, 1); // 1 for position
 	mUpVector = glm::vec3(0, 1, 0);
 
-	mFieldOfView = 120.0f;
+	mFieldOfViewX = 90.0f;
 	mAspectRatio = 4/3;
 	mNearClippingPlane = 0.1f;
 	mFarClippingPlane = 100.0f;
@@ -44,7 +45,7 @@ Camera::Camera(float fieldOfView, float aspectRatio)
 {
 	init();
 
-	mFieldOfView = fieldOfView;
+	mFieldOfViewX = fieldOfView;
 	mAspectRatio = aspectRatio;
 }
 
@@ -77,9 +78,9 @@ void Camera::setUpVector(glm::vec3 upVector)
 	mUpVector = upVector;
 }
 
-void Camera::setFieldOfView(float fieldOfView) // In degrees
+void Camera::setFieldOfView(float fieldOfViewX) // In degrees
 {
-	mFieldOfView = fieldOfView;
+	mFieldOfViewX = fieldOfViewX;
 }
 
 void Camera::setAspectRatio(float aspectRatio)
@@ -96,8 +97,12 @@ void Camera::updateMatrices() // Call after you are done setting up the camera
 	else if(mTarget.w==0)
 		vec3Target = glm::vec3(mTarget) + mPos; // Is a direction
 
+	// Calculate vertical field of view (glm::perspective()'s input)
+	float radFOVX = glm::radians(mFieldOfViewX);
+	float radFOVY = 2 * atan( tan(radFOVX / 2) / mAspectRatio); // For some reason, glm takes radians here
+
 	mViewMatrix = glm::lookAt(mPos, vec3Target, mUpVector);
-	mProjectionMatrix = glm::perspective(mFieldOfView, mAspectRatio, mNearClippingPlane, mFarClippingPlane);
+	mProjectionMatrix = glm::perspective(radFOVY, mAspectRatio, mNearClippingPlane, mFarClippingPlane);
 }
 
 glm::mat4 Camera::getViewMatrix()

@@ -17,34 +17,43 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-// Based of default script of: http://shdr.bkcore.com/
-
 #version 330 core
 
 // Input vertex data, different for all executions
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV;
-layout(location = 1) in vec3 vertexNormal;
+layout(location = 1) in vec3 vertexNormal_modelspace;
 
 // Values that stay constant for the whole mesh
 uniform mat4 MVP;
-uniform mat4 modelViewMatrix;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 uniform mat4 normalMatrix;
 
 // Output data
 out vec2 UV; // Proxy, sends UV coord to fragment shader
-out vec3 fPosition;
-out vec3 fNormal; // Proxy
+out vec3 normal_cameraspace;
+out vec3 lightDirection_cameraspace;
+out vec3 vertexPosition_worldspace;
 
 void main()
 {
-	vec4 pos = modelViewMatrix * vec4(vertexPosition_modelspace, 1.0);
-	vec4 normal = normalize(normalMatrix * vec4(vertexNormal, 0.0));
-
+	//DEBUG
+	vec3 lightPosition_worldspace = vec3(4, 4, 4);
+	
 	// UV of the vertex
 	UV = vertexUV;
-	fPosition = pos.xyz; // Fragment position
-	fNormal = normal.xyz;
+	
+	vertexPosition_worldspace = (modelMatrix * vec4(vertexPosition_modelspace, 1)).xyz;
+	
+	vec3 vertexPosition_cameraspace = (viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1)).xyz;
+	vec3 eyeDirection_cameraspace = vec3(0, 0, 0) - vertexPosition_cameraspace;
+	
+	vec3 lightPosition_cameraspace = (viewMatrix * vec4(lightPosition_worldspace, 1)).xyz;
+	lightDirection_cameraspace = lightPosition_cameraspace + eyeDirection_cameraspace; // Vector from vertex to light
+	
+	normal_cameraspace = (normalMatrix * modelMatrix * vec4(vertexNormal_modelspace, 0.0)).xyz;
 	
 	// Output position of the vertex
 	gl_Position = MVP * vec4(vertexPosition_modelspace, 1);

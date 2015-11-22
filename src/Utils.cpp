@@ -55,11 +55,22 @@ namespace Utils
 		gLogFile << msg << '\n';
 
 #ifndef NDEBUG // Debug
+		bool parametersValid = false;
+
 		if(file != 0) // If file is defined
+		{
 			gLogFile << "----- from file: " << file << '\n';
+			parametersValid = true;
+		}
 
 		if(line != -1) // If line is defined
+		{
 			gLogFile << "----- at line: " << line << '\n';
+			parametersValid = true;
+		}
+
+		if(parametersValid) // Add a newline if you outputted something, for prettyness.
+			gLogFile << '\n';
 
 		gLogFile.flush(); // Whatever happens, flush out the buffer so we get logs even if it exploded: this is debug!
 #endif

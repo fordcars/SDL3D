@@ -34,7 +34,7 @@ private:
 	glm::vec3 mUpVector; // glm::vec3(0, -1, 0) will the camera be upside down, in contrast to glm::vec3(0, 1, 0);
 						// This up vector represents the direction of the up side of the camera.
 
-	float mFieldOfView; // In degrees
+	float mFieldOfViewX; // The horizontal field of view, in degrees
 	float mAspectRatio;
 	float mNearClippingPlane;
 	float mFarClippingPlane;
@@ -53,7 +53,7 @@ public:
 	void setTarget(glm::vec4 target);
 	void setUpVector(glm::vec3 upVector);
 
-	void setFieldOfView(float fieldOfView);
+	void setFieldOfView(float mFieldOfViewX);
 	void setAspectRatio(float aspectRatio);
 
 	void updateMatrices();

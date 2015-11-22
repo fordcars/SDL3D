@@ -19,42 +19,36 @@
 
 #version 330 core
 
-out vec3 color;
-
 // Interpolated values from the vertex shader
 in vec2 UV;
-in vec3 fPosition;
-in vec3 fNormal;
+in vec3 normal_cameraspace;
+in vec3 lightDirection_cameraspace;
+in vec3 vertexPosition_worldspace;
+
+out vec3 color;
 
 // Values that stay constant for the whole mesh
 uniform sampler2D textureSampler;
-
-// lightDir, lightIntensity, Ka, Kd, Ks, shininess
-vec2 blinnPhongDir(vec3 lightDir, float lightIntensity, float diffuseIntensity, float diffuseBrightness, float specularIntensity, float shininess)
-{
-	vec3 s = normalize(lightDir);
-	vec3 v = normalize(-fPosition);
-	vec3 n = normalize(fNormal);
-	vec3 h = normalize(v + s);
-	
-	float diffuse = diffuseIntensity + diffuseBrightness * lightIntensity * max(0.0, dot(n, s));
-	float specular = specularIntensity * pow(max(0.0, dot(n, h)), shininess);
-	
-	return vec2(diffuse, specular);
-}
+//uniform vec3 lightColor;
+//uniform vec3 lightPower
 
 void main()
-{	
-	// DEBUG for now
-	vec3 lightDir = vec3(0.1, 2.5, 5.0);
-	float lightIntensity = 1.0;
-	float diffuseIntensity = 0.1;
-	float diffuseBrightness = 1.0;
-	float specularIntensity = 1.5;
-	float shininess = 10.0;
+{
+	//DEBUG
+	vec3 lightPosition_worldspace = vec3(4, 4, 4);
+	vec3 lightColor = vec3(1.0, 1.0, 1.0);
+	float lightPower = 50.0;
 	
-	vec2 light = blinnPhongDir(lightDir, lightIntensity, diffuseIntensity, diffuseBrightness, specularIntensity, shininess);
-	vec3 textureColor = texture(textureSampler, UV).rgb;
+	vec3 n = normalize(normal_cameraspace); // Normal of fragment
+	vec3 ld = normalize(lightDirection_cameraspace); // Direction of the light (from the fragment to the light)
 	
-	color = textureColor * vec3(light, 1.0);
+	float cosTheta = clamp(dot(n, ld), 0, 1); // Always positive! Otherwise we have a negative color.
+	
+	float distance = length(lightPosition_worldspace - vertexPosition_worldspace);
+	
+	vec3 materialDiffuseColor = texture(textureSampler, UV).rgb;
+	//vec3 materialAmbientColor
+	
+	// Ouput color = color at that specific UV
+	color = materialDiffuseColor * lightColor * lightPower * cosTheta / (distance * distance);
 }
