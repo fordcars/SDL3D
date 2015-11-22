@@ -121,7 +121,7 @@ void Game::mainLoopPreparation() // Initialize a few things before the main loop
 	mResourceManager.addObjectTemplate("suzanne.obj");
 
 	mCamera.setAspectRatio((float)(mGameWidth/mGameHeight));
-	mCamera.setFieldOfView(120.0f); // Divided by: horizontal fov to vertical fov
+	mCamera.setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
 	mCamera.setPos(glm::vec3(10.0f, 0.0f, 3.0f));
 
 	test = new ShadedObject(mResourceManager.findObjectTemplate("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")); // Obviously a test

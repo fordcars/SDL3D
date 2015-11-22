@@ -17,6 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// Based off the blinn-phong snippet at http://shdr.bkcore.com/
+
 #version 330 core
 
 // Interpolated values from the vertex shader
@@ -33,29 +35,35 @@ uniform sampler2D textureSampler;
 //uniform vec3 lightColor;
 //uniform vec3 lightPower
 
+vec2 blinnPhongDir(vec3 lightDir, float lightInt, float Ka, float Kd, float Ks, float shininess)
+{
+	vec3 s = normalize(lightDir);
+	vec3 v = normalize(-vertexPosition_worldspace);
+	vec3 n = normalize(normal_cameraspace);
+	vec3 h = normalize(v+s);
+	
+	float diffuse = Ka + Kd * lightInt * max(0.0, dot(n, s));
+	float specular = Ks * pow(max(0.0, dot(n, h)), shininess);
+	
+	return vec2(diffuse, specular);
+}
+
 void main()
 {
 	//DEBUG
-	vec3 lightPosition_worldspace = vec3(4, 4, 4);
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-	float lightPower = 50.0;
+	float lightPower = 10.0;
 	
 	vec3 materialDiffuseColor = texture(textureSampler, UV).rgb;
 	vec3 materialAmbientColor = vec3(0.1, 0.1, 0.1) * materialDiffuseColor;
 	vec3 materialSpecularColor = vec3(1.0, 1.0, 1.0);
 	
-	float squareDistance = pow(length(lightPosition_worldspace - vertexPosition_worldspace), 2);
+	float Ka = 0.5;
+	float Kd = 0.1;
+	float Ks = 0.1;
+	float shininess = 100.0;
 	
-	vec3 n = normalize(normal_cameraspace); // Normal of fragment
-	vec3 ld = normalize(lightDirection_cameraspace); // Direction of the light (from the fragment to the light)
-	
-	float cosTheta = clamp(dot(n, ld), 0, 1); // Always positive! Otherwise we have a negative color.
-	
-	// From vertex towards the camera
-	vec3 E = normalize(eyeDirection_cameraspace);
-	// Direction in which the triangle reflects the light
-	vec3 R = reflect(-ld, n);
-	float cosAlpha = clamp(dot(E, R), 0, 1);
+	vec2 lighting = blinnPhongDir(lightDirection_cameraspace, lightPower, Ka, Kd, Ks, shininess);
 	
 	//vec3 materialAmbientColor
 	
@@ -64,7 +72,7 @@ void main()
 	// Ambient : simulates indirect lighting
 	materialAmbientColor +
 	// Diffuse : "color" of the object
-	materialDiffuseColor * lightColor * lightPower * cosTheta / squareDistance +
+	materialDiffuseColor * lightColor * lightPower * lighting.x +
 	// Specular " reflective highlight, like a mirror
-	materialSpecularColor * lightColor * lightPower * pow(cosAlpha, 5) / squareDistance;
+	materialSpecularColor * lightColor * lightPower * lighting.y;
 }

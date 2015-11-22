@@ -1,3 +1,5 @@
+-Finish per fragment blinnPhong
+
 -Don't make uniforms obligatory
 
 -Load all files at the same place?
