@@ -5,5 +5,5 @@ Building:
 - cd build
 - cmake ..
 
-Released under the MIT license.
+Released under the GNU GPLv3 license.
 
