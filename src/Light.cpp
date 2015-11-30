@@ -17,27 +17,18 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef SHADEDOBJECT_HPP_
-#define SHADEDOBJECT_HPP_
+#include <Light.hpp>
 
-#include <BasicObject.hpp>
-#include <ObjectGeometry.hpp>
-#include <Texture.hpp>
-
-#include <memory> // For smart pointers
-
-class ShadedObject : public BasicObject // Inherit! 'public' is required here
+Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
 {
-private:
-	typedef std::shared_ptr<const Texture> constTexturePointer; // We can't modify the texture
-	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
+	mPosition = position;
+	mDiffuseColor = diffuseColor;
+	mSpecularColor = specularColor;
 
-public:
-	ShadedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
-	~ShadedObject();
+	mPower = power;
+}
 
-	void setTexture(constTexturePointer texturePointer);
-	void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overloading
-};
-
-#endif /* SHADEDOBJECT_HPP_ */
+Light::~Light()
+{
+	// Do nothing
+}

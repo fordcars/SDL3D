@@ -20,22 +20,6 @@
 #include <Camera.hpp>
 #include <math.h>
 
-void Camera::init() // Called when constructed, private
-{
-	// Default values
-	mViewMatrix = glm::mat4(1.0f); // Identity matrix
-	mProjectionMatrix = glm::mat4(1.0f);
-
-	mPos = glm::vec3(0, 0, 0);
-	mTarget = glm::vec4(0, 0, 0, 1); // 1 for position
-	mUpVector = glm::vec3(0, 1, 0);
-
-	mFieldOfViewX = 90.0f;
-	mAspectRatio = 4/3;
-	mNearClippingPlane = 0.1f;
-	mFarClippingPlane = 100.0f;
-}
-
 Camera::Camera() // Constructor
 {
 	init();
@@ -53,19 +37,32 @@ Camera::~Camera()
 {
 	// Do nothing
 }
-void Camera::setPos(glm::vec3 pos)
+
+// Private
+void Camera::init() // Called when constructed, private
 {
-	mPos = pos;
+	// Default values
+	mViewMatrix = glm::mat4(1.0f); // Identity matrix
+	mProjectionMatrix = glm::mat4(1.0f);
+
+	mPosition = glm::vec3(0, 0, 0);
+	mTarget = glm::vec4(0, 0, 0, 1); // 1 for position
+	mUpVector = glm::vec3(0, 1, 0);
+
+	mFieldOfViewX = 90.0f;
+	mAspectRatio = 4/3;
+	mNearClippingPlane = 0.1f;
+	mFarClippingPlane = 100.0f;
 }
 
-void Camera::translate(glm::vec3 translation)
+void Camera::setPosition(glm::vec3 position)
 {
-	mPos += translation;
+	mPosition = position;
 }
 
-glm::vec3 Camera::getPos()
+glm::vec3 Camera::getPosition()
 {
-	return mPos;
+	return mPosition;
 }
 
 void Camera::setTarget(glm::vec4 target) // vec4 since this can be a position or a direction
@@ -95,13 +92,13 @@ void Camera::updateMatrices() // Call after you are done setting up the camera
 	if(mTarget.w==1) // Is a position
 		vec3Target = glm::vec3(mTarget); // Doesn't cast, it creates a new one
 	else if(mTarget.w==0)
-		vec3Target = glm::vec3(mTarget) + mPos; // Is a direction
+		vec3Target = glm::vec3(mTarget) + mPosition; // Is a direction
 
 	// Calculate vertical field of view (glm::perspective()'s input)
 	float radFOVX = glm::radians(mFieldOfViewX);
-	float radFOVY = 2 * atan( tan(radFOVX / 2) / mAspectRatio); // For some reason, glm takes radians here
+	float radFOVY = 2 * atan( tan(radFOVX / 2) / mAspectRatio); // Glm takes radians
 
-	mViewMatrix = glm::lookAt(mPos, vec3Target, mUpVector);
+	mViewMatrix = glm::lookAt(mPosition, vec3Target, mUpVector);
 	mProjectionMatrix = glm::perspective(radFOVY, mAspectRatio, mNearClippingPlane, mFarClippingPlane);
 }
 

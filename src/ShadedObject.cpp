@@ -33,8 +33,8 @@
 // - mat4 normalMatrix
 // - sampler2D textureSampler
 
-ShadedObject::ShadedObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer, constTexturePointer texturePointer)
-	: BasicObject(objectTemplate, shaderPointer)
+ShadedObject::ShadedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer)
+	: BasicObject(objectGeometry, shaderPointer)
 {
 	mTexturePointer = texturePointer;
 }

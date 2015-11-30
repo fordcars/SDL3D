@@ -17,15 +17,13 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-// Object: A generic base-class for all objects. This holds the basic information of an object (vertices, etc).
-
-#include <ObjectTemplate.hpp>
+#include <ObjectGeometry.hpp>
 #include <Utils.hpp> // For vector stuff and error messages
 
 #include <sstream>
 #include <fstream> // For file stuff
 
-ObjectTemplate::ObjectTemplate(const std::string& name,  vec3Vector& vertices, vec2Vector& UVs, vec3Vector& normals)
+ObjectGeometry::ObjectGeometry(const std::string& name,  vec3Vector& vertices, vec2Vector& UVs, vec3Vector& normals)
 {
 	mName = name;
 	
@@ -35,7 +33,7 @@ ObjectTemplate::ObjectTemplate(const std::string& name,  vec3Vector& vertices, v
 }
 
 // Keeps track of all of the object's data
-ObjectTemplate::ObjectTemplate(const std::string& name, const std::string& objectPath) // Uses std::array for modernism, wasn't necessairy
+ObjectGeometry::ObjectGeometry(const std::string& name, const std::string& objectPath) // Uses std::array for modernism, wasn't necessairy
 {
 	mName = name;
 	
@@ -51,14 +49,14 @@ ObjectTemplate::ObjectTemplate(const std::string& name, const std::string& objec
 	mNormalBuffer.setMutableData(normals, GL_DYNAMIC_DRAW);
 }
 
-ObjectTemplate::~ObjectTemplate()
+ObjectGeometry::~ObjectGeometry()
 {
 	// Do nothing
 }
 
 // Static
 // A super-simple .obj loader
-bool ObjectTemplate::loadOBJObject(const std::string& filePath,
+bool ObjectGeometry::loadOBJObject(const std::string& filePath,
 						 std::vector<glm::vec3>& outVertices,
 						 std::vector<glm::vec2>& outUVs,
 						 std::vector<glm::vec3>& outNormals)
@@ -140,17 +138,17 @@ bool ObjectTemplate::loadOBJObject(const std::string& filePath,
 	return true;
 }
 
-ObjectTemplate::vec3Buffer& ObjectTemplate::getVertexBuffer()
+ObjectGeometry::vec3Buffer& ObjectGeometry::getVertexBuffer()
 {
 	return mVertexBuffer;
 }
 
-ObjectTemplate::vec2Buffer& ObjectTemplate::getUVBuffer()
+ObjectGeometry::vec2Buffer& ObjectGeometry::getUVBuffer()
 {
 	return mUVBuffer;
 }
 
-ObjectTemplate::vec3Buffer& ObjectTemplate::getNormalBuffer()
+ObjectGeometry::vec3Buffer& ObjectGeometry::getNormalBuffer()
 {
 	return mNormalBuffer;
 }

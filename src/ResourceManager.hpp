@@ -29,7 +29,7 @@
 
 #include <Shader.hpp>
 #include <Texture.hpp>
-#include <ObjectTemplate.hpp>
+#include <ObjectGeometry.hpp>
 
 // All paths are prefixed with mResourceDir
 
@@ -46,13 +46,13 @@ private:
 	typedef std::unordered_map<std::string, texturePointer> textureMap;
 	typedef std::pair<std::string, texturePointer> textureMapPair;
 
-	typedef std::shared_ptr<ObjectTemplate> objectTemplatePointer;
-	typedef std::unordered_map<std::string, objectTemplatePointer> objectTemplateMap;
-	typedef std::pair<std::string, objectTemplatePointer> objectTemplateMapPair;
+	typedef std::shared_ptr<ObjectGeometry> objectGeometryPointer;
+	typedef std::unordered_map<std::string, objectGeometryPointer> objectGeometryMap;
+	typedef std::pair<std::string, objectGeometryPointer> objectGeometryMapPair;
 
 	shaderMap mShaderMap; // Map, faster access: shaders[shaderName] = shaderID etc
 	textureMap mTextureMap;
-	objectTemplateMap mObjectTemplateMap;
+	objectGeometryMap mObjectGeometryMap;
 
 	std::string mResourceDir;
 
@@ -73,10 +73,10 @@ public:
 	texturePointer findTexture(const std::string& textureName);
 	void clearTextures();
 
-	ObjectTemplate addObjectTemplate(const std::string& objectFile);
-	ObjectTemplate addObjectTemplate(const std::string& objectFile, const std::string& name);
-	ObjectTemplate findObjectTemplate(const std::string& objectName);
-	void clearObjectTemplates();
+	ObjectGeometry addObjectGeometry(const std::string& objectFile);
+	ObjectGeometry addObjectGeometry(const std::string& objectFile, const std::string& name);
+	ObjectGeometry findObjectGeometry(const std::string& objectName);
+	void clearObjectGeometries();
 };
 
 #endif /* RESOURCEMANAGER_HPP_ */

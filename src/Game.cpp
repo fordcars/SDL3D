@@ -118,13 +118,14 @@ void Game::mainLoopPreparation() // Initialize a few things before the main loop
 	mResourceManager.findShader("shaded")->registerUniforms(uniforms, 5);
 	
 	// Test (Game.h, render() and here)
-	mResourceManager.addObjectTemplate("suzanne.obj");
+	mResourceManager.addObjectGeometry("suzanne.obj");
 
 	mCamera.setAspectRatio((float)(mGameWidth/mGameHeight));
 	mCamera.setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
-	mCamera.setPos(glm::vec3(10.0f, 0.0f, 3.0f));
+	mCamera.setPosition(glm::vec3(10.0f, 0.0f, 3.0f));
 
-	test = new ShadedObject(mResourceManager.findObjectTemplate("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")); // Obviously a test
+	test = new ShadedObject(mResourceManager.findObjectGeometry("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")); // Obviously a test
+	light = new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 50);
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -153,7 +154,7 @@ void Game::render()
 {
 	mCamera.updateMatrices();
 
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Set clear color
+	glClearColor(0.1f, 0.1f, 1.0f, 1.0f); // Set clear color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
 
 	glm::mat4 model = glm::mat4(1.0f);
@@ -217,8 +218,8 @@ void Game::update()
 			timeX -= speed;
 		}
 
-		glm::vec3 position(radius * cos(timeX), mCamera.getPos().y, radius * sin(timeX));
-		mCamera.setPos(position);
+		glm::vec3 position(radius * cos(timeX), mCamera.getPosition().y, radius * sin(timeX));
+		mCamera.setPosition(position);
 	}
 	
 	render();

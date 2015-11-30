@@ -27,9 +27,8 @@
 
 #include <BasicObject.hpp>
 
-// You can only create this object with a pre-existing object template (base class)
-BasicObject::BasicObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer)
-	: ObjectTemplate(objectTemplate) // Calls the copy constructor! That object becomes BasicObject's base class.
+BasicObject::BasicObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer)
+	: ObjectGeometry(objectGeometry)
 {
 	mShaderPointer = shaderPointer;
 }

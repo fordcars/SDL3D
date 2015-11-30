@@ -17,12 +17,10 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-// This is the base class of 3d objects. This class holds the vertices.
-// This class can also live on it's own.
-// Eventually, we could have 1 vertex buffer holding all of the objects.
+// This class holds the vertices. Use this class as a member for other 3D objects.
 
-#ifndef OBJECTTEMPLATE_HPP_
-#define OBJECTTEMPLATE_HPP_
+#ifndef OBJECTGEOMETRY_HPP_
+#define OBJECTGEOMETRY_HPP_
 
 #include <memory> // For smart pointers
 
@@ -33,19 +31,14 @@
 #include <Shader.hpp>
 #include <GLBuffer.hpp>
 
-class ObjectTemplate
+class ObjectGeometry
 {
-protected: // Only accessible to this class and derived classes
+public:
 	typedef GLBuffer<glm::vec2> vec2Buffer;
 	typedef GLBuffer<glm::vec3> vec3Buffer;
 	typedef std::vector<glm::vec2> vec2Vector;
 	typedef std::vector<glm::vec3> vec3Vector;
 	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
-
-	static bool loadOBJObject(const std::string& filePath,
-						 std::vector<glm::vec3>& outVertices,
-						 std::vector<glm::vec2>& outUVs,
-						 std::vector<glm::vec3>& outNormals);
 
 private:
 	std::string mName;
@@ -55,13 +48,18 @@ private:
 	vec3Buffer mNormalBuffer;
 
 public:
-	ObjectTemplate(const std::string& name, vec3Vector& vertices, vec2Vector& UVs, vec3Vector& normals);
-	ObjectTemplate(const std::string& name, const std::string& objectPath);
-	~ObjectTemplate();
+	ObjectGeometry(const std::string& name, vec3Vector& vertices, vec2Vector& UVs, vec3Vector& normals);
+	ObjectGeometry(const std::string& name, const std::string& objectPath);
+	~ObjectGeometry();
+
+	static bool loadOBJObject(const std::string& filePath,
+						 std::vector<glm::vec3>& outVertices,
+						 std::vector<glm::vec2>& outUVs,
+						 std::vector<glm::vec3>& outNormals);
 
 	vec3Buffer& getVertexBuffer();
 	vec2Buffer& getUVBuffer();
 	vec3Buffer& getNormalBuffer();
 };
 
-#endif /* OBJECTTEMPLATE_HPP_ */
+#endif /* OBJECTGEOMETRY_HPP_ */

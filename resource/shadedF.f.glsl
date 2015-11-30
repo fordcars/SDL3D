@@ -17,6 +17,7 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// Per fragment lighting
 // Based off the blinn-phong snippet at http://shdr.bkcore.com/
 
 #version 330 core
@@ -35,15 +36,15 @@ uniform sampler2D textureSampler;
 //uniform vec3 lightColor;
 //uniform vec3 lightPower
 
-vec2 blinnPhongDir(vec3 lightDir, float lightInt, float Ka, float Kd, float Ks, float shininess)
+vec2 blinnPhongDir(vec3 lightDir, float lightInt, float diffuseIntensity, float specularIntensity, float shininess)
 {
 	vec3 s = normalize(lightDir);
 	vec3 v = normalize(-vertexPosition_worldspace);
 	vec3 n = normalize(normal_cameraspace);
 	vec3 h = normalize(v+s);
 	
-	float diffuse = Ka + Kd * lightInt * max(0.0, dot(n, s));
-	float specular = Ks * pow(max(0.0, dot(n, h)), shininess);
+	float diffuse = diffuseIntensity * lightInt * max(0.0, dot(n, s));
+	float specular = specularIntensity * lightInt * pow(max(0.0, dot(n, h)), shininess);
 	
 	return vec2(diffuse, specular);
 }
@@ -58,12 +59,11 @@ void main()
 	vec3 materialAmbientColor = vec3(0.1, 0.1, 0.1) * materialDiffuseColor;
 	vec3 materialSpecularColor = vec3(1.0, 1.0, 1.0);
 	
-	float Ka = 0.5;
-	float Kd = 0.1;
-	float Ks = 0.1;
-	float shininess = 100.0;
+	float diffuseIntensity = 0.1;
+	float specularIntensity = 0.1;
+	float shininess = 10.0;
 	
-	vec2 lighting = blinnPhongDir(lightDirection_cameraspace, lightPower, Ka, Kd, Ks, shininess);
+	vec2 lighting = blinnPhongDir(lightDirection_cameraspace, lightPower, diffuseIntensity, specularIntensity, shininess);
 	
 	//vec3 materialAmbientColor
 	
@@ -72,7 +72,7 @@ void main()
 	// Ambient : simulates indirect lighting
 	materialAmbientColor +
 	// Diffuse : "color" of the object
-	materialDiffuseColor * lightColor * lightPower * lighting.x +
+	materialDiffuseColor * lightColor * lighting.x +
 	// Specular " reflective highlight, like a mirror
-	materialSpecularColor * lightColor * lightPower * lighting.y;
+	materialSpecularColor * lightColor * lighting.y;
 }

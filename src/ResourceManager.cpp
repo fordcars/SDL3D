@@ -144,20 +144,20 @@ void ResourceManager::clearTextures()
 	mTextureMap.clear();
 }
 
-// Objects are copied to make them easily modifiable. They are, however, stored as shared pointers for efficiency.
-ObjectTemplate ResourceManager::addObjectTemplate(const std::string& objectFile, const std::string& name)
+// Object geometries are copied to make them easily modifiable. They are, however, stored as shared pointers for efficiency.
+ObjectGeometry ResourceManager::addObjectGeometry(const std::string& objectFile, const std::string& name)
 {
 	std::string path = getFullResourcePath(objectFile);
 
-	objectTemplatePointer objectTemplatePointer(new ObjectTemplate(name, path));
-	objectTemplateMapPair objectTemplatePair(name, objectTemplatePointer);
+	objectGeometryPointer objectGeometryPointer(new ObjectGeometry(name, path));
+	objectGeometryMapPair objectGeometryPair(name, objectGeometryPointer);
 
-	std::pair<objectTemplateMap::iterator, bool> newlyAddedPair = mObjectTemplateMap.insert(objectTemplatePair);
+	std::pair<objectGeometryMap::iterator, bool> newlyAddedPair = mObjectGeometryMap.insert(objectGeometryPair);
 	
 	if(newlyAddedPair.second == false)
 	{
 		std::string error = name;
-		error = "Object template '" + error + "' already exists and cannot be added again!";
+		error = "Object geometry '" + error + "' already exists and cannot be added again!";
 		Utils::crash(error, __LINE__, __FILE__);
 		return *(newlyAddedPair.first->second); // Parenthesis for clarity
 	}
@@ -165,21 +165,21 @@ ObjectTemplate ResourceManager::addObjectTemplate(const std::string& objectFile,
 	return *(newlyAddedPair.first->second);
 }
 
-ObjectTemplate ResourceManager::addObjectTemplate(const std::string& objectFile)
+ObjectGeometry ResourceManager::addObjectGeometry(const std::string& objectFile)
 {
 	std::string path = getFullResourcePath(objectFile);
 	std::string name = getBasename(objectFile);
 
-	return addObjectTemplate(objectFile, name);
+	return addObjectGeometry(objectFile, name);
 }
 
-ObjectTemplate ResourceManager::findObjectTemplate(const std::string& objectName) // Copies the object
+ObjectGeometry ResourceManager::findObjectGeometry(const std::string& objectName) // Copies the geometry
 {
-	objectTemplateMap::iterator got = mObjectTemplateMap.find(objectName);
+	objectGeometryMap::iterator got = mObjectGeometryMap.find(objectName);
 
-	if(got == mObjectTemplateMap.end()) // end() is past-the-end element iterator, so not found in the map!
+	if(got == mObjectGeometryMap.end()) // end() is past-the-end element iterator, so not found in the map!
 	{
-		std::string error = "Object template '" + objectName + "' not found!";;
+		std::string error = "Object geometry '" + objectName + "' not found!";;
 		Utils::crash(error, __LINE__, __FILE__);
 		return *got->second;
 	}
@@ -187,7 +187,7 @@ ObjectTemplate ResourceManager::findObjectTemplate(const std::string& objectName
 	return *got->second;
 }
 
-void ResourceManager::clearObjectTemplates()
+void ResourceManager::clearObjectGeometries()
 {
-	mObjectTemplateMap.clear();
+	mObjectGeometryMap.clear();
 }

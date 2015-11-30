@@ -41,7 +41,7 @@ out vec3 eyeDirection_cameraspace;
 void main()
 {
 	//DEBUG
-	vec3 lightPosition_worldspace = vec3(4, 4, 4);
+	vec3 lightPosition_worldspace = vec3(4, 0, 4);
 	
 	// UV of the vertex
 	UV = vertexUV;

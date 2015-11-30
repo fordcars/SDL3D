@@ -21,7 +21,7 @@
 #define TEXTUREDOBJECT_HPP_
 
 #include <BasicObject.hpp>
-#include <ObjectTemplate.hpp>
+#include <ObjectGeometry.hpp>
 #include <Texture.hpp>
 
 #include <memory> // For smart pointers
@@ -33,7 +33,7 @@ private:
 	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
 
 public:
-	TexturedObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer, constTexturePointer texturePointer);
+	TexturedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
 	~TexturedObject();
 
 	void setTexture(constTexturePointer texturePointer);

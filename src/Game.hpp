@@ -29,6 +29,7 @@
 
 #include <BasicObject.hpp> // For testing
 #include <ShadedObject.hpp> // For testing
+#include <Light.hpp> // For testing
 
 class Game
 {
@@ -68,6 +69,7 @@ private:
 
 	// Test
 	BasicObject *test;
+	Light *light;
 
 public:
 	Game(const std::string& gameName, int width, int height, int frameRate, const std::string& resourceDir);

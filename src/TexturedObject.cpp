@@ -28,8 +28,8 @@
 // - mat4 MVP
 // - sampler2D textureSampler
 
-TexturedObject::TexturedObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer, constTexturePointer texturePointer)
-	: BasicObject(objectTemplate, shaderPointer) // Calls Object constructor with those arguments
+TexturedObject::TexturedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer)
+	: BasicObject(objectGeometry, shaderPointer) // Calls Object constructor with those arguments
 {
 	mTexturePointer = texturePointer;
 }

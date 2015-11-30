@@ -49,12 +49,14 @@ set(SOURCES
 	src/InputHandler.cpp
 	src/SimpleTimer.cpp
 	src/Camera.cpp
-	src/ObjectTemplate.cpp
+	src/ObjectGeometry.cpp
 	src/Shader.cpp
 	src/Texture.cpp
 	src/BasicObject.cpp
 	src/TexturedObject.cpp
 	src/ShadedObject.cpp
+	src/Light.cpp
+	src/GameEntity.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -70,13 +72,15 @@ set(HEADERS
 	src/InputHandler.hpp
 	src/SimpleTimer.hpp
 	src/Camera.hpp
-	src/ObjectTemplate.hpp
+	src/ObjectGeometry.hpp
 	src/Shader.hpp
 	src/Texture.hpp
 	src/GLBuffer.hpp
 	src/BasicObject.hpp
 	src/TexturedObject.hpp
 	src/ShadedObject.hpp
+	src/Light.hpp
+	src/GameEntity.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

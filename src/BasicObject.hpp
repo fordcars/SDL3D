@@ -20,11 +20,11 @@
 #ifndef BASICOBJECT_HPP_
 #define BASICOBJECT_HPP_
 
-#include <ObjectTemplate.hpp>
+#include <ObjectGeometry.hpp>
 #include <glm/glm.hpp>
 #include <GLAD/glad.h> // OpenGL, rendering and all
 
-class BasicObject : public ObjectTemplate
+class BasicObject : public ObjectGeometry
 {
 protected:
 	constShaderPointer getShader();
@@ -33,7 +33,7 @@ private:
 	constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
 public:
-	BasicObject(const ObjectTemplate& objectTemplate, constShaderPointer shaderPointer);
+	BasicObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer);
 	~BasicObject();
 
 	void setShader(constShaderPointer shaderPointer);
