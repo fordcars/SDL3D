@@ -1,6 +1,4 @@
--Make ObjectTemplate a member, not a parent class
--Base class GameEntity
--Rename Light to PointLight
+-Class PhysicsEntity: how to decide which base class to use when creating an object? We know which objects will be which, I just don't want to write PhysicsBasicObject etc
 -Keep track of objects! (Yes, this will make testing lights easier)
 -Render objects with lights
 

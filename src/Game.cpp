@@ -125,7 +125,7 @@ void Game::mainLoopPreparation() // Initialize a few things before the main loop
 	mCamera.setPosition(glm::vec3(10.0f, 0.0f, 3.0f));
 
 	test = new ShadedObject(mResourceManager.findObjectGeometry("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")); // Obviously a test
-	light = new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 50);
+	light = new PointLight(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 50);
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting

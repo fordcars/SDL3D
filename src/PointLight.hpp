@@ -17,31 +17,23 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef BASICOBJECT_HPP_
-#define BASICOBJECT_HPP_
+#ifndef POINTLIGHT_HPP_
+#define POINTLIGHT_HPP_
 
-#include <Entity.hpp>
-#include <ObjectGeometry.hpp>
 #include <glm/glm.hpp>
-#include <GLAD/glad.h> // OpenGL, rendering and all
 
-class BasicObject : Entity
+class PointLight
 {
-protected:
-	ObjectGeometry& getObjectGeometry();
-
 private:
-	ObjectGeometry mObjectGeometry;
-	ObjectGeometry::constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
+	glm::vec3 mPosition;
+	glm::vec3 mDiffuseColor; // Virtually all of the time, diffuse color and specular color will be white
+	glm::vec3 mSpecularColor;
+
+	float mPower;
 
 public:
-	BasicObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer);
-	~BasicObject();
-
-	void setShader(ObjectGeometry::constShaderPointer shaderPointer);
-	ObjectGeometry::constShaderPointer getShader();
-
-	virtual void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overload this if you need to!
+	PointLight(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power);
+	~PointLight();
 };
 
-#endif /* BASICOBJECT_HPP_ */
+#endif /* POINTLIGHT_HPP_ */

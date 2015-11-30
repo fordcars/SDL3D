@@ -55,8 +55,9 @@ set(SOURCES
 	src/BasicObject.cpp
 	src/TexturedObject.cpp
 	src/ShadedObject.cpp
-	src/Light.cpp
-	src/GameEntity.cpp
+	src/PointLight.cpp
+	src/Entity.cpp
+	src/PhysicsEntity.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -79,8 +80,9 @@ set(HEADERS
 	src/BasicObject.hpp
 	src/TexturedObject.hpp
 	src/ShadedObject.hpp
-	src/Light.hpp
-	src/GameEntity.hpp
+	src/PointLight.hpp
+	src/Entity.hpp
+	src/PhysicsEntity.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

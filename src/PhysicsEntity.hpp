@@ -17,31 +17,25 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef BASICOBJECT_HPP_
-#define BASICOBJECT_HPP_
+#ifndef PHYSICSENTITY_HPP_
+#define PHYSICSENTITY_HPP_
 
 #include <Entity.hpp>
-#include <ObjectGeometry.hpp>
 #include <glm/glm.hpp>
-#include <GLAD/glad.h> // OpenGL, rendering and all
 
-class BasicObject : Entity
+class PhysicsEntity : Entity
 {
-protected:
-	ObjectGeometry& getObjectGeometry();
-
 private:
-	ObjectGeometry mObjectGeometry;
-	ObjectGeometry::constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
+	glm::vec3 mPosition;
+	glm::vec3 mVelocity;
 
 public:
-	BasicObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer);
-	~BasicObject();
+	PhysicsEntity();
+	PhysicsEntity(glm::vec3 position, glm::vec3 velocity);
+	~PhysicsEntity();
 
-	void setShader(ObjectGeometry::constShaderPointer shaderPointer);
-	ObjectGeometry::constShaderPointer getShader();
-
-	virtual void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overload this if you need to!
+	void setVelocity(glm::vec3 velocity);
+	glm::vec3 getVelocity();
 };
 
-#endif /* BASICOBJECT_HPP_ */
+#endif /* PHYSICSENTITY_HPP_ */

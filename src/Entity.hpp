@@ -17,31 +17,26 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef BASICOBJECT_HPP_
-#define BASICOBJECT_HPP_
+// This class is the parent class of all entities in the game (objects, lights, camera, etc)
+// This is ALWAYS in worldspace!
 
-#include <Entity.hpp>
-#include <ObjectGeometry.hpp>
+#ifndef ENTITY_HPP_
+#define ENTITY_HPP_
+
 #include <glm/glm.hpp>
-#include <GLAD/glad.h> // OpenGL, rendering and all
 
-class BasicObject : Entity
+class Entity
 {
-protected:
-	ObjectGeometry& getObjectGeometry();
-
 private:
-	ObjectGeometry mObjectGeometry;
-	ObjectGeometry::constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
+	glm::vec3 mPosition;
 
 public:
-	BasicObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer);
-	~BasicObject();
+	Entity();
+	Entity(glm::vec3 position);
+	~Entity();
 
-	void setShader(ObjectGeometry::constShaderPointer shaderPointer);
-	ObjectGeometry::constShaderPointer getShader();
-
-	virtual void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overload this if you need to!
+	void setPosition(glm::vec3 position);
+	glm::vec3 getPosition();
 };
 
-#endif /* BASICOBJECT_HPP_ */
+#endif /* ENTITY_HPP_ */

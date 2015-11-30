@@ -17,18 +17,30 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <Light.hpp>
+#include <Entity.hpp>
 
-Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
-{
-	mPosition = position;
-	mDiffuseColor = diffuseColor;
-	mSpecularColor = specularColor;
-
-	mPower = power;
-}
-
-Light::~Light()
+Entity::Entity()
+	: mPosition(0, 0, 0)
 {
 	// Do nothing
+}
+
+Entity::Entity(glm::vec3 position)
+{
+	mPosition = position;
+}
+
+Entity::~Entity()
+{
+	// Do nothing
+}
+
+void Entity::setPosition(glm::vec3 position)
+{
+	mPosition = position;
+}
+
+glm::vec3 Entity::getPosition()
+{
+	return mPosition;
 }

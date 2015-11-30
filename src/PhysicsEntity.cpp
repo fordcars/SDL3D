@@ -17,23 +17,31 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef LIGHT_HPP_
-#define LIGHT_HPP_
+#include <PhysicsEntity.hpp>
 
-#include <glm/glm.hpp>
-
-class Light
+PhysicsEntity::PhysicsEntity()
+	: mPosition(0, 0, 0)
 {
-private:
-	glm::vec3 mPosition;
-	glm::vec3 mDiffuseColor; // Virtually all of the time, diffuse color and specular color will be white
-	glm::vec3 mSpecularColor;
+	// Do nothing
+}
 
-	float mPower;
+PhysicsEntity::PhysicsEntity(glm::vec3 position, glm::vec3 velocity)
+{
+	mPosition = position;
+	mVelocity = velocity;
+}
 
-public:
-	Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power);
-	~Light();
-};
+PhysicsEntity::~PhysicsEntity()
+{
+	// Do nothing
+}
 
-#endif /* LIGHT_HPP_ */
+void PhysicsEntity::setVelocity(glm::vec3 velocity)
+{
+	mVelocity = velocity;
+}
+
+glm::vec3 PhysicsEntity::getVelocity()
+{
+	return mVelocity;
+}
