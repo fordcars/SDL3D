@@ -33,7 +33,7 @@
 // - mat4 normalMatrix
 // - sampler2D textureSampler
 
-ShadedObject::ShadedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer)
+ShadedObject::ShadedObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer, constTexturePointer texturePointer)
 	: BasicObject(objectGeometry, shaderPointer)
 {
 	mTexturePointer = texturePointer;
@@ -55,9 +55,9 @@ void ShadedObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
 
-	vec3Buffer& vertexBuffer = getVertexBuffer();
-	vec2Buffer& UVBuffer = getUVBuffer();
-	vec3Buffer& normalBuffer = getNormalBuffer();
+	ObjectGeometry::vec3Buffer& vertexBuffer = getObjectGeometry().getVertexBuffer();
+	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
+	ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry().getNormalBuffer();
 
 	glUseProgram(getShader()->getID());
 

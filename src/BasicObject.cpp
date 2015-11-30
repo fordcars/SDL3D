@@ -27,8 +27,8 @@
 
 #include <BasicObject.hpp>
 
-BasicObject::BasicObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer)
-	: ObjectGeometry(objectGeometry)
+BasicObject::BasicObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer)
+	: mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
 {
 	mShaderPointer = shaderPointer;
 }
@@ -37,13 +37,18 @@ BasicObject::~BasicObject()
 {
 }
 
-BasicObject::constShaderPointer BasicObject::getShader()
+ObjectGeometry& BasicObject::getObjectGeometry()
+{
+	return mObjectGeometry;
+}
+
+ObjectGeometry::constShaderPointer BasicObject::getShader()
 {
 	return mShaderPointer;
 }
 
  // Useful for changing the shader for different effects "on the fly"
-void BasicObject::setShader(constShaderPointer shaderPointer)
+void BasicObject::setShader(ObjectGeometry::constShaderPointer shaderPointer)
 {
 	mShaderPointer = shaderPointer;
 }
@@ -53,7 +58,7 @@ void BasicObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 
 {
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
 
-	vec3Buffer& vertexBuffer = getVertexBuffer();
+	ObjectGeometry::vec3Buffer& vertexBuffer = mObjectGeometry.getVertexBuffer();
 
 	glUseProgram(mShaderPointer->getID());
 	glUniformMatrix4fv(mShaderPointer->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);

@@ -33,7 +33,7 @@ private:
 	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
 
 public:
-	ShadedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
+	ShadedObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer, constTexturePointer texturePointer);
 	~ShadedObject();
 
 	void setTexture(constTexturePointer texturePointer);

@@ -24,19 +24,21 @@
 #include <glm/glm.hpp>
 #include <GLAD/glad.h> // OpenGL, rendering and all
 
-class BasicObject : public ObjectGeometry
+class BasicObject
 {
 protected:
-	constShaderPointer getShader();
+	ObjectGeometry& getObjectGeometry();
 
 private:
-	constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
+	ObjectGeometry mObjectGeometry;
+	ObjectGeometry::constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
 public:
-	BasicObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer);
+	BasicObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer);
 	~BasicObject();
 
-	void setShader(constShaderPointer shaderPointer);
+	void setShader(ObjectGeometry::constShaderPointer shaderPointer);
+	ObjectGeometry::constShaderPointer getShader();
 
 	virtual void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overload this if you need to!
 };

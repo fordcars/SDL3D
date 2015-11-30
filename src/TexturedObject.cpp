@@ -28,7 +28,7 @@
 // - mat4 MVP
 // - sampler2D textureSampler
 
-TexturedObject::TexturedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer)
+TexturedObject::TexturedObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer, constTexturePointer texturePointer)
 	: BasicObject(objectGeometry, shaderPointer) // Calls Object constructor with those arguments
 {
 	mTexturePointer = texturePointer;
@@ -48,8 +48,8 @@ void TexturedObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::ma
 {
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
 
-	vec3Buffer& vertexBuffer = getVertexBuffer();
-	vec2Buffer& UVBuffer = getUVBuffer();
+	ObjectGeometry::vec3Buffer& vertexBuffer = getObjectGeometry().getVertexBuffer();
+	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
 	
 	glUseProgram(getShader()->getID());
 
