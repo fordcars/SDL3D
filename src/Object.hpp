@@ -17,18 +17,33 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <PointLight.hpp>
+#ifndef OBJECT_HPP_
+#define OBJECT_HPP_
 
-PointLight::PointLight(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
+#include <Entity.hpp>
+#include <ObjectGeometry.hpp>
+#include <Camera.hpp>
+
+#include <glm/glm.hpp>
+#include <GLAD/glad.h> // OpenGL, rendering and all
+
+class Object : public Entity
 {
-	mPosition = position;
-	mDiffuseColor = diffuseColor;
-	mSpecularColor = specularColor;
+protected:
+	ObjectGeometry& getObjectGeometry();
 
-	mPower = power;
-}
+private:
+	ObjectGeometry mObjectGeometry;
+	ObjectGeometry::constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
-PointLight::~PointLight()
-{
-	// Do nothing
-}
+public:
+	Object(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer);
+	~Object();
+
+	void setShader(ObjectGeometry::constShaderPointer shaderPointer);
+	ObjectGeometry::constShaderPointer getShader();
+
+	virtual void render(const Camera& camera); // Override this if you need to!
+};
+
+#endif /* OBJECT_HPP_ */

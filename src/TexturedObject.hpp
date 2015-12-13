@@ -20,13 +20,14 @@
 #ifndef TEXTUREDOBJECT_HPP_
 #define TEXTUREDOBJECT_HPP_
 
-#include <BasicObject.hpp>
+#include <Object.hpp>
 #include <ObjectGeometry.hpp>
 #include <Texture.hpp>
+#include <Camera.hpp>
 
 #include <memory> // For smart pointers
 
-class TexturedObject : public BasicObject // Inherit! 'public' is required here
+class TexturedObject : public Object // Inherit! 'public' is required here
 {
 private:
 	typedef std::shared_ptr<const Texture> constTexturePointer; // We can't modify the texture
@@ -37,7 +38,7 @@ public:
 	~TexturedObject();
 
 	void setTexture(constTexturePointer texturePointer);
-	void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overloading
+	void render(const Camera& camera); // Overriding
 };
 
 #endif /* TEXTURED_OBJECT_HPP_ */

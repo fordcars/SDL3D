@@ -17,31 +17,37 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef BASICOBJECT_HPP_
-#define BASICOBJECT_HPP_
+#include <Light.hpp>
 
-#include <Entity.hpp>
-#include <ObjectGeometry.hpp>
-#include <glm/glm.hpp>
-#include <GLAD/glad.h> // OpenGL, rendering and all
-
-class BasicObject : Entity
+Light::Light()
 {
-protected:
-	ObjectGeometry& getObjectGeometry();
+	mDiffuseColor = glm::vec3(0.0f, 0.0f, 0.0f);
+	mSpecularColor = glm::vec3(0.0f, 0.0f, 0.0f);
 
-private:
-	ObjectGeometry mObjectGeometry;
-	ObjectGeometry::constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
+	mPower = 60.0f;
+}
 
-public:
-	BasicObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer);
-	~BasicObject();
+Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
+{
+	setPosition(position);
 
-	void setShader(ObjectGeometry::constShaderPointer shaderPointer);
-	ObjectGeometry::constShaderPointer getShader();
+	mDiffuseColor = diffuseColor;
+	mSpecularColor = specularColor;
 
-	virtual void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overload this if you need to!
-};
+	mPower = power;
+}
 
-#endif /* BASICOBJECT_HPP_ */
+Light::~Light()
+{
+	// Do nothing
+}
+
+void Light::setDiffuseColor(glm::vec3 color)
+{
+	mDiffuseColor = color;
+}
+
+void Light::setSpecularColor(glm::vec3 color)
+{
+	mSpecularColor = color;
+}

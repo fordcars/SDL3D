@@ -55,7 +55,7 @@ void main()
 	vec3 lightPosition_cameraspace = (viewMatrix * vec4(lightPosition_worldspace, 1)).xyz;
 	lightDirection_cameraspace = lightPosition_cameraspace + eyeDirection_cameraspace; // Vector from vertex to light
 	
-	normal_cameraspace = (normalMatrix * modelMatrix * vec4(vertexNormal_modelspace, 0.0)).xyz;
+	normal_cameraspace = (normalMatrix * vec4(vertexNormal_modelspace, 0.0)).xyz;
 	
 	// Output position of the vertex
 	gl_Position = MVP * vec4(vertexPosition_modelspace, 1);

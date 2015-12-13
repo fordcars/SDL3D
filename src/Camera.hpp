@@ -20,16 +20,17 @@
 #ifndef CAMERA_HPP_
 #define CAMERA_HPP_
 
+#include <Entity.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> // For lookAt() and others
 
-class Camera
+class Camera : public Entity
 {
 private:
 	glm::mat4 mViewMatrix;
 	glm::mat4 mProjectionMatrix; // Gives perspective
 
-	glm::vec3 mPosition;
 	glm::vec4 mTarget; // Target point or direction
 	glm::vec3 mUpVector; // glm::vec3(0, -1, 0) will the camera be upside down, in contrast to glm::vec3(0, 1, 0);
 						// This up vector represents the direction of the up side of the camera.
@@ -46,18 +47,14 @@ public:
 	Camera(float fieldOfView, float aspectRatio);
 	~Camera();
 
-	void setPosition(glm::vec3 position);
-	glm::vec3 getPosition();
-
 	void setTarget(glm::vec4 target);
 	void setUpVector(glm::vec3 upVector);
 
 	void setFieldOfView(float mFieldOfViewX);
 	void setAspectRatio(float aspectRatio);
 
-	void updateMatrices();
-	glm::mat4 getViewMatrix();
-	glm::mat4 getProjectionMatrix();
+	glm::mat4 getViewMatrix() const;
+	glm::mat4 getProjectionMatrix() const;
 };
 
 #endif /* CAMERA_HPP_ */

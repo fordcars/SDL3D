@@ -20,13 +20,14 @@
 #ifndef SHADEDOBJECT_HPP_
 #define SHADEDOBJECT_HPP_
 
-#include <BasicObject.hpp>
+#include <Object.hpp>
 #include <ObjectGeometry.hpp>
 #include <Texture.hpp>
+#include <Camera.hpp>
 
 #include <memory> // For smart pointers
 
-class ShadedObject : public BasicObject // Inherit! 'public' is required here
+class ShadedObject : public Object // Inherit! 'public' is required here
 {
 private:
 	typedef std::shared_ptr<const Texture> constTexturePointer; // We can't modify the texture
@@ -37,7 +38,7 @@ public:
 	~ShadedObject();
 
 	void setTexture(constTexturePointer texturePointer);
-	void render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix); // Overloading
+	void render(const Camera& camera); // Overriding
 };
 
 #endif /* SHADEDOBJECT_HPP_ */

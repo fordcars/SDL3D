@@ -62,9 +62,9 @@ ResourceManager::shaderPointer ResourceManager::addShader(const std::string& sha
 	std::string vertexShaderPath = getFullResourcePath(vertexShaderFile); // All resources are in the resource dir
 	std::string fragmentShaderPath = getFullResourcePath(fragmentShaderFile);
 
-	shaderPointer shaderPointer(new Shader(shaderName, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
+	shaderPointer shader(new Shader(shaderName, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
 
-	shaderMapPair shaderPair(shaderName, shaderPointer);
+	shaderMapPair shaderPair(shaderName, shader);
 	std::pair<shaderMap::iterator, bool> newlyAddedPair = mShaderMap.insert(shaderPair);
 	
 	if(newlyAddedPair.second == false) // It already exists in the map
@@ -101,8 +101,8 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 {
 	std::string path = getFullResourcePath(textureFile);
 
-	texturePointer texturePointer(new Texture(name, path, type));
-	textureMapPair texturePair(name, texturePointer);
+	texturePointer texture(new Texture(name, path, type));
+	textureMapPair texturePair(name, texture);
 
 	std::pair<textureMap::iterator, bool> newlyAddedPair = mTextureMap.insert(texturePair); // Insert in map
 	
@@ -149,8 +149,8 @@ ObjectGeometry ResourceManager::addObjectGeometry(const std::string& objectFile,
 {
 	std::string path = getFullResourcePath(objectFile);
 
-	objectGeometryPointer objectGeometryPointer(new ObjectGeometry(name, path));
-	objectGeometryMapPair objectGeometryPair(name, objectGeometryPointer);
+	objectGeometryPointer objectGeometry(new ObjectGeometry(name, path));
+	objectGeometryMapPair objectGeometryPair(name, objectGeometry);
 
 	std::pair<objectGeometryMap::iterator, bool> newlyAddedPair = mObjectGeometryMap.insert(objectGeometryPair);
 	

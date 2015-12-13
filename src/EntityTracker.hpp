@@ -17,23 +17,41 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef POINTLIGHT_HPP_
-#define POINTLIGHT_HPP_
+#ifndef ENTITYTRACKER_HPP_
+#define ENTITYTRACKER_HPP_
 
-#include <glm/glm.hpp>
+#include <Object.hpp>
+#include <Light.hpp>
+#include <Camera.hpp>
 
-class PointLight
+#include <memory>
+#include <vector>
+
+class EntityTracker
 {
 private:
-	glm::vec3 mPosition;
-	glm::vec3 mDiffuseColor; // Virtually all of the time, diffuse color and specular color will be white
-	glm::vec3 mSpecularColor;
+	typedef std::shared_ptr<Object> objectPointer;
+	typedef std::shared_ptr<Light> lightPointer;
 
-	float mPower;
+	typedef std::vector<objectPointer> objectVector; // Vector containing shared pointers
+	typedef std::vector<lightPointer> lightVector;
+
+	Camera mCamera;
+
+	objectVector mObjects;
+	lightVector mLights;
 
 public:
-	PointLight(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power);
-	~PointLight();
+	EntityTracker();
+	~EntityTracker();
+
+	void addObject(objectPointer object);
+	objectVector& getObjects();
+
+	void addLight(lightPointer light);
+	lightVector& getLights();
+
+	void tick();
 };
 
-#endif /* POINTLIGHT_HPP_ */
+#endif /* ENTITYTRACKER_HPP_ */

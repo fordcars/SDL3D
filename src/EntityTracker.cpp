@@ -17,31 +17,46 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <PhysicsEntity.hpp>
+#include <EntityTracker.hpp>
 
-PhysicsEntity::PhysicsEntity()
-	: mPosition(0, 0, 0)
+EntityTracker::EntityTracker()
 {
-	// Do nothing
 }
 
-PhysicsEntity::PhysicsEntity(glm::vec3 position, glm::vec3 velocity)
+EntityTracker::~EntityTracker()
 {
-	mPosition = position;
-	mVelocity = velocity;
 }
 
-PhysicsEntity::~PhysicsEntity()
+void EntityTracker::addObject(objectPointer object) // Give it an actual object
 {
-	// Do nothing
+	mObjects.push_back(object);
 }
 
-void PhysicsEntity::setVelocity(glm::vec3 velocity)
+EntityTracker::objectVector& EntityTracker::getObjects()
 {
-	mVelocity = velocity;
+	return mObjects;
 }
 
-glm::vec3 PhysicsEntity::getVelocity()
+void EntityTracker::addLight(lightPointer light) // Give it an actual object
 {
-	return mVelocity;
+	mLights.push_back(light);
+}
+
+EntityTracker::lightVector& EntityTracker::getLights()
+{
+	return mLights;
+}
+
+void EntityTracker::tick() // P.S. Tick is a verb
+{
+	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+	{
+		(*it)->step(); // it is a pointer (iterator) pointing to a smart pointer
+		(*it)->render(mCamera);
+	}
+
+	for(lightVector::iterator it = mLights.begin(); it != mLights.end(); ++it)
+	{
+		(*it)->step();
+	}
 }

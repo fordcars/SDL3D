@@ -34,7 +34,7 @@
 // - sampler2D textureSampler
 
 ShadedObject::ShadedObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer, constTexturePointer texturePointer)
-	: BasicObject(objectGeometry, shaderPointer)
+	: Object(objectGeometry, shaderPointer)
 {
 	mTexturePointer = texturePointer;
 }
@@ -49,8 +49,12 @@ void ShadedObject::setTexture(constTexturePointer texturePointer)
 	mTexturePointer = texturePointer;
 }
 
-void ShadedObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+void ShadedObject::render(const Camera& camera)
 {
+	glm::mat4 modelMatrix = getModelMatrix();
+	glm::mat4 viewMatrix = camera.getViewMatrix();
+	glm::mat4 projectionMatrix = camera.getProjectionMatrix();
+
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));

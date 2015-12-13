@@ -52,12 +52,12 @@ set(SOURCES
 	src/ObjectGeometry.cpp
 	src/Shader.cpp
 	src/Texture.cpp
-	src/BasicObject.cpp
+	src/Object.cpp
 	src/TexturedObject.cpp
 	src/ShadedObject.cpp
-	src/PointLight.cpp
+	src/Light.cpp
 	src/Entity.cpp
-	src/PhysicsEntity.cpp
+	src/EntityTracker.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -77,12 +77,12 @@ set(HEADERS
 	src/Shader.hpp
 	src/Texture.hpp
 	src/GLBuffer.hpp
-	src/BasicObject.hpp
+	src/Object.hpp
 	src/TexturedObject.hpp
 	src/ShadedObject.hpp
-	src/PointLight.hpp
+	src/Light.hpp
 	src/Entity.hpp
-	src/PhysicsEntity.hpp
+	src/EntityTracker.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

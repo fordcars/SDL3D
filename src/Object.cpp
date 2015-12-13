@@ -17,7 +17,7 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-// BaseObject: A simple textureless object, useful as a base class for more complex type
+// A simple textureless object. Use it as a base class for different types of objects.
 
 // In:
 // - layout location 0: vertex position in modelspace
@@ -25,38 +25,38 @@
 // Uniforms:
 // - mat4 MVP
 
-#include <BasicObject.hpp>
+#include <Object.hpp>
 
-BasicObject::BasicObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer)
+Object::Object(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer)
 	: mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
 {
 	mShaderPointer = shaderPointer;
 }
 
-BasicObject::~BasicObject()
+Object::~Object()
 {
 }
 
-ObjectGeometry& BasicObject::getObjectGeometry()
+ObjectGeometry& Object::getObjectGeometry()
 {
 	return mObjectGeometry;
 }
 
-ObjectGeometry::constShaderPointer BasicObject::getShader()
+ObjectGeometry::constShaderPointer Object::getShader()
 {
 	return mShaderPointer;
 }
 
  // Useful for changing the shader for different effects "on the fly"
-void BasicObject::setShader(ObjectGeometry::constShaderPointer shaderPointer)
+void Object::setShader(ObjectGeometry::constShaderPointer shaderPointer)
 {
 	mShaderPointer = shaderPointer;
 }
 
 // Virtual
-void BasicObject::render(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
+void Object::render(const Camera& camera)
 {
-	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
+	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
 
 	ObjectGeometry::vec3Buffer& vertexBuffer = mObjectGeometry.getVertexBuffer();
 

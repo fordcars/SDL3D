@@ -93,7 +93,7 @@ void Game::checkCompability() // Checks if the game will work on the user's setu
 		Utils::crash("Your system is not compatible with the game. Please take a look at the generated warnings.", __LINE__, __FILE__);
 }
 
-void Game::mainLoopPreparation() // Initialize a few things before the main loop
+void Game::initMainLoop() // Initialize a few things before the main loop
 {
 	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_SPACE};
 	mInputHandler.registerKeys(keys, 5);
@@ -122,10 +122,12 @@ void Game::mainLoopPreparation() // Initialize a few things before the main loop
 
 	mCamera.setAspectRatio((float)(mGameWidth/mGameHeight));
 	mCamera.setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
-	mCamera.setPosition(glm::vec3(10.0f, 0.0f, 3.0f));
+	mCamera.setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
 
 	test = new ShadedObject(mResourceManager.findObjectGeometry("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")); // Obviously a test
-	light = new PointLight(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 50);
+	light = new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60);
+
+	test->setVelocity(glm::vec3(0.05f, 0.0f, 0.0f));
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -152,14 +154,11 @@ void Game::doEvents()
 
 void Game::render()
 {
-	mCamera.updateMatrices();
-
 	glClearColor(0.1f, 0.1f, 1.0f, 1.0f); // Set clear color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
 
-	glm::mat4 model = glm::mat4(1.0f);
-	
-	test->render(model, mCamera.getViewMatrix(), mCamera.getProjectionMatrix());
+	test->step(); // Debug of course
+	test->render(mCamera);
 	
 	SDL_GL_SwapWindow(mMainWindow);
 }
@@ -192,7 +191,8 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 }
 float timeX = 0;  //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 float radius = 1; //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-void Game::update()
+// NORMALLLLLY YOU WOULD USE DELTA WITH THE TRANSLATION (VELOCITY)
+void Game::doMainLoop()
 {
 	SimpleTimer fpsTimer; // For calculating update delay and all
 	int currentTime = fpsTimer.start();
@@ -202,24 +202,28 @@ void Game::update()
 
 	float speed = 0.05f;
 
-	if(mLastFrameTime != 0) // Make sure delta makes sense before moving anything!
+	if(mLastFrameTime != 0) // Make sure everything is good before moving stuff!
 	{
 		if(mInputHandler.keyPressed(SDLK_UP))
 		{
-			radius -= speed;
+			//radius -= speed;
+			test->setVelocity(test->getVelocity()+glm::vec3(0.001f, 0.0f, 0.0f));
 		} else if(mInputHandler.keyPressed(SDLK_DOWN))
 		{
-			radius += speed;
+			//radius += speed;
+			test->setVelocity(test->getVelocity()-glm::vec3(0.001f, 0.0f, 0.0f));
 		} else if(mInputHandler.keyPressed(SDLK_LEFT))
 		{
-			timeX += speed;
+			//timeX += speed;
+			test->setRotation(test->getRotation()+glm::vec3(0.0f, 5.0f, 0.0f));
 		} else if(mInputHandler.keyPressed(SDLK_RIGHT))
 		{
-			timeX -= speed;
+			//timeX -= speed;
+			test->setRotation(test->getRotation()+glm::vec3(0.0f, -5.0f, 0.0f));
 		}
 
-		glm::vec3 position(radius * cos(timeX), mCamera.getPosition().y, radius * sin(timeX));
-		mCamera.setPosition(position);
+		//glm::vec3 position(radius * cos(timeX), mCamera.getPosition().y, radius * sin(timeX));
+		//mCamera.setPosition(position);
 	}
 	
 	render();
@@ -276,15 +280,15 @@ void Game::init() // Starts the game
 	mInitialized = true;
 }
 
-void Game::mainLoop() // Starts the main loop
+void Game::startMainLoop() // Starts the main loop
 {
 	if(mInitialized)
 	{
-		mainLoopPreparation();
+		initMainLoop();
 
 		while(!mQuitting) // While not quitting. mQuitting is set with quit()
 		{
-			update();
+			doMainLoop();
 		}
 
 		cleanUp();

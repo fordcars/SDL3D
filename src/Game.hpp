@@ -27,9 +27,9 @@
 #include <InputHandler.hpp>
 #include <Camera.hpp>
 
-#include <BasicObject.hpp> // For testing
+#include <Object.hpp>
 #include <ShadedObject.hpp> // For testing
-#include <PointLight.hpp> // For testing
+#include <Light.hpp> // For testing
 
 class Game
 {
@@ -59,23 +59,23 @@ private:
 	Camera mCamera;
 
 	void checkCompability();
-	void mainLoopPreparation();
+	void initMainLoop();
 	void cleanUp();
 
 	void doEvents();
 	void render();
 	void checkForErrors();
-	void update();
+	void doMainLoop();
 
 	// Test
-	BasicObject *test;
-	PointLight *light;
+	Object *test;
+	Light *light;
 
 public:
 	Game(const std::string& gameName, int width, int height, int frameRate, const std::string& resourceDir);
 	~Game();
 	void init();
-	void mainLoop();
+	void startMainLoop();
 	void quit();
 };
 

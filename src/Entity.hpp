@@ -24,19 +24,37 @@
 #define ENTITY_HPP_
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Entity
 {
 private:
 	glm::vec3 mPosition;
+	glm::vec3 mScaling;
+	glm::vec3 mRotation; // Rotation angle on the x, y and z axis, in degrees
+
+	glm::vec3 mVelocity;
 
 public:
 	Entity();
-	Entity(glm::vec3 position);
+	Entity(glm::vec3 position, glm::vec3 scaling, glm::vec3 rotation, glm::vec3 velocity);
 	~Entity();
 
 	void setPosition(glm::vec3 position);
-	glm::vec3 getPosition();
+	glm::vec3 getPosition() const;
+
+	void setScaling(glm::vec3 scaling);
+	glm::vec3 getScaling() const;
+
+	void setRotation(glm::vec3 rotation);
+	glm::vec3 getRotation() const;
+
+	void setVelocity(glm::vec3 velocity);
+	glm::vec3 getVelocity() const;
+
+	glm::mat4 getModelMatrix();
+
+	void step();
 };
 
 #endif /* ENTITY_HPP_ */

@@ -1,9 +1,16 @@
--Class PhysicsEntity: how to decide which base class to use when creating an object? We know which objects will be which, I just don't want to write PhysicsBasicObject etc
--Keep track of objects! (Yes, this will make testing lights easier)
--Render objects with lights
+-Keep track of objects! + lights (Yes, this will make testing lights easier)
+-Lights: derive from Entity
+-Give delta to Entity.step()
+-Give lightSSSS to shader + don't care about lights that are too far away
 
 -Don't make uniforms obligatory
 
+-Get rid of Game::initMainLoop()
+
+-Use TinyLoader
+
+-Lua API?
+-Colision detection (in Entity step function?) - Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!
 -Load all files at the same place?
 -Seperate resources in directories? Textures, objects, etc
 
@@ -14,9 +21,6 @@
 
 -Settings class? Include max fps, field of view and resolution
 --->> Can the field of view be anything else than numbers power of ten?
-
--Lua API?
--Colision detection?
 
 -Level editor? (specifying textures, probably not shaders) TRY USING BLENDER! - multiple objects per .obj (use tiny loader)
 ->>>> CHECK OUT TUTORIAL 15 lightmaps! It talks about that (obj, etc) = join all objects

@@ -68,5 +68,6 @@ void main()
 	// Diffuse : "color" of the object
 	materialDiffuseColor * lightColor * lightPower * cosTheta / squareDistance +
 	// Specular " reflective highlight, like a mirror
-	materialSpecularColor * lightColor * lightPower * pow(cosAlpha, 5) / squareDistance;
+	// Multiplying by cos theta removes annoying artefacts http://www.gamedev.net/topic/672374-blinn-phong-artifact-in-shader/
+	materialSpecularColor * lightColor * lightPower * pow(cosAlpha, 5) / squareDistance * cosTheta;
 }
