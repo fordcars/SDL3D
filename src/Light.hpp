@@ -38,7 +38,13 @@ public:
 	~Light();
 
 	void setDiffuseColor(glm::vec3 color);
+	glm::vec3 getDiffuseColor();
+
 	void setSpecularColor(glm::vec3 color);
+	glm::vec3 getSpecularColor();
+
+	void setPower(float power);
+	float getPower();
 };
 
 #endif /* LIGHT_HPP_ */

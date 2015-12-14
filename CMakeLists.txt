@@ -57,7 +57,7 @@ set(SOURCES
 	src/ShadedObject.cpp
 	src/Light.cpp
 	src/Entity.cpp
-	src/EntityTracker.cpp
+	src/EntityManager.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -82,7 +82,7 @@ set(HEADERS
 	src/ShadedObject.hpp
 	src/Light.hpp
 	src/Entity.hpp
-	src/EntityTracker.hpp
+	src/EntityManager.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

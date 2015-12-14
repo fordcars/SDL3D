@@ -47,7 +47,27 @@ void Light::setDiffuseColor(glm::vec3 color)
 	mDiffuseColor = color;
 }
 
+glm::vec3 Light::getDiffuseColor()
+{
+	return mDiffuseColor;
+}
+
 void Light::setSpecularColor(glm::vec3 color)
 {
 	mSpecularColor = color;
+}
+
+glm::vec3 Light::getSpecularColor()
+{
+	return mSpecularColor;
+}
+
+void Light::setPower(float power)
+{
+	mPower = power;
+}
+
+float Light::getPower()
+{
+	return mPower;
 }

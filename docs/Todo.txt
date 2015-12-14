@@ -1,7 +1,5 @@
--Keep track of objects! + lights (Yes, this will make testing lights easier)
--Lights: derive from Entity
--Give delta to Entity.step()
 -Give lightSSSS to shader + don't care about lights that are too far away
+->>> Maybe give mLights to ShadedObject? Shared pointer? Reference?
 
 -Don't make uniforms obligatory
 
@@ -10,12 +8,15 @@
 -Use TinyLoader
 
 -Lua API?
--Colision detection (in Entity step function?) - Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!
+-Colision detection (in Entity step function?) - Either point or box (and add collision on and off):
+---Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!
+
 -Load all files at the same place?
 -Seperate resources in directories? Textures, objects, etc
 
 -Update to VS 2015 to:
 ->>Update arrays (uniforms and keys) to std::arrays(VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)
+->>'using' instead of typedef!
 
 -No need of particles, but billboards would be useful for trees, see tutorial 18. Call them sprites.
 

@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef ENTITYTRACKER_HPP_
-#define ENTITYTRACKER_HPP_
+#ifndef ENTITYMANAGER_HPP_
+#define ENTITYMANAGER_HPP_
 
 #include <Object.hpp>
 #include <Light.hpp>
@@ -27,12 +27,13 @@
 #include <memory>
 #include <vector>
 
-class EntityTracker
+class EntityManager
 {
-private:
+public: // Public typedefs
 	typedef std::shared_ptr<Object> objectPointer;
 	typedef std::shared_ptr<Light> lightPointer;
 
+private:
 	typedef std::vector<objectPointer> objectVector; // Vector containing shared pointers
 	typedef std::vector<lightPointer> lightVector;
 
@@ -42,8 +43,10 @@ private:
 	lightVector mLights;
 
 public:
-	EntityTracker();
-	~EntityTracker();
+	EntityManager();
+	~EntityManager();
+
+	Camera& getCamera();
 
 	void addObject(objectPointer object);
 	objectVector& getObjects();
@@ -51,7 +54,8 @@ public:
 	void addLight(lightPointer light);
 	lightVector& getLights();
 
-	void tick();
+	void step();
+	void render();
 };
 
-#endif /* ENTITYTRACKER_HPP_ */
+#endif /* ENTITYMANAGER_HPP_ */

@@ -43,7 +43,7 @@ Game::Game(const std::string& gameName, int width, int height, int maxFrameRate,
 	mMinTicksPerFrame = (int)(1000 / maxFrameRate); // Trucation
 
 	mLastFrameTime = 0;
-	mGameSpeedDivider = 16; // Delta is divided by this. Setting this to 16 makes delta 1 (per frame) at 60fps.
+	mStepLength = 16; // This is the length of a step, used for movement and everything, in ms. 16 makes 60 steps per second.
 
 	mInitialized = false;
 	mQuitting = false;
@@ -113,21 +113,30 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	mResourceManager.addShader("shaded", "shaded.v.glsl", "shaded.f.glsl");
 	mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
 	mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
+	mResourceManager.addTexture("building.dds", DDS_TEXTURE);
 
 	const std::string uniforms[] = {"MVP", "modelMatrix", "viewMatrix", "normalMatrix", "textureSampler"};
 	mResourceManager.findShader("shaded")->registerUniforms(uniforms, 5);
 	
 	// Test (Game.h, render() and here)
 	mResourceManager.addObjectGeometry("suzanne.obj");
+	mResourceManager.addObjectGeometry("building.obj");
 
-	mCamera.setAspectRatio((float)(mGameWidth/mGameHeight));
-	mCamera.setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
-	mCamera.setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
+	mEntityManager.getCamera().setAspectRatio((float)(mGameWidth/mGameHeight));
+	mEntityManager.getCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
+	mEntityManager.getCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
 
-	test = new ShadedObject(mResourceManager.findObjectGeometry("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")); // Obviously a test
-	light = new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60);
+	EntityManager::objectPointer monkey(new ShadedObject(mResourceManager.findObjectGeometry("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
+	mEntityManager.addObject(monkey);
 
-	test->setVelocity(glm::vec3(0.05f, 0.0f, 0.0f));
+	EntityManager::objectPointer building(new ShadedObject(mResourceManager.findObjectGeometry("building"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("building")));
+	mEntityManager.addObject(building);
+
+	EntityManager::lightPointer light(new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60));
+	mEntityManager.addLight(light);
+
+	//mEntityManager.getObjects()[0]->setVelocity(glm::vec3(0.05f, 0.0f, 0.0f));
+	mEntityManager.getObjects()[0]->setPosition(glm::vec3(5.0f, 0.0f, 0.0f));
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -150,17 +159,6 @@ void Game::doEvents()
 		if(event.type == SDL_QUIT)
 			quit();
 	}
-}
-
-void Game::render()
-{
-	glClearColor(0.1f, 0.1f, 1.0f, 1.0f); // Set clear color
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
-
-	test->step(); // Debug of course
-	test->render(mCamera);
-	
-	SDL_GL_SwapWindow(mMainWindow);
 }
 
 void Game::checkForErrors() // Call each frame for safety. Do not call after deleting the OpenGL context.
@@ -188,44 +186,69 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 			return;
 		}
 	}
+
+	// Over 1000 errors, is this possible?
+	Utils::warn("Over 1000 OpenGL errors?!");
 }
+
+
 float timeX = 0;  //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 float radius = 1; //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-// NORMALLLLLY YOU WOULD USE DELTA WITH THE TRANSLATION (VELOCITY)
+void Game::step() // Movement and all
+{
+	float speed = 0.05f;
+
+	if(mInputHandler.keyPressed(SDLK_UP))
+	{
+		//radius -= speed;
+		mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()+glm::vec3(0.001f, 0.0f, 0.0f));
+		//mEntityManager.getObjects()[0]->setScaling(mEntityManager.getObjects()[0]->getScaling() + glm::vec3(0.01f, 0.01f, 0.01f));
+	} else if(mInputHandler.keyPressed(SDLK_DOWN))
+	{
+		//radius += speed;
+		mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()-glm::vec3(0.001f, 0.0f, 0.0f));
+		//mEntityManager.getObjects()[0]->setScaling(mEntityManager.getObjects()[0]->getScaling() - glm::vec3(0.01f, 0.01f, 0.01f));
+	} else if(mInputHandler.keyPressed(SDLK_LEFT))
+	{
+		//timeX += speed;
+		mEntityManager.getObjects()[0]->setRotation(mEntityManager.getObjects()[0]->getRotation()+glm::vec3(0.0f, 5.0f, 0.0f));
+	} else if(mInputHandler.keyPressed(SDLK_RIGHT))
+	{
+		//timeX -= speed;
+		mEntityManager.getObjects()[0]->setRotation(mEntityManager.getObjects()[0]->getRotation()-glm::vec3(0.0f, 5.0f, 0.0f));
+	}
+
+	//glm::vec3 position(radius * cos(timeX), mCamera.getPosition().y, radius * sin(timeX));
+	//mCamera.setPosition(position);
+
+	mEntityManager.step();
+}
+
+void Game::render()
+{
+	glClearColor(0.1f, 0.1f, 1.0f, 1.0f); // Set clear color
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
+
+	mEntityManager.render();
+	SDL_GL_SwapWindow(mMainWindow);
+}
+
 void Game::doMainLoop()
 {
 	SimpleTimer fpsTimer; // For calculating update delay and all
 	int currentTime = fpsTimer.start();
-	int delta = (int)((currentTime - mLastFrameTime)/mGameSpeedDivider);
+
+	// Number of steps we need to do to be where we want to be
+	int numberOfStepsToDo = (currentTime - mLastFrameTime)/mStepLength;
 
 	doEvents();
 
-	float speed = 0.05f;
-
 	if(mLastFrameTime != 0) // Make sure everything is good before moving stuff!
 	{
-		if(mInputHandler.keyPressed(SDLK_UP))
-		{
-			//radius -= speed;
-			test->setVelocity(test->getVelocity()+glm::vec3(0.001f, 0.0f, 0.0f));
-		} else if(mInputHandler.keyPressed(SDLK_DOWN))
-		{
-			//radius += speed;
-			test->setVelocity(test->getVelocity()-glm::vec3(0.001f, 0.0f, 0.0f));
-		} else if(mInputHandler.keyPressed(SDLK_LEFT))
-		{
-			//timeX += speed;
-			test->setRotation(test->getRotation()+glm::vec3(0.0f, 5.0f, 0.0f));
-		} else if(mInputHandler.keyPressed(SDLK_RIGHT))
-		{
-			//timeX -= speed;
-			test->setRotation(test->getRotation()+glm::vec3(0.0f, -5.0f, 0.0f));
-		}
-
-		//glm::vec3 position(radius * cos(timeX), mCamera.getPosition().y, radius * sin(timeX));
-		//mCamera.setPosition(position);
+		for(int i = 0; i < numberOfStepsToDo; i++)
+			step();
 	}
-	
+
 	render();
 	checkForErrors();
 

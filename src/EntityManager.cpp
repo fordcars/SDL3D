@@ -17,46 +17,58 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <EntityTracker.hpp>
+#include <EntityManager.hpp>
 
-EntityTracker::EntityTracker()
+EntityManager::EntityManager()
 {
 }
 
-EntityTracker::~EntityTracker()
+EntityManager::~EntityManager()
 {
 }
 
-void EntityTracker::addObject(objectPointer object) // Give it an actual object
+Camera& EntityManager::getCamera()
+{
+	return mCamera;
+}
+
+void EntityManager::addObject(objectPointer object) // Give it an actual object
 {
 	mObjects.push_back(object);
 }
 
-EntityTracker::objectVector& EntityTracker::getObjects()
+EntityManager::objectVector& EntityManager::getObjects()
 {
 	return mObjects;
 }
 
-void EntityTracker::addLight(lightPointer light) // Give it an actual object
+void EntityManager::addLight(lightPointer light) // Give it an actual object
 {
 	mLights.push_back(light);
 }
 
-EntityTracker::lightVector& EntityTracker::getLights()
+EntityManager::lightVector& EntityManager::getLights()
 {
 	return mLights;
 }
 
-void EntityTracker::tick() // P.S. Tick is a verb
+void EntityManager::step() // Steps all entities a number of times
 {
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
 		(*it)->step(); // it is a pointer (iterator) pointing to a smart pointer
-		(*it)->render(mCamera);
 	}
 
 	for(lightVector::iterator it = mLights.begin(); it != mLights.end(); ++it)
 	{
 		(*it)->step();
+	}
+}
+
+void EntityManager::render() // Renders all entities that can be rendered
+{
+	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+	{
+		(*it)->render(mCamera);
 	}
 }

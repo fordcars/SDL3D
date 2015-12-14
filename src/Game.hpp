@@ -25,9 +25,8 @@
 
 #include <ResourceManager.hpp>
 #include <InputHandler.hpp>
-#include <Camera.hpp>
+#include <EntityManager.hpp>
 
-#include <Object.hpp>
 #include <ShadedObject.hpp> // For testing
 #include <Light.hpp> // For testing
 
@@ -42,7 +41,7 @@ private:
 	int mMinTicksPerFrame;
 	
 	int mLastFrameTime; // Time at last frame
-	int mGameSpeedDivider;
+	int mStepLength;
 
 	bool mInitialized; // Set to true after initializing
 	bool mQuitting; // If set to true, the game will quit at the end of the frame
@@ -56,20 +55,18 @@ private:
 
 	InputHandler mInputHandler;
 
-	Camera mCamera;
+	EntityManager mEntityManager;
 
 	void checkCompability();
 	void initMainLoop();
 	void cleanUp();
 
 	void doEvents();
-	void render();
 	void checkForErrors();
-	void doMainLoop();
 
-	// Test
-	Object *test;
-	Light *light;
+	void step();
+	void render();
+	void doMainLoop();
 
 public:
 	Game(const std::string& gameName, int width, int height, int frameRate, const std::string& resourceDir);
