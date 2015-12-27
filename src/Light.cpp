@@ -71,3 +71,13 @@ float Light::getPower()
 {
 	return mPower;
 }
+
+void Light::setOnState(bool onState)
+{
+	mOnState = onState;
+}
+
+bool Light::getOnState()
+{
+	return mOnState;
+}

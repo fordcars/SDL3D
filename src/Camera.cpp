@@ -45,7 +45,7 @@ void Camera::init() // Called when constructed, private
 	mViewMatrix = glm::mat4(1.0f); // Identity matrix
 	mProjectionMatrix = glm::mat4(1.0f);
 
-	mTarget = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // 1 for position
+	mDirection = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // 1 for position
 	mUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	mFieldOfViewX = 90.0f;
@@ -54,9 +54,9 @@ void Camera::init() // Called when constructed, private
 	mFarClippingPlane = 100.0f;
 }
 
-void Camera::setTarget(glm::vec4 target) // vec4 since this can be a position or a direction
+void Camera::setDirection(glm::vec4 direction) // vec4 since this can be a position or a direction
 {
-	mTarget = target;
+	mDirection = direction;
 }
 
 void Camera::setUpVector(glm::vec3 upVector)
@@ -77,14 +77,14 @@ void Camera::setAspectRatio(float aspectRatio)
 glm::mat4 Camera::getViewMatrix() const
 {
 	glm::vec3 position = getPosition();
-	glm::vec3 vec3Target;
+	glm::vec3 vec3Direction;
 
-	if(mTarget.w==1) // Is a position
-		vec3Target = glm::vec3(mTarget); // Doesn't cast, it creates a new one
-	else if(mTarget.w==0)
-		vec3Target = glm::vec3(mTarget) + position; // Is a direction
+	if(mDirection.w==1) // Is a point
+		vec3Direction = glm::vec3(mDirection); // Doesn't cast, it creates a new one
+	else if(mDirection.w==0)
+		vec3Direction = glm::vec3(mDirection) + position; // Is a vector
 
-	glm::mat4 viewMatrix = glm::lookAt(position, vec3Target, mUpVector);
+	glm::mat4 viewMatrix = glm::lookAt(position, vec3Direction, mUpVector);
 
 	return viewMatrix;
 }

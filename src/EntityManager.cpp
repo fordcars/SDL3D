@@ -27,9 +27,9 @@ EntityManager::~EntityManager()
 {
 }
 
-Camera& EntityManager::getCamera()
+Camera& EntityManager::getGameCamera()
 {
-	return mCamera;
+	return mGameCamera;
 }
 
 void EntityManager::addObject(objectPointer object) // Give it an actual object
@@ -54,6 +54,8 @@ EntityManager::lightVector& EntityManager::getLights()
 
 void EntityManager::step() // Steps all entities a number of times
 {
+	mGameCamera.step();
+
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
 		(*it)->step(); // it is a pointer (iterator) pointing to a smart pointer
@@ -69,6 +71,6 @@ void EntityManager::render() // Renders all entities that can be rendered
 {
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
-		(*it)->render(mCamera);
+		(*it)->render(mGameCamera);
 	}
 }

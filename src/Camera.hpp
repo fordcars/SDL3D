@@ -31,7 +31,7 @@ private:
 	glm::mat4 mViewMatrix;
 	glm::mat4 mProjectionMatrix; // Gives perspective
 
-	glm::vec4 mTarget; // Target point or direction
+	glm::vec4 mDirection; // Point or vector
 	glm::vec3 mUpVector; // glm::vec3(0, -1, 0) will the camera be upside down, in contrast to glm::vec3(0, 1, 0);
 						// This up vector represents the direction of the up side of the camera.
 
@@ -47,7 +47,7 @@ public:
 	Camera(float fieldOfView, float aspectRatio);
 	~Camera();
 
-	void setTarget(glm::vec4 target);
+	void setDirection(glm::vec4 direction);
 	void setUpVector(glm::vec3 upVector);
 
 	void setFieldOfView(float mFieldOfViewX);

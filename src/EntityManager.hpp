@@ -37,7 +37,7 @@ private:
 	typedef std::vector<objectPointer> objectVector; // Vector containing shared pointers
 	typedef std::vector<lightPointer> lightVector;
 
-	Camera mCamera;
+	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.
 
 	objectVector mObjects;
 	lightVector mLights;
@@ -46,7 +46,7 @@ public:
 	EntityManager();
 	~EntityManager();
 
-	Camera& getCamera();
+	Camera& getGameCamera();
 
 	void addObject(objectPointer object);
 	objectVector& getObjects();

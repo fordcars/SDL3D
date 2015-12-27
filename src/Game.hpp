@@ -38,7 +38,7 @@ private:
 
 	int mGameWidth;
 	int mGameHeight;
-	int mMinTicksPerFrame;
+	int mMinTimePerFrame;
 	
 	int mLastFrameTime; // Time at last frame
 	int mStepLength;

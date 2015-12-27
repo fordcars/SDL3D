@@ -31,6 +31,7 @@ private:
 	glm::vec3 mSpecularColor;
 
 	float mPower;
+	bool mOnState; // Can turn the light on or off
 
 public:
 	Light();
@@ -45,6 +46,9 @@ public:
 
 	void setPower(float power);
 	float getPower();
+
+	void setOnState(bool onState);
+	bool getOnState();
 };
 
 #endif /* LIGHT_HPP_ */

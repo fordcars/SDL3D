@@ -38,6 +38,9 @@ private:
 	static GLuint compileShader(const std::string& shaderPath, const std::string& shaderCode, GLenum type);
 	static GLuint linkShaderProgram(const std::string& shaderProgramName, GLuint vertexShader, GLuint fragmentShader);
 
+	void registerUniforms();
+	const GLuint registerUniform(const std::string& uniformName);
+
 public:
 	Shader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 	~Shader();
@@ -45,8 +48,6 @@ public:
 	const GLuint getID() const;
 	static std::string getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog);
 
-	const GLuint registerUniform(const std::string& uniformName);
-	void registerUniforms(const std::string uniformNames[], int length); // Const variable, non-const pointer
 	const GLuint findUniform(const std::string& uniformName) const;
 };
 

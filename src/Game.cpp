@@ -40,10 +40,13 @@ Game::Game(const std::string& gameName, int width, int height, int maxFrameRate,
 
 	mGameWidth = width;
 	mGameHeight = height;
-	mMinTicksPerFrame = (int)(1000 / maxFrameRate); // Trucation
+	mMinTimePerFrame = (int)(1000 / maxFrameRate); // Trucation
 
 	mLastFrameTime = 0;
-	mStepLength = 16; // This is the length of a step, used for movement and everything, in ms. 16 makes 60 steps per second.
+
+	// This is the length of a step, used for movement and everything, in ms. 8 ms makes 120 steps per second.
+	// If the time of one frame is smaller than this value (ex: faster screens in the future), the game will slow down.
+	mStepLength = 8;
 
 	mInitialized = false;
 	mQuitting = false;
@@ -114,17 +117,14 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
 	mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
 	mResourceManager.addTexture("building.dds", DDS_TEXTURE);
-
-	const std::string uniforms[] = {"MVP", "modelMatrix", "viewMatrix", "normalMatrix", "textureSampler"};
-	mResourceManager.findShader("shaded")->registerUniforms(uniforms, 5);
 	
 	// Test (Game.h, render() and here)
 	mResourceManager.addObjectGeometry("suzanne.obj");
 	mResourceManager.addObjectGeometry("building.obj");
 
-	mEntityManager.getCamera().setAspectRatio((float)(mGameWidth/mGameHeight));
-	mEntityManager.getCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
-	mEntityManager.getCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
+	mEntityManager.getGameCamera().setAspectRatio((float)(mGameWidth/mGameHeight));
+	mEntityManager.getGameCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
+	mEntityManager.getGameCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
 
 	EntityManager::objectPointer monkey(new ShadedObject(mResourceManager.findObjectGeometry("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
 	mEntityManager.addObject(monkey);
@@ -201,21 +201,21 @@ void Game::step() // Movement and all
 	if(mInputHandler.keyPressed(SDLK_UP))
 	{
 		//radius -= speed;
-		mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()+glm::vec3(0.001f, 0.0f, 0.0f));
+		mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()+glm::vec3(0.0005f, 0.0f, 0.0f));
 		//mEntityManager.getObjects()[0]->setScaling(mEntityManager.getObjects()[0]->getScaling() + glm::vec3(0.01f, 0.01f, 0.01f));
 	} else if(mInputHandler.keyPressed(SDLK_DOWN))
 	{
 		//radius += speed;
-		mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()-glm::vec3(0.001f, 0.0f, 0.0f));
+		mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()-glm::vec3(0.0005f, 0.0f, 0.0f));
 		//mEntityManager.getObjects()[0]->setScaling(mEntityManager.getObjects()[0]->getScaling() - glm::vec3(0.01f, 0.01f, 0.01f));
 	} else if(mInputHandler.keyPressed(SDLK_LEFT))
 	{
 		//timeX += speed;
-		mEntityManager.getObjects()[0]->setRotation(mEntityManager.getObjects()[0]->getRotation()+glm::vec3(0.0f, 5.0f, 0.0f));
+		mEntityManager.getObjects()[0]->setRotation(mEntityManager.getObjects()[0]->getRotation()+glm::vec3(0.0f, 2.5f, 0.0f));
 	} else if(mInputHandler.keyPressed(SDLK_RIGHT))
 	{
 		//timeX -= speed;
-		mEntityManager.getObjects()[0]->setRotation(mEntityManager.getObjects()[0]->getRotation()-glm::vec3(0.0f, 5.0f, 0.0f));
+		mEntityManager.getObjects()[0]->setRotation(mEntityManager.getObjects()[0]->getRotation()-glm::vec3(0.0f, 2.5f, 0.0f));
 	}
 
 	//glm::vec3 position(radius * cos(timeX), mCamera.getPosition().y, radius * sin(timeX));
@@ -255,9 +255,9 @@ void Game::doMainLoop()
 	mLastFrameTime = currentTime;
 
 	// If the frame took les ticks than the minimum, delay the next frame, virtually always does this.
-	if(fpsTimer.getTicks() < mMinTicksPerFrame)
+	if(fpsTimer.getTicks() < mMinTimePerFrame)
 	{
-		SDL_Delay(mMinTicksPerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
+		SDL_Delay(mMinTimePerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
 	}
 }
 

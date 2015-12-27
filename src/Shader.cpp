@@ -39,12 +39,16 @@ Shader::Shader(const std::string& name,
 		mID = linkShaderProgram(mName, vertexShader, fragmentShader);
 	else
 		mID = 0; // Make sure it doesn't blow up. Error messages should have already been sent.
+
+	registerUniforms(); // Will find all uniforms in the shader and register them
 }
 
 Shader::~Shader()
 {
 	glDeleteShader(mID); // Free memory
 }
+
+// PRIVATE
 
 GLuint Shader::compileShader(const std::string& shaderPath, const std::string& shaderCode, GLenum type) // fileName for debugging
 {
@@ -110,28 +114,27 @@ GLuint Shader::linkShaderProgram(const std::string& shaderProgramName, GLuint ve
 		Utils::crash(error, __LINE__, __FILE__);
 		return 0;
 	}
-	
+
 	return program;
 }
 
-const GLuint Shader::getID() const
+void Shader::registerUniforms()
 {
-	return mID;
-}
-
-std::string Shader::getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog)
-{
-	GLint logLength; // Amount of characters
-	std::string log;
+	GLint numberOfUniforms; // Number of uniforms in the shader (linked program)
+	glGetProgramiv(mID, GL_ACTIVE_UNIFORMS, &numberOfUniforms);
 	
-	glGet_iv(object, GL_INFO_LOG_LENGTH, &logLength); // Get size
-	log.resize(logLength); // Resize string
+	const GLsizei bufferSize = 256;
+	GLchar uniformNameBuffer[bufferSize]; // Each uniform name will be read to this buffer
 
-	if(logLength)
-		glGet__InfoLog(object, logLength, NULL, &log[0]);
+	GLsizei numberOfCharsReceived;
 
-	log.pop_back(); // Remove null terminator (\0) that OpenGL added
-	return "\n-----------GL LOG-----------\n" + log; // For looks
+	for(int i=0; i<numberOfUniforms; i++)
+	{
+		glGetActiveUniformName(mID, i, bufferSize, &numberOfCharsReceived, uniformNameBuffer);
+
+		// Buffer is converted to an std::string using the null terminator placed by gl
+		registerUniform(uniformNameBuffer);
+	}
 }
 
 // A uniform is attached to a shader, but can be modified whenever
@@ -160,12 +163,26 @@ const GLuint Shader::registerUniform(const std::string& uniformName) // Uniform 
 	return uniformLocation; // Return the newly added uniform location
 }
 
-void Shader::registerUniforms(const std::string uniformNames[], int length)
+// PUBLIC
+
+const GLuint Shader::getID() const
 {
-	for(int i=0; i<length; i++)
-	{
-		registerUniform(uniformNames[i]); // Give it the actual value (dereferenced using [i])
-	}
+	return mID;
+}
+
+std::string Shader::getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog)
+{
+	GLint logLength; // Amount of characters
+	std::string log;
+	
+	glGet_iv(object, GL_INFO_LOG_LENGTH, &logLength); // Get size
+	log.resize(logLength); // Resize string
+
+	if(logLength)
+		glGet__InfoLog(object, logLength, NULL, &log[0]);
+
+	log.pop_back(); // Remove null terminator (\0) that OpenGL added
+	return "\n-----------GL LOG-----------\n" + log; // For looks
 }
 
 const GLuint Shader::findUniform(const std::string& uniformName) const // Returns a read only int
