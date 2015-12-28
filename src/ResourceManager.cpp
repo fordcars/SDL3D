@@ -17,8 +17,11 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <ResourceManager.hpp>
 #include <fstream>
+#include <vector>
+#include <tiny_obj_loader.h>
+
+#include <ResourceManager.hpp>
 #include <Utils.hpp>
 
 // Shaders must be ASCII or UTF-8
@@ -70,7 +73,7 @@ ResourceManager::shaderPointer ResourceManager::addShader(const std::string& sha
 	if(newlyAddedPair.second == false) // It already exists in the map
 	{
 		std::string error = "Shader '" + shaderName + "' already exists and cannot be added again!";;
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return newlyAddedPair.first->second; // Returns a reference to the shader that was there before
 	}
 
@@ -85,7 +88,7 @@ ResourceManager::shaderPointer ResourceManager::findShader(const std::string& sh
 	if(got==mShaderMap.end())
 	{
 		std::string error = "Shader '" + shaderName + "' not found!";;
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return got->second; // Can't return nothing here!
 	}
 
@@ -109,7 +112,7 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 	if(newlyAddedPair.second == false)
 	{
 		std::string error = "Texture '" + name + "' already exists and cannot be added again!";;
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return newlyAddedPair.first->second; // Returns a reference to the texture that was there before
 	}
 
@@ -132,7 +135,7 @@ ResourceManager::texturePointer ResourceManager::findTexture(const std::string& 
 	if(got == mTextureMap.end())
 	{
 		std::string error = "Texture '" + textureName + "' not found!";;
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return got->second;
 	}
 
@@ -144,7 +147,23 @@ void ResourceManager::clearTextures()
 	mTextureMap.clear();
 }
 
-// Object geometries are copied to make them easily modifiable. They are, however, stored as shared pointers for efficiency.
+/*// Object geometries are copied to make them easily modifiable. They are, however, stored as shared pointers for efficiency.
+void ResourceManager::addObjectGeometries(const std::string& objectFile)
+{
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+
+	std::string error;
+
+	tinyobj::LoadObj(shapes, materials, error, objectFile.c_str());
+
+	if(!error.empty())
+	{
+		Utils::LOGPRINT(".obj file '" + objectFile + "' failed to load!");
+		Utils::CRASH("Tinyobjloader error message: " + error);
+
+}*/
+
 ObjectGeometry ResourceManager::addObjectGeometry(const std::string& objectFile, const std::string& name)
 {
 	std::string path = getFullResourcePath(objectFile);
@@ -158,7 +177,7 @@ ObjectGeometry ResourceManager::addObjectGeometry(const std::string& objectFile,
 	{
 		std::string error = name;
 		error = "Object geometry '" + error + "' already exists and cannot be added again!";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return *(newlyAddedPair.first->second); // Parenthesis for clarity
 	}
 
@@ -180,7 +199,7 @@ ObjectGeometry ResourceManager::findObjectGeometry(const std::string& objectName
 	if(got == mObjectGeometryMap.end()) // end() is past-the-end element iterator, so not found in the map!
 	{
 		std::string error = "Object geometry '" + objectName + "' not found!";;
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return *got->second;
 	}
 	

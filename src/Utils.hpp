@@ -26,14 +26,21 @@
 #include <vector>
 #include <cstdlib> // For size_t
 
+// Macros simply replaces text
+#define LOGPRINT(msg) logprint_direct(msg) // Don't send the line and file for logprints, it would annoying
+#define LOGPRINT_WITH_INFO(msg) logprint_direct(msg, __LINE__, __FILE__) // But do whatever you want, fam
+#define WARN(msg) warn_direct(msg, __LINE__, __FILE__)
+#define CRASH(msg) crash_direct(msg, __LINE__, __FILE__)
+
 namespace Utils
 {
 	void closeLogFile();
 	void clearDataOutput();
-	void logprint(const std::string& msg, int line = -1, const char *file = 0);
-	void warn(const std::string& msg, int line = -1, const char *file = 0);
-	void crash(const std::string& msg, int line, const char *file);
-	void checkSDLError(int line, const char *file);
+
+	// Use macros above to access these
+	void logprint_direct(const std::string& msg, int line = -1, const char *file = 0);
+	void warn_direct(const std::string& msg, int line = -1, const char *file = 0);
+	void crash_direct(const std::string& msg, int line = -1, const char *file = 0);
 
 	std::string getFileContents(const std::string& filePath);
 

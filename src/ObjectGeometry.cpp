@@ -72,7 +72,7 @@ bool ObjectGeometry::loadOBJObject(const std::string& filePath,
 	
 	if(!file)
 	{
-		Utils::crash("The object " + filePath + " does not exist or cannot be opened!", __LINE__, __FILE__);
+		Utils::CRASH("The object " + filePath + " does not exist or cannot be opened!");
 		return false;
 	}
 	
@@ -100,7 +100,7 @@ bool ObjectGeometry::loadOBJObject(const std::string& filePath,
 			
 			if(vertex0.size() != 3 || vertex1.size() != 3 || vertex2.size() != 3)
 			{
-				Utils::crash("Object at " + filePath + " is badly formatted for our simple loader!", __LINE__, __FILE__);
+				Utils::CRASH("Object at " + filePath + " is badly formatted for our simple loader!");
 				return false;
 			}
 			

@@ -22,10 +22,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# TODO: Make it work with everything (Linux, compile with -ldl), make it funner to use
+# TODO: Make it work with everything (Linux, compile with -ldl), make it funner to use.
 
-# NOTES: No need to modify this to add static libraries
-# CMAKE_CURRENT_SOURCE_DIR is the root directory of the project
+# NOTES: CMAKE_CURRENT_SOURCE_DIR is the root directory of the project.
+# Feel free to add include paths for static libraries if you want to.
 
 cmake_minimum_required(VERSION 2.6)
 project(SDL3D)
@@ -39,6 +39,7 @@ set(RESOURCE_DIR_EXE resource) # The resource in the executable's directory
 set(ARCHITECTURE x86)
 
 set(GLAD_DIR ${LIB_DIR}/glad)
+set(TINYOBJLOADER_DIR ${LIB_DIR}/tinyobjloader)
 
 # A list of header and source files
 set(SOURCES
@@ -61,6 +62,7 @@ set(SOURCES
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
+	${TINYOBJLOADER_DIR}/tiny_obj_loader.cc
 )
 
  # Show up in VisualStudio
@@ -125,6 +127,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${SDL_FOLDER}/include # For shorter includes
 	${GLAD_DIR}/include
+	${TINYOBJLOADER_DIR}
 	${LIB_DIR} # All other libraries
 )
 

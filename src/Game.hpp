@@ -58,6 +58,7 @@ private:
 	EntityManager mEntityManager;
 
 	void checkCompability();
+	void setupGraphics();
 	void initMainLoop();
 	void cleanUp();
 

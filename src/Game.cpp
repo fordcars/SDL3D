@@ -84,23 +84,20 @@ void Game::checkCompability() // Checks if the game will work on the user's setu
 
 		if(!foundExtension) // If the extension isn't found
 		{
-			Utils::warn("The extension " + extensions[i] + " has not been found on your system.");
+			Utils::WARN("The extension " + extensions[i] + " has not been found on your system.");
 			isCompatible = false; // Not compatible!
 			// Don't break, let the user know what other extensions are not found (if it is the case)
 		}
 	}
 
 	if(isCompatible)
-		Utils::logprint("Your system seems to be compatible with the game!");
+		Utils::LOGPRINT("Your system seems to be compatible with the game!");
 	else
-		Utils::crash("Your system is not compatible with the game. Please take a look at the generated warnings.", __LINE__, __FILE__);
+		Utils::CRASH("Your system is not compatible with the game. Please take a look at the generated warnings.");
 }
 
-void Game::initMainLoop() // Initialize a few things before the main loop
+void Game::setupGraphics() // VAO and OpenGL options
 {
-	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_SPACE};
-	mInputHandler.registerKeys(keys, 5);
-
 	GLuint vertexArrayID; // VAO - vertex aray object
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
@@ -111,6 +108,12 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	// Cull triangles which normal is not towards the camera
 	// If there are holes in the model because of this, click the "invert normals" button in your 3D modeler.
 	glEnable(GL_CULL_FACE);
+}
+
+void Game::initMainLoop() // Initialize a few things before the main loop
+{
+	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_SPACE};
+	mInputHandler.registerKeys(keys, 5);
 
 	// Shaders
 	mResourceManager.addShader("shaded", "shaded.v.glsl", "shaded.f.glsl");
@@ -145,7 +148,7 @@ void Game::cleanUp() // Cleans up everything. Call before quitting
 	SDL_DestroyWindow(mMainWindow);
 	SDL_Quit();
 
-	Utils::logprint("Game quit successfully.");
+	Utils::LOGPRINT("Game quit successfully.");
 	Utils::closeLogFile();
 }
 
@@ -163,32 +166,46 @@ void Game::doEvents()
 
 void Game::checkForErrors() // Call each frame for safety. Do not call after deleting the OpenGL context.
 {
-	for(int i=0; i<1000; i++) // Because meh, I don't like infinite loops
+	const int maxGLErrors = 1000;
+	bool finishedGLErrors = false;
+
+	for(int i=0; i<maxGLErrors; i++) // Because meh, I don't like infinite loops
 	{
 		GLenum err = glGetError();
 		
 		if(err!=GL_NO_ERROR) // There is an error
 		{
 			if(err == GL_INVALID_ENUM)
-				Utils::warn("OpenGL error: GL_INVALID_ENUM");
+				Utils::WARN("OpenGL error: GL_INVALID_ENUM");
 			else if(err == GL_INVALID_VALUE)
-				Utils::warn("OpenGL error: GL_INVALID_VALUE");
+				Utils::WARN("OpenGL error: GL_INVALID_VALUE");
 			else if(err == GL_INVALID_OPERATION)
-				Utils::warn("OpenGL error: GL_INVALID_OPERATION");
+				Utils::WARN("OpenGL error: GL_INVALID_OPERATION");
 			else if(err == GL_STACK_OVERFLOW)
-				Utils::warn("OpenGL error: GL_STACK_OVERFLOW");
+				Utils::WARN("OpenGL error: GL_STACK_OVERFLOW");
 			else if(err == GL_STACK_UNDERFLOW)
-				Utils::warn("OpenGL error: GL_STACK_UNDERFLOW");
+				Utils::WARN("OpenGL error: GL_STACK_UNDERFLOW");
 			else if(err == GL_OUT_OF_MEMORY)
-				Utils::warn("OpenGL error: GL_OUT_OF_MEMORY");
+				Utils::WARN("OpenGL error: GL_OUT_OF_MEMORY");
 		} else // No (more) errors!
 		{
-			return;
+			finishedGLErrors = true;
+			break;
 		}
 	}
 
-	// Over 1000 errors, is this possible?
-	Utils::warn("Over 1000 OpenGL errors?!");
+	if(!finishedGLErrors)
+		// Is this even possible?
+		Utils::WARN("Over " + std::to_string(maxGLErrors) + " OpenGL errors?!");
+
+	// SDL
+	const char *error = SDL_GetError();
+
+	if(*error!='\0')
+	{
+		Utils::CRASH(error);
+		SDL_ClearError();
+	}
 }
 
 
@@ -268,7 +285,7 @@ void Game::init() // Starts the game
 	Utils::clearDataOutput();
 	
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
-		Utils::crash("Unable to initialize SDL", __LINE__, __FILE__);
+		Utils::CRASH("Unable to initialize SDL");
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -279,27 +296,26 @@ void Game::init() // Starts the game
 	mMainWindow = SDL_CreateWindow(mGameName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mGameWidth, mGameHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	
 	if(!mMainWindow) // If the window failed to create, crash
-		Utils::crash("Unable to create window!", __LINE__, __FILE__);
-
-	Utils::checkSDLError(__LINE__, __FILE__);
+		Utils::CRASH("Unable to create window!");
 
 	mMainContext = SDL_GL_CreateContext(mMainWindow); // Create OpenGL context!
-	Utils::checkSDLError(__LINE__, __FILE__);
 
 	SDL_GL_SetSwapInterval(1); // Kind of VSync?
 
 	if(!gladLoadGL()) // Load OpenGL at runtime. I don't use SDL's loader, so no need to use gladLoadGLLoader().
-		Utils::crash("GLAD failed to load OpenGL!", __LINE__, __FILE__);
+		Utils::CRASH("GLAD failed to load OpenGL!");
 
 	// Output OpenGL version
 	std::string glVersion;
 	glVersion = (const char *)glGetString(GL_VERSION);
 	glVersion = "Graphics: " + glVersion;
-	Utils::logprint(glVersion);
+	Utils::LOGPRINT(glVersion);
 	
 	checkCompability();
+	setupGraphics();
+	checkForErrors();
 
-	Utils::logprint("Initialization was a success!");
+	Utils::LOGPRINT("Initialization finished!");
 	mInitialized = true;
 }
 
@@ -318,7 +334,7 @@ void Game::startMainLoop() // Starts the main loop
 	} else
 	{
 		Utils::clearDataOutput(); // Just to make sure the log is empty
-		Utils::crash("Game was not initialized before launching the main loop!", __LINE__, __FILE__);
+		Utils::CRASH("Game was not initialized before launching the main loop!");
 	}
 
 	return; // Quit!

@@ -25,8 +25,6 @@
 
 #include <sstream> // For std::getLine()
 
-// This set of functions make it easy to logprint wherever you are in the code.
-
 namespace Utils
 {
 	std::ofstream gLogFile(LOG_FILE, std::ios::app); // Evil global
@@ -50,7 +48,7 @@ namespace Utils
 		gLogFile.open(LOG_FILE, std::ios::app); // Reopen the file
 	}
 
-	void logprint(const std::string& msg, int line, const char* file)
+	void logprint_direct(const std::string& msg, int line, const char* file)
 	{
 		gLogFile << msg << '\n';
 
@@ -76,14 +74,14 @@ namespace Utils
 #endif
 	}
 
-	void warn(const std::string& msg, int line, const char* file)
+	void warn_direct(const std::string& msg, int line, const char* file)
 	{
 		std::string fullString = "Warning: " + msg; // Concentenate
-		logprint(fullString, line, file);
+		logprint_direct(fullString, line, file);
 	}
 
 	// This quits the game, so don't expect to be able to do other things after calling this (including logging)!
-	void crash(const std::string& msg, int line, const char* file)
+	void crash_direct(const std::string& msg, int line, const char* file)
 	{
 		std::string sdlError = SDL_GetError();
 
@@ -92,25 +90,11 @@ namespace Utils
 		if(sdlError.length()>0)
 			fullString += "\nSDL error: " + sdlError; // Info adds a newline at the end of the string
 
-		logprint(fullString, line, file);
+		logprint_direct(fullString, line, file);
 
 		closeLogFile();
 		SDL_Quit();
 		exit(1); // Not the best
-	}
-
-	void checkSDLError(int line, const char* file) // Default parameter in Utils.hpp
-	{
-#ifndef NDEBUG
-		const char *error = SDL_GetError();
-
-		if(*error!='\0')
-		{
-			crash(error, line, file);
-
-			SDL_ClearError();
-		}
-#endif
 	}
 
 	// Does checks and returns the contents of the file
@@ -130,7 +114,7 @@ namespace Utils
 		} else // Can't open the file!
 		{
 			std::string crashLog = filePath + " doesn't exist or cannot be opened!";
-			crash(crashLog, __LINE__, __FILE__);
+			CRASH(crashLog);
 			return 0;
 		}
 	}

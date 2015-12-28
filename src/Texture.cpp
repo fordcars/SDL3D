@@ -42,7 +42,7 @@ Texture::Texture(const std::string& name, const std::string& texturePath, int ty
 
 	default:
 		std::string warning = "No texture type specified for textue '" + name + "'! Assuming it is bipmap";
-		Utils::warn(warning);
+		Utils::WARN(warning);
 		break;
 	}
 }
@@ -70,7 +70,7 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 	if(!file)
 	{
 		std::string error = "BMP image '" + texturePath + "' could not be opened!";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return 0;
 	}
 
@@ -79,7 +79,7 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 	if(file.gcount() != 54) // If it's not 54 bytes, crash!
 	{
 		std::string error = "BMP image '" + texturePath + "' is not a correct BMP file! (Header is not 54 bytes)";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		file.close();
 
 		return 0;
@@ -88,7 +88,7 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 	if(header[0] != 'B' || header[1] != 'M') // Not BMP file?
 	{
 		std::string error = "BMP image '" + texturePath + "' is not a correct BMP file! (No 'BM' present in header)";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		file.close();
 
 		return 0;
@@ -147,7 +147,7 @@ const GLuint Texture::loadDDSTexture(const std::string& texturePath)
 	if(!file)
 	{
 		std::string error = "Texture '" + texturePath + "' cannot be opened!";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return 0;
 	}
 
@@ -160,7 +160,7 @@ const GLuint Texture::loadDDSTexture(const std::string& texturePath)
 		file.close();
 
 		std::string error = "DDS file '" + texturePath + "' is not a correct DDS file!";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return 0;
 	}
 
@@ -204,7 +204,7 @@ const GLuint Texture::loadDDSTexture(const std::string& texturePath)
 
 	default:
 		std::string error = "DDS file '" + texturePath + "' cannot be loaded as DDS file!";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return 0;
 	}
 

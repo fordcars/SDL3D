@@ -1,15 +1,14 @@
--Update uniforms per shader or only when needed?
 
+-USE UNIFORM BLOCK FOR LIGHTS?
 -Give lightSSSS to shader + don't care about lights that are too far away
 - CHECK FOR ONSTATE BEFORE SENDING!
 ->>> Maybe give mLights to ShadedObject? Shared pointer? Reference?
 ->>>>>> Uniform block thing: http://www.geeks3d.com/20140704/gpu-buffers-introduction-to-opengl-3-1-uniform-buffers-objects/
 ->>>>> http://stackoverflow.com/questions/7954927/glsl-passing-a-list-of-values-to-fragment-shader
 
-
 -Don't make uniforms obligatory
 
--Get rid of Game::initMainLoop()
+-Get rid of Game::initMainLoop() (from lua!!)
 
 -Use TinyLoader
 

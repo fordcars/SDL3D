@@ -59,7 +59,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 
 	if(length>INT_MAX)
 	{
-		Utils::crash("Overflow! Shader too long! How is this possible?!", __LINE__, __FILE__);
+		Utils::CRASH("Overflow! Shader too long! How is this possible?!");
 		return 0;
 	}
 
@@ -69,7 +69,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 	const int shaderFilesLength[] = {shaderLength}; // Array
 
 	if(shaderLength==0) // If there is no source
-		Utils::crash("No shader source found!", __LINE__, __FILE__);
+		Utils::CRASH("No shader source found!");
 	
 	glShaderSource(shader, 1, shaderFiles, shaderFilesLength);
 	glCompileShader(shader);
@@ -83,8 +83,8 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 		std::string shaderLog = getGLShaderDebugLog(shader, glGetShaderiv, glGetShaderInfoLog); // Give it the right functions
 		glDeleteProgram(shader);
 
-		Utils::logprint(shaderLog);
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::LOGPRINT(shaderLog);
+		Utils::CRASH(error);
 		return 0;
 	}
 
@@ -110,8 +110,8 @@ GLuint Shader::linkShaderProgram(const std::string& shaderProgramName, GLuint ve
 		std::string shaderLog = getGLShaderDebugLog(program, glGetProgramiv, glGetProgramInfoLog); // Give it the right functions
 		glDeleteProgram(program);
 
-		Utils::logprint(shaderLog);
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::LOGPRINT(shaderLog);
+		Utils::CRASH(error);
 		return 0;
 	}
 
@@ -151,13 +151,13 @@ const GLuint Shader::registerUniform(const std::string& uniformName) // Uniform 
 		if(newlyAddedPair.second == false) // Already exists!
 		{
 			std::string error = "Uniform '" + uniformName + "' in shader '" + mName + "' already exists and cannot be added again!";
-			Utils::crash(error, __LINE__, __FILE__);
+			Utils::CRASH(error);
 			return newlyAddedPair.first->second; // Returns the uniform that was there before
 		}
 	} else // Invalid uniform
 	{
 			std::string error = "Uniform '" + uniformName + "' does not exist or is invalid in shader '" + mName + "'! Are you sure it is active (contributing to the output)?";
-			Utils::crash(error, __LINE__, __FILE__);
+			Utils::CRASH(error);
 	}
 
 	return uniformLocation; // Return the newly added uniform location
@@ -193,7 +193,7 @@ const GLuint Shader::findUniform(const std::string& uniformName) const // Return
 	{
 		std::string error = uniformName;
 		error = "Uniform '" + error + "' was not registered for shader '" + mName + "'!";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 		return 0;
 	}
 

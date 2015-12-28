@@ -41,7 +41,7 @@ void InputHandler::registerKey(int sdlKey) // Not const just in-case
 	if(newlyAddedPair.second == false)
 	{
 		std::string error = "Key '" + std::to_string(sdlKey) + "' is already registered and can't be registered again!";
-		Utils::crash(error, __LINE__, __FILE__);
+		Utils::CRASH(error);
 	}
 }
 
@@ -76,7 +76,7 @@ bool InputHandler::keyPressed(const int sdlKey)
 
 	if(got==mKeys.end()) // Not found!
 	{
-		Utils::warn("Key not found! Please register before using it");
+		Utils::WARN("Key not found! Please register before using it");
 		return false;
 	}
 
