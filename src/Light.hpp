@@ -48,7 +48,7 @@ public:
 	float getPower();
 
 	void setOnState(bool onState);
-	bool getOnState();
+	bool isOn();
 };
 
 #endif /* LIGHT_HPP_ */

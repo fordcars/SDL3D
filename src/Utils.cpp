@@ -48,7 +48,7 @@ namespace Utils
 		gLogFile.open(LOG_FILE, std::ios::app); // Reopen the file
 	}
 
-	void logprint_direct(const std::string& msg, int line, const char* file)
+	void directly_logprint(const std::string& msg, int line, const char* file)
 	{
 		gLogFile << msg << '\n';
 
@@ -74,14 +74,14 @@ namespace Utils
 #endif
 	}
 
-	void warn_direct(const std::string& msg, int line, const char* file)
+	void directly_warn(const std::string& msg, int line, const char* file)
 	{
 		std::string fullString = "Warning: " + msg; // Concentenate
-		logprint_direct(fullString, line, file);
+		directly_logprint(fullString, line, file);
 	}
 
 	// This quits the game, so don't expect to be able to do other things after calling this (including logging)!
-	void crash_direct(const std::string& msg, int line, const char* file)
+	void directly_crash(const std::string& msg, int line, const char* file)
 	{
 		std::string sdlError = SDL_GetError();
 
@@ -90,7 +90,7 @@ namespace Utils
 		if(sdlError.length()>0)
 			fullString += "\nSDL error: " + sdlError; // Info adds a newline at the end of the string
 
-		logprint_direct(fullString, line, file);
+		directly_logprint(fullString, line, file);
 
 		closeLogFile();
 		SDL_Quit();

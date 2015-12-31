@@ -47,10 +47,11 @@ set(SOURCES
 	src/Game.cpp
 	src/Utils.cpp
 	src/ResourceManager.cpp
-	src/InputHandler.cpp
+	src/InputManager.cpp
 	src/SimpleTimer.cpp
 	src/Camera.cpp
 	src/ObjectGeometry.cpp
+	src/ObjectGeometryGroup.cpp
 	src/Shader.cpp
 	src/Texture.cpp
 	src/Object.cpp
@@ -72,13 +73,14 @@ set(HEADERS
 	src/Utils.hpp
 	src/Definitions.hpp
 	src/ResourceManager.hpp
-	src/InputHandler.hpp
+	src/InputManager.hpp
 	src/SimpleTimer.hpp
 	src/Camera.hpp
 	src/ObjectGeometry.hpp
+	src/ObjectGeometryGroup.hpp
 	src/Shader.hpp
 	src/Texture.hpp
-	src/GLBuffer.hpp
+	src/GPUBuffer.hpp
 	src/Object.hpp
 	src/TexturedObject.hpp
 	src/ShadedObject.hpp

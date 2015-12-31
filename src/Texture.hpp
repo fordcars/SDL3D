@@ -33,20 +33,21 @@
 class Texture
 {
 private:
-	std::string mName; // May be useful, for error messages for example
+	std::string mName; // May be useful, for error messages for example. Don't change this stupidly.
 	int mType;
 
 	GLuint mID;
 
-	static const GLuint loadBMPTexture(const std::string& texturePath);
-	static const GLuint loadDDSTexture(const std::string& texturePath);
+	static GLuint loadBMPTexture(const std::string& texturePath);
+	static GLuint loadDDSTexture(const std::string& texturePath);
 
 public:
 	Texture(const std::string& name, const std::string& texturePath, int type);
 	~Texture();
 
-	const GLuint getID() const;
-	const GLuint getType() const;
+	std::string getName() const;
+	GLuint getID() const;
+	GLuint getType() const;
 };
 
 #endif /* TEXTURE_HPP_ */

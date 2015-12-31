@@ -48,7 +48,9 @@ public:
 	~Camera();
 
 	void setDirection(glm::vec4 direction);
+	glm::vec4 getDirection();
 	void setUpVector(glm::vec3 upVector);
+	glm::vec3 getUpVector();
 
 	void setFieldOfView(float mFieldOfViewX);
 	void setAspectRatio(float aspectRatio);

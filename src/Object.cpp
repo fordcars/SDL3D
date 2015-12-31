@@ -27,6 +27,7 @@
 
 #include <Object.hpp>
 
+// Objects copy objectGeometry instead of pointing to them, allow you to modify them
 Object::Object(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer)
 	: mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
 {

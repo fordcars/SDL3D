@@ -29,7 +29,7 @@
 class Shader
 {
 private:
-	std::string mName; // Useful for error messages
+	std::string mName; // Useful for error messages, don't change this stupidly
 
 	GLuint mID; // the ID of the shader, give this to OpenGL stuff. Could be const, but I left it non-const to make things easier.
 	GLuintMap mUniformMap; // Uniform variables, uniforms[uniformName] = uniform location
@@ -39,16 +39,18 @@ private:
 	static GLuint linkShaderProgram(const std::string& shaderProgramName, GLuint vertexShader, GLuint fragmentShader);
 
 	void registerUniforms();
-	const GLuint registerUniform(const std::string& uniformName);
+	GLuint registerUniform(const std::string& uniformName);
 
 public:
 	Shader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 	~Shader();
 
-	const GLuint getID() const;
+	std::string getName() const;
+	GLuint getID() const;
+
 	static std::string getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog);
 
-	const GLuint findUniform(const std::string& uniformName) const;
+	GLuint findUniform(const std::string& uniformName) const;
 };
 
 #endif /* SHADER_HPP_ */

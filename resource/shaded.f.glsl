@@ -38,12 +38,12 @@ uniform sampler2D textureSampler;
 void main()
 {
 	//DEBUG
-	vec3 lightPosition_worldspace = vec3(4, 4, 4);
+	vec3 lightPosition_worldspace = vec3(400, 400, 400);
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-	float lightPower = 50.0;
+	float lightPower = 300000.0;
 	
 	vec3 materialDiffuseColor = texture(textureSampler, UV).rgb;
-	vec3 materialAmbientColor = vec3(0.1, 0.1, 0.1) * materialDiffuseColor;
+	vec3 materialAmbientColor = vec3(0.8, 0.8, 0.8) * materialDiffuseColor;
 	vec3 materialSpecularColor = vec3(1.0, 1.0, 1.0);
 	
 	float squareDistance = pow(length(lightPosition_worldspace - vertexPosition_worldspace), 2);

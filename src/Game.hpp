@@ -24,9 +24,11 @@
 #include <SDL.h>
 
 #include <ResourceManager.hpp>
-#include <InputHandler.hpp>
+#include <InputManager.hpp>
 #include <EntityManager.hpp>
 
+#include <glm/gtx/rotate_vector.hpp> // For testing
+#include <glm/gtx/vector_angle.hpp> // For testing
 #include <ShadedObject.hpp> // For testing
 #include <Light.hpp> // For testing
 
@@ -53,7 +55,7 @@ private:
 									  // But in this case, we need data from the user to create the resource manager, so we
 									  // need a list initialization. See the Game constructor in Game.cpp
 
-	InputHandler mInputHandler;
+	InputManager mInputManager;
 
 	EntityManager mEntityManager;
 

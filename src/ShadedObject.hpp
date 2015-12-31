@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef SHADEDOBJECT_HPP_
-#define SHADEDOBJECT_HPP_
+#ifndef SHADED_OBJECT_HPP_
+#define SHADED_OBJECT_HPP_
 
 #include <Object.hpp>
 #include <ObjectGeometry.hpp>
@@ -41,4 +41,4 @@ public:
 	void render(const Camera& camera); // Overriding
 };
 
-#endif /* SHADEDOBJECT_HPP_ */
+#endif /* SHADED_OBJECT_HPP_ */

@@ -77,7 +77,7 @@ void Light::setOnState(bool onState)
 	mOnState = onState;
 }
 
-bool Light::getOnState()
+bool Light::isOn()
 {
 	return mOnState;
 }

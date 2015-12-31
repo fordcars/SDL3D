@@ -54,7 +54,7 @@ Texture::~Texture()
 
 // Static
 // When loading a BMP texture, mipmaps are generated automatically. Consider compressing textures into DDS files and use the corresponding function for adding them.
-const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a texture to the map
+GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a texture to the map
 {
 	// Not the best code for getting BMP data
 	const int headerSize = 54;
@@ -124,6 +124,7 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 	// The second color format (GL_RGB or GL_BGR) can be changed to invert colors
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, &data[0]);
 
+	// Filtering
 	// When we stretch (magnify) the image, use linear filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -136,7 +137,7 @@ const GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a t
 
 // Static
 // Loads .DDS textures. Compress using DXT1, DXT3 or DXT5.
-const GLuint Texture::loadDDSTexture(const std::string& texturePath)
+GLuint Texture::loadDDSTexture(const std::string& texturePath)
 {
 	const int headerSize = 124;
 	std::vector<char> header(headerSize);
@@ -228,17 +229,26 @@ const GLuint Texture::loadDDSTexture(const std::string& texturePath)
 		offset += size;
 		width /= 2;
 		height /= 2;
+
+		// Deal with non-power-of-two textures
+		if(width < 1) width = 1;
+		if(height < 1) height = 1;
 	}
 
 	return textureID;
 }
 
-const GLuint Texture::getID() const // Can be called from const instances
+std::string Texture::getName() const
+{
+	return mName;
+}
+
+GLuint Texture::getID() const // Can be called from const instances
 {
 	return mID;
 }
 
-const GLuint Texture::getType() const
+GLuint Texture::getType() const
 {
 	return mType;
 }

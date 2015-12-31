@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef RESOURCEMANAGER_HPP_
-#define RESOURCEMANAGER_HPP_
+#ifndef RESOURCE_MANAGER_HPP_
+#define RESOURCE_MANAGER_HPP_
 
 #include <GLAD/glad.h>
 #include <string>
@@ -29,7 +29,7 @@
 
 #include <Shader.hpp>
 #include <Texture.hpp>
-#include <ObjectGeometry.hpp>
+#include <ObjectGeometryGroup.hpp>
 
 // All paths are prefixed with mResourceDir
 
@@ -46,13 +46,13 @@ private:
 	typedef std::unordered_map<std::string, texturePointer> textureMap;
 	typedef std::pair<std::string, texturePointer> textureMapPair;
 
-	typedef std::shared_ptr<ObjectGeometry> objectGeometryPointer;
-	typedef std::unordered_map<std::string, objectGeometryPointer> objectGeometryMap;
-	typedef std::pair<std::string, objectGeometryPointer> objectGeometryMapPair;
+	typedef std::shared_ptr<ObjectGeometryGroup> objectGeometryGroup_pointer; // Underscores for clarity
+	typedef std::unordered_map<std::string, objectGeometryGroup_pointer> objectGeometryGroup_map;
+	typedef std::pair<std::string, objectGeometryGroup_pointer> objectGeometryGroup_mapPair;
 
 	shaderMap mShaderMap; // Map, faster access: shaders[shaderName] = shaderID etc
 	textureMap mTextureMap;
-	objectGeometryMap mObjectGeometryMap;
+	objectGeometryGroup_map mObjectGeometryGroupMap;
 
 	std::string mResourceDir;
 
@@ -64,19 +64,19 @@ public:
 
 	std::string getFullResourcePath(const std::string& fileName);
 
-	shaderPointer addShader(const std::string& shaderName, const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
-	shaderPointer findShader(const std::string& shaderName);
+	shaderPointer addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
+	shaderPointer findShader(const std::string& name);
 	void clearShaders();
 
-	texturePointer addTexture(const std::string& textureFile, const std::string& name, int type);
+	texturePointer addTexture(const std::string& name, const std::string& textureFile, int type);
 	texturePointer addTexture(const std::string& textureFile, int type);
 	texturePointer findTexture(const std::string& textureName);
 	void clearTextures();
 
-	ObjectGeometry addObjectGeometry(const std::string& objectFile);
-	ObjectGeometry addObjectGeometry(const std::string& objectFile, const std::string& name);
-	ObjectGeometry findObjectGeometry(const std::string& objectName);
+	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& name, const std::string& objectFile);
+	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& objectFile);
+	objectGeometryGroup_pointer findObjectGeometryGroup(const std::string& objectName);
 	void clearObjectGeometries();
 };
 
-#endif /* RESOURCEMANAGER_HPP_ */
+#endif /* RESOURCE_MANAGER_HPP_ */

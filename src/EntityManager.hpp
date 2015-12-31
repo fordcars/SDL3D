@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef ENTITYMANAGER_HPP_
-#define ENTITYMANAGER_HPP_
+#ifndef ENTITY_MANAGER_HPP_
+#define ENTITY_MANAGER_HPP_
 
 #include <Object.hpp>
 #include <Light.hpp>
@@ -58,4 +58,4 @@ public:
 	void render();
 };
 
-#endif /* ENTITYMANAGER_HPP_ */
+#endif /* ENTITY_MANAGER_HPP_ */

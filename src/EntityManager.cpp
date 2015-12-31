@@ -32,7 +32,7 @@ Camera& EntityManager::getGameCamera()
 	return mGameCamera;
 }
 
-void EntityManager::addObject(objectPointer object) // Give it an actual object
+void EntityManager::addObject(objectPointer object) // Give it a shared pointer
 {
 	mObjects.push_back(object);
 }
@@ -52,7 +52,7 @@ EntityManager::lightVector& EntityManager::getLights()
 	return mLights;
 }
 
-void EntityManager::step() // Steps all entities a number of times
+void EntityManager::step() // Steps all entities
 {
 	mGameCamera.step();
 

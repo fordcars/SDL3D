@@ -112,34 +112,45 @@ void Game::setupGraphics() // VAO and OpenGL options
 
 void Game::initMainLoop() // Initialize a few things before the main loop
 {
-	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_SPACE};
-	mInputHandler.registerKeys(keys, 5);
+	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_SPACE, SDLK_LSHIFT, SDLK_LCTRL};
+	mInputManager.registerKeys(keys, 11);
 
 	// Shaders
+	mResourceManager.addShader("basic", "basic.v.glsl", "basic.f.glsl");
+	mResourceManager.addShader("textured", "textured.v.glsl", "textured.f.glsl");
 	mResourceManager.addShader("shaded", "shaded.v.glsl", "shaded.f.glsl");
 	mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
 	mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
 	mResourceManager.addTexture("building.dds", DDS_TEXTURE);
+	mResourceManager.addTexture("rungholt.dds", DDS_TEXTURE);
 	
 	// Test (Game.h, render() and here)
-	mResourceManager.addObjectGeometry("suzanne.obj");
-	mResourceManager.addObjectGeometry("building.obj");
+	mResourceManager.addObjectGeometryGroup("suzanne.obj");
+	mResourceManager.addObjectGeometryGroup("building.obj");
+	mResourceManager.addObjectGeometryGroup("rungholt.obj");
 
 	mEntityManager.getGameCamera().setAspectRatio((float)(mGameWidth/mGameHeight));
 	mEntityManager.getGameCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
 	mEntityManager.getGameCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
 
-	EntityManager::objectPointer monkey(new ShadedObject(mResourceManager.findObjectGeometry("suzanne"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
+	mEntityManager.getGameCamera().setDirection(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)); // 0 for orientation
+
+	EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
 	mEntityManager.addObject(monkey);
 
-	EntityManager::objectPointer building(new ShadedObject(mResourceManager.findObjectGeometry("building"), mResourceManager.findShader("shaded"), mResourceManager.findTexture("building")));
-	mEntityManager.addObject(building);
+	// This is nuts
+	for(size_t i=0; i<mResourceManager.findObjectGeometryGroup("rungholt")->getObjectGeometries().size(); i++)
+	{
+		EntityManager::objectPointer funTest(new ShadedObject(*mResourceManager.findObjectGeometryGroup("rungholt")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("rungholt")));
+		funTest->setScaling(glm::vec3(0.2f, 0.2f, 0.2f));
+		mEntityManager.addObject(funTest);
+	}
 
 	EntityManager::lightPointer light(new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60));
 	mEntityManager.addLight(light);
 
 	//mEntityManager.getObjects()[0]->setVelocity(glm::vec3(0.05f, 0.0f, 0.0f));
-	mEntityManager.getObjects()[0]->setPosition(glm::vec3(5.0f, 0.0f, 0.0f));
+	//mEntityManager.getObjects()[0]->setPosition(glm::vec3(5.0f, 0.0f, 0.0f));
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -157,7 +168,7 @@ void Game::doEvents()
 	SDL_Event event;
 	while(SDL_PollEvent(&event))
 	{
-		mInputHandler.updateKeys(event);
+		mInputManager.updateKeys(event);
 
 		if(event.type == SDL_QUIT)
 			quit();
@@ -213,30 +224,91 @@ float timeX = 0;  //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 float radius = 1; //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 void Game::step() // Movement and all
 {
-	float speed = 0.05f;
+	float speed = 0.01f;
+	float rotateAngle = 0.01f;
 
-	if(mInputHandler.keyPressed(SDLK_UP))
+	mEntityManager.getGameCamera().setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
+
+	if(mInputManager.isKeyPressed(SDLK_LSHIFT))
 	{
+		speed *= 5;
+	}
+
+	if(mInputManager.isKeyPressed(SDLK_UP))
+	{
+		mEntityManager.getGameCamera().setVelocity(glm::vec3(mEntityManager.getGameCamera().getDirection()) * speed);
 		//radius -= speed;
-		mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()+glm::vec3(0.0005f, 0.0f, 0.0f));
-		//mEntityManager.getObjects()[0]->setScaling(mEntityManager.getObjects()[0]->getScaling() + glm::vec3(0.01f, 0.01f, 0.01f));
-	} else if(mInputHandler.keyPressed(SDLK_DOWN))
+		//mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()+glm::vec3(0.0005f, 0.0f, 0.0f));
+		//mEntityManager.getObjects()[1]->setScaling(mEntityManager.getObjects()[1]->getScaling() + glm::vec3(0.01f, 0.01f, 0.01f));
+	} else if(mInputManager.isKeyPressed(SDLK_DOWN))
 	{
+		mEntityManager.getGameCamera().setVelocity(glm::vec3(mEntityManager.getGameCamera().getDirection()) * -speed);
 		//radius += speed;
-		mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()-glm::vec3(0.0005f, 0.0f, 0.0f));
-		//mEntityManager.getObjects()[0]->setScaling(mEntityManager.getObjects()[0]->getScaling() - glm::vec3(0.01f, 0.01f, 0.01f));
-	} else if(mInputHandler.keyPressed(SDLK_LEFT))
+		//mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()-glm::vec3(0.0005f, 0.0f, 0.0f));
+		//mEntityManager.getObjects()[1]->setScaling(mEntityManager.getObjects()[1]->getScaling() - glm::vec3(0.01f, 0.01f, 0.01f));
+	}
+	
+	if(mInputManager.isKeyPressed(SDLK_LEFT))
 	{
+		mEntityManager.getGameCamera().setVelocity(mEntityManager.getGameCamera().getVelocity() +  glm::rotateY(glm::vec3(mEntityManager.getGameCamera().getDirection()) * speed, 1.5708f)  );
 		//timeX += speed;
-		mEntityManager.getObjects()[0]->setRotation(mEntityManager.getObjects()[0]->getRotation()+glm::vec3(0.0f, 2.5f, 0.0f));
-	} else if(mInputHandler.keyPressed(SDLK_RIGHT))
+		//mEntityManager.getObjects()[1]->setRotation(mEntityManager.getObjects()[1]->getRotation()+glm::vec3(0.0f, 2.5f, 0.0f));
+	} else if(mInputManager.isKeyPressed(SDLK_RIGHT))
 	{
+		mEntityManager.getGameCamera().setVelocity(mEntityManager.getGameCamera().getVelocity() +  glm::rotateY(glm::vec3(mEntityManager.getGameCamera().getDirection()) * speed, -1.5708f)  );
 		//timeX -= speed;
-		mEntityManager.getObjects()[0]->setRotation(mEntityManager.getObjects()[0]->getRotation()-glm::vec3(0.0f, 2.5f, 0.0f));
+		//mEntityManager.getObjects()[1]->setRotation(mEntityManager.getObjects()[1]->getRotation()-glm::vec3(0.0f, 2.5f, 0.0f));
+	}
+
+	if(mInputManager.isKeyPressed(SDLK_SPACE))
+	{
+		mEntityManager.getGameCamera().setPosition(mEntityManager.getGameCamera().getPosition() += glm::vec3(0.0f, speed, 0.0f));
+	} else if(mInputManager.isKeyPressed(SDLK_LCTRL))
+	{
+		mEntityManager.getGameCamera().setPosition(mEntityManager.getGameCamera().getPosition() += glm::vec3(0.0f, -speed, 0.0f));
+	}
+	
+	// Camera controls, needs work haha
+	if(mInputManager.isKeyPressed(SDLK_w))
+	{
+		glm::vec4 direction(mEntityManager.getGameCamera().getDirection());
+
+		// Get a 2D version and calculate the angle between them (think top-down, the other vector being a vector that goes forward)
+		glm::vec2 forward2D(0.0f, 1.0f);
+		glm::vec2 direction2D(direction.x, direction.z);
+
+		// Get top down angle
+		float angle = glm::orientedAngle(forward2D, glm::normalize(direction2D));
+
+		// Rotate the 3D direction at that angle, so now it is facing forward
+		glm::vec4 forwardDirection(glm::rotateY(direction, angle));
+		forwardDirection = glm::rotateX(forwardDirection, -rotateAngle); // Make it rotate up
+
+		mEntityManager.getGameCamera().setDirection(glm::rotateY(forwardDirection, -angle)); // Rotate it back
+	} else if(mInputManager.isKeyPressed(SDLK_s))
+	{
+		glm::vec4 direction(mEntityManager.getGameCamera().getDirection());
+
+		glm::vec2 forward2D(0.0f, 1.0f);
+		glm::vec2 direction2D(direction.x, direction.z);
+
+		float angle = glm::orientedAngle(forward2D, glm::normalize(direction2D));
+
+		glm::vec4 forwardDirection(glm::rotateY(direction, angle));
+		forwardDirection = glm::rotateX(forwardDirection, rotateAngle);
+
+		mEntityManager.getGameCamera().setDirection(glm::rotateY(forwardDirection, -angle));
+	}
+
+	if(mInputManager.isKeyPressed(SDLK_a))
+	{
+		mEntityManager.getGameCamera().setDirection(glm::rotateY(mEntityManager.getGameCamera().getDirection(), rotateAngle));
+	} else if(mInputManager.isKeyPressed(SDLK_d))
+	{
+		mEntityManager.getGameCamera().setDirection(glm::rotateY(mEntityManager.getGameCamera().getDirection(), -rotateAngle));
 	}
 
 	//glm::vec3 position(radius * cos(timeX), mCamera.getPosition().y, radius * sin(timeX));
-	//mCamera.setPosition(position);
 
 	mEntityManager.step();
 }

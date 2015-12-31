@@ -138,7 +138,7 @@ void Shader::registerUniforms()
 }
 
 // A uniform is attached to a shader, but can be modified whenever
-const GLuint Shader::registerUniform(const std::string& uniformName) // Uniform name is the name as in the shader
+GLuint Shader::registerUniform(const std::string& uniformName) // Uniform name is the name as in the shader
 {
 	GLuint uniformLocation = glGetUniformLocation(mID, uniformName.c_str()); // Returns the "index" of the variable in the shader.
 	
@@ -165,7 +165,12 @@ const GLuint Shader::registerUniform(const std::string& uniformName) // Uniform 
 
 // PUBLIC
 
-const GLuint Shader::getID() const
+std::string Shader::getName() const
+{
+	return mName;
+}
+
+GLuint Shader::getID() const
 {
 	return mID;
 }
@@ -185,7 +190,7 @@ std::string Shader::getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGe
 	return "\n-----------GL LOG-----------\n" + log; // For looks
 }
 
-const GLuint Shader::findUniform(const std::string& uniformName) const // Returns a read only int
+GLuint Shader::findUniform(const std::string& uniformName) const // Returns a read only int
 {
 	GLuintMap::const_iterator got = mUniformMap.find(uniformName); // Const iterator, we should not need to change this GLuint
 

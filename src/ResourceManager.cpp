@@ -19,7 +19,9 @@
 
 #include <fstream>
 #include <vector>
-#include <tiny_obj_loader.h>
+#include <cstdlib> // For size_t
+#include <fstream> // For object loading
+#include <glm/gtc/type_ptr.hpp>
 
 #include <ResourceManager.hpp>
 #include <Utils.hpp>
@@ -27,9 +29,7 @@
 // Shaders must be ASCII or UTF-8
 // Reference: http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.2:-Shaders.html
 
-// OpenGL IDs are constant
-
-// Texture and shader names are also kept in their instances
+// Resource names are also kept in their instances, so don't change them randomly without updating the resources
 
 ResourceManager::ResourceManager(const std::string& resourceDir)
 {
@@ -60,34 +60,37 @@ std::string ResourceManager::getFullResourcePath(const std::string& resourcePath
 }
 
 // Factory
-ResourceManager::shaderPointer ResourceManager::addShader(const std::string& shaderName, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
+ResourceManager::shaderPointer ResourceManager::addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
 	std::string vertexShaderPath = getFullResourcePath(vertexShaderFile); // All resources are in the resource dir
 	std::string fragmentShaderPath = getFullResourcePath(fragmentShaderFile);
 
-	shaderPointer shader(new Shader(shaderName, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
+	shaderPointer shader(new Shader(name, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
 
-	shaderMapPair shaderPair(shaderName, shader);
+	shaderMapPair shaderPair(name, shader);
 	std::pair<shaderMap::iterator, bool> newlyAddedPair = mShaderMap.insert(shaderPair);
 	
 	if(newlyAddedPair.second == false) // It already exists in the map
 	{
-		std::string error = "Shader '" + shaderName + "' already exists and cannot be added again!";;
+		std::string error = "Shader '" + name + "' already exists and cannot be added again!";
 		Utils::CRASH(error);
-		return newlyAddedPair.first->second; // Returns a reference to the shader that was there before
+		return newlyAddedPair.first->second; // Returns a pointer to the shader that was there before
 	}
 
-	return newlyAddedPair.first->second; // Returns a reference. Get the pair at pair.first, then the value at ->second
+	return newlyAddedPair.first->second; // Get the pair at pair.first, then the pointer at ->second
 }
 
-ResourceManager::shaderPointer ResourceManager::findShader(const std::string& shaderName) // Returns an lvalue reference, so you can modify it in the map. Make sure you keep it in the map though!
+// Returns a smart pointer, so you can use it wherever you want however you want and it will never be invalid
+// It is non-const like this you can modify it outside of objects
+// It returns a smart pointer instead of a reference since the objects store smart pointers
+ResourceManager::shaderPointer ResourceManager::findShader(const std::string& name)
 {
 	// http://www.cplusplus.com/reference/unordered_map/unordered_map/find/
-	shaderMap::iterator got = mShaderMap.find(shaderName); // Non-const iterator, since we want a non-const reference!
+	shaderMap::iterator got = mShaderMap.find(name); // Non-const iterator, since we want a non-const reference!
 
 	if(got==mShaderMap.end())
 	{
-		std::string error = "Shader '" + shaderName + "' not found!";;
+		std::string error = "Shader '" + name + "' not found!";
 		Utils::CRASH(error);
 		return got->second; // Can't return nothing here!
 	}
@@ -100,7 +103,7 @@ void ResourceManager::clearShaders() // For freeing memory, you don't have to ca
 	mShaderMap.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
 }
 
-ResourceManager::texturePointer ResourceManager::addTexture(const std::string& textureFile, const std::string& name, int type)
+ResourceManager::texturePointer ResourceManager::addTexture(const std::string& name, const std::string& textureFile, int type)
 {
 	std::string path = getFullResourcePath(textureFile);
 
@@ -111,9 +114,9 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 	
 	if(newlyAddedPair.second == false)
 	{
-		std::string error = "Texture '" + name + "' already exists and cannot be added again!";;
+		std::string error = "Texture '" + name + "' already exists and cannot be added again!";
 		Utils::CRASH(error);
-		return newlyAddedPair.first->second; // Returns a reference to the texture that was there before
+		return newlyAddedPair.first->second; // Returns a pointer to the texture that was there before
 	}
 
 	return newlyAddedPair.first->second;
@@ -122,10 +125,8 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 // The texture will take the name of the texture file (characters before the first dot). This will make it easier to add many textures since you would probably name them the same anyway.
 ResourceManager::texturePointer ResourceManager::addTexture(const std::string& textureFile, int type)
 {
-	std::string path = getFullResourcePath(textureFile);
 	std::string name = getBasename(textureFile);
-
-	return addTexture(textureFile, name, type); // Create the texture and return it
+	return addTexture(name, textureFile, type); // Create the texture and return it
 }
 
 ResourceManager::texturePointer ResourceManager::findTexture(const std::string& textureName)
@@ -134,7 +135,7 @@ ResourceManager::texturePointer ResourceManager::findTexture(const std::string& 
 
 	if(got == mTextureMap.end())
 	{
-		std::string error = "Texture '" + textureName + "' not found!";;
+		std::string error = "Texture '" + textureName + "' not found!";
 		Utils::CRASH(error);
 		return got->second;
 	}
@@ -147,66 +148,46 @@ void ResourceManager::clearTextures()
 	mTextureMap.clear();
 }
 
-/*// Object geometries are copied to make them easily modifiable. They are, however, stored as shared pointers for efficiency.
-void ResourceManager::addObjectGeometries(const std::string& objectFile)
-{
-	std::vector<tinyobj::shape_t> shapes;
-	std::vector<tinyobj::material_t> materials;
-
-	std::string error;
-
-	tinyobj::LoadObj(shapes, materials, error, objectFile.c_str());
-
-	if(!error.empty())
-	{
-		Utils::LOGPRINT(".obj file '" + objectFile + "' failed to load!");
-		Utils::CRASH("Tinyobjloader error message: " + error);
-
-}*/
-
-ObjectGeometry ResourceManager::addObjectGeometry(const std::string& objectFile, const std::string& name)
+ResourceManager::objectGeometryGroup_pointer ResourceManager::addObjectGeometryGroup(const std::string& name, const std::string& objectFile)
 {
 	std::string path = getFullResourcePath(objectFile);
+	objectGeometryGroup_pointer group(new ObjectGeometryGroup(name, path));
 
-	objectGeometryPointer objectGeometry(new ObjectGeometry(name, path));
-	objectGeometryMapPair objectGeometryPair(name, objectGeometry);
-
-	std::pair<objectGeometryMap::iterator, bool> newlyAddedPair = mObjectGeometryMap.insert(objectGeometryPair);
+	objectGeometryGroup_mapPair groupPair(name, group);
+	std::pair<objectGeometryGroup_map::iterator, bool> newlyAddedPair = mObjectGeometryGroupMap.insert(groupPair);
 	
-	if(newlyAddedPair.second == false)
+	if(newlyAddedPair.second == false) // It already exists in the map
 	{
-		std::string error = name;
-		error = "Object geometry '" + error + "' already exists and cannot be added again!";
+		std::string error = "Object geometry group '" + name + "' already exists!";
 		Utils::CRASH(error);
-		return *(newlyAddedPair.first->second); // Parenthesis for clarity
+		return newlyAddedPair.first->second;
 	}
 
-	return *(newlyAddedPair.first->second);
+	return newlyAddedPair.first->second;
 }
 
-ObjectGeometry ResourceManager::addObjectGeometry(const std::string& objectFile)
+ResourceManager::objectGeometryGroup_pointer ResourceManager::addObjectGeometryGroup(const std::string& objectFile)
 {
-	std::string path = getFullResourcePath(objectFile);
 	std::string name = getBasename(objectFile);
 
-	return addObjectGeometry(objectFile, name);
+	return addObjectGeometryGroup(name, objectFile); // Create the texture and return it
 }
 
-ObjectGeometry ResourceManager::findObjectGeometry(const std::string& objectName) // Copies the geometry
+ResourceManager::objectGeometryGroup_pointer ResourceManager::findObjectGeometryGroup(const std::string& name) // Gives a pointer
 {
-	objectGeometryMap::iterator got = mObjectGeometryMap.find(objectName);
+	objectGeometryGroup_map::iterator got = mObjectGeometryGroupMap.find(name);
 
-	if(got == mObjectGeometryMap.end()) // end() is past-the-end element iterator, so not found in the map!
+	if(got == mObjectGeometryGroupMap.end()) // end() is past-the-end element iterator, so not found in the map!
 	{
-		std::string error = "Object geometry '" + objectName + "' not found!";;
+		std::string error = "Object geometry group '" + name + "' not found!";
 		Utils::CRASH(error);
-		return *got->second;
+		return got->second;
 	}
 	
-	return *got->second;
+	return got->second;
 }
 
 void ResourceManager::clearObjectGeometries()
 {
-	mObjectGeometryMap.clear();
+	mObjectGeometryGroupMap.clear();
 }

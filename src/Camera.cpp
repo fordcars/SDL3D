@@ -59,9 +59,19 @@ void Camera::setDirection(glm::vec4 direction) // vec4 since this can be a posit
 	mDirection = direction;
 }
 
+glm::vec4 Camera::getDirection()
+{
+	return mDirection;
+}
+
 void Camera::setUpVector(glm::vec3 upVector)
 {
 	mUpVector = upVector;
+}
+
+glm::vec3 Camera::getUpVector()
+{
+	return mUpVector;
 }
 
 void Camera::setFieldOfView(float fieldOfViewX) // In degrees

@@ -1,3 +1,10 @@
+TEMPPP TODOOO (in order)
+-Clean some debugging
+-Make objgeom loading have a flag for individual objects (? yes for now I think, but later mtl will make it different, not a problem though, still a fun feature to have)
+-Have a way of creating all objectgeoms of a group as object at once (useful for levels, for example)
+-HAve a way of detecting if the loaded object is made of triangles or quads because otherwise it crashes
+-Rename vertexbuffer and friends to position buffer
+-VBO indexing! Check out source code: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
 
 -USE UNIFORM BLOCK FOR LIGHTS?
 -Give lightSSSS to shader + don't care about lights that are too far away
@@ -9,8 +16,6 @@
 -Don't make uniforms obligatory
 
 -Get rid of Game::initMainLoop() (from lua!!)
-
--Use TinyLoader
 
 -Lua API?
 -Colision detection (in Entity step function?) - Either point or box (and add collision on and off):
@@ -45,8 +50,11 @@
 ------------------------------------
 
 -Advanced tutorials:
--VBO Indexing
+-VBO Indexing(?)
 -2D Text (+2d textures)
 
 FUTURE:
+-Use .mtl material files (with ObjectGeometry, check out addObjectGeometryGroup())
+->>> .mtl can specify textures!
+
 -Dynamic shadows (static shadows are made in 3d modeling program)

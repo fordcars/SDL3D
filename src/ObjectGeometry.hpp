@@ -18,9 +18,10 @@
 ///////////////////////////////////////////////////////////////////////
 
 // This class holds the vertices. Use this class as a member for other 3D objects.
+// There is also a group class defined under that groups together multiple geometries.
 
-#ifndef OBJECTGEOMETRY_HPP_
-#define OBJECTGEOMETRY_HPP_
+#ifndef OBJECT_GEOMETRY_HPP_
+#define OBJECT_GEOMETRY_HPP_
 
 #include <memory> // For smart pointers
 
@@ -29,37 +30,33 @@
 #include <glm/glm.hpp>
 
 #include <Shader.hpp>
-#include <GLBuffer.hpp>
+#include <GPUBuffer.hpp>
 
 class ObjectGeometry
 {
 public:
-	typedef GLBuffer<glm::vec2> vec2Buffer;
-	typedef GLBuffer<glm::vec3> vec3Buffer;
+	typedef GPUBuffer<glm::vec2> vec2Buffer;
+	typedef GPUBuffer<glm::vec3> vec3Buffer;
 	typedef std::vector<glm::vec2> vec2Vector;
 	typedef std::vector<glm::vec3> vec3Vector;
 	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
 
 private:
-	std::string mName;
+	std::string mName; // Don't change this stupidly
 
 	vec3Buffer mVertexBuffer; // The OpenGL vertex buffer
 	vec2Buffer mUVBuffer;
 	vec3Buffer mNormalBuffer;
 
 public:
-	ObjectGeometry(const std::string& name, vec3Vector& vertices, vec2Vector& UVs, vec3Vector& normals);
-	ObjectGeometry(const std::string& name, const std::string& objectPath);
+	ObjectGeometry(const std::string& name, const vec3Vector& vertices, const vec2Vector& UVs, const vec3Vector& normals);
 	~ObjectGeometry();
 
-	static bool loadOBJObject(const std::string& filePath,
-						 std::vector<glm::vec3>& outVertices,
-						 std::vector<glm::vec2>& outUVs,
-						 std::vector<glm::vec3>& outNormals);
+	std::string getName() const;
 
 	vec3Buffer& getVertexBuffer();
 	vec2Buffer& getUVBuffer();
 	vec3Buffer& getNormalBuffer();
 };
 
-#endif /* OBJECTGEOMETRY_HPP_ */
+#endif /* OBJECT_GEOMETRY_HPP_ */
