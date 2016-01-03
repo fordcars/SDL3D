@@ -137,7 +137,6 @@ public:
 
 	std::vector<bufferDataType> readData(GLintptr offset, GLsizeiptr size) const
 	{
-		bind();
 		std::vector<bufferDataType> data(size / sizeof(bufferDataType)); // Allocate
 		glGetBufferSubData(mTarget, offset, size, &data[0]);
 
