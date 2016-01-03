@@ -35,18 +35,20 @@
 
 class ResourceManager
 {
+public:
+	typedef std::shared_ptr<Shader> shaderPointer;
+	typedef std::shared_ptr<Texture> texturePointer;
+	typedef std::shared_ptr<ObjectGeometryGroup> objectGeometryGroup_pointer; // Underscore for clarity
+
 private:
 	// Each map will hold shared_ptrs to instances. When you remove this from the map, the instance will stay alive until all
 	// shared_ptrs pointing to it are gone.
-	typedef std::shared_ptr<Shader> shaderPointer;
 	typedef std::unordered_map<std::string, shaderPointer> shaderMap; // Map of pointers
 	typedef std::pair<std::string, shaderPointer> shaderMapPair; // These kinds of typedef are great inside the class definition like this
 
-	typedef std::shared_ptr<Texture> texturePointer;
 	typedef std::unordered_map<std::string, texturePointer> textureMap;
 	typedef std::pair<std::string, texturePointer> textureMapPair;
 
-	typedef std::shared_ptr<ObjectGeometryGroup> objectGeometryGroup_pointer; // Underscores for clarity
 	typedef std::unordered_map<std::string, objectGeometryGroup_pointer> objectGeometryGroup_map;
 	typedef std::pair<std::string, objectGeometryGroup_pointer> objectGeometryGroup_mapPair;
 

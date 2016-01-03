@@ -39,9 +39,10 @@ public:
 	typedef GPUBuffer<glm::vec3> vec3Buffer;
 	typedef std::vector<glm::vec2> vec2Vector;
 	typedef std::vector<glm::vec3> vec3Vector;
-	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
 
 private:
+	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
+
 	std::string mName; // Don't change this stupidly
 
 	vec3Buffer mVertexBuffer; // The OpenGL vertex buffer

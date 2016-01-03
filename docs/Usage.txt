@@ -1,5 +1,0 @@
-cd build
-cmake ..
-
-To update or recreate the OpenGL Loader, launch glad or go to http://glad.dav1d.de/ (Git: https://github.com/dav1dde/glad-web).
-Include all extensions in the loader :)
