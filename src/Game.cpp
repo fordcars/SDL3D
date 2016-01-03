@@ -122,12 +122,12 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
 	mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
 	mResourceManager.addTexture("building.dds", DDS_TEXTURE);
-	mResourceManager.addTexture("rungholt.dds", DDS_TEXTURE);
+	mResourceManager.addTexture("minecraft.dds", DDS_TEXTURE);
 	
 	// Test (Game.h, render() and here)
 	mResourceManager.addObjectGeometryGroup("suzanne.obj");
 	mResourceManager.addObjectGeometryGroup("building.obj");
-	mResourceManager.addObjectGeometryGroup("rungholt.obj");
+	mResourceManager.addObjectGeometryGroup("minecraft.obj");
 
 	mEntityManager.getGameCamera().setAspectRatio((float)(mGameWidth/mGameHeight));
 	mEntityManager.getGameCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
@@ -135,14 +135,14 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 
 	mEntityManager.getGameCamera().setDirection(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)); // 0 for orientation
 
-	EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
-	mEntityManager.addObject(monkey);
+	//EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
+	//mEntityManager.addObject(monkey);
 
 	// This is nuts
-	for(size_t i=0; i<mResourceManager.findObjectGeometryGroup("rungholt")->getObjectGeometries().size(); i++)
+	for(size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
 	{
-		EntityManager::objectPointer funTest(new ShadedObject(*mResourceManager.findObjectGeometryGroup("rungholt")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("rungholt")));
-		funTest->setScaling(glm::vec3(0.2f, 0.2f, 0.2f));
+		EntityManager::objectPointer funTest(new ShadedObject(*mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("minecraft")));
+		funTest->setScaling(glm::vec3(1.0f, 1.0f, 1.0f));
 		mEntityManager.addObject(funTest);
 	}
 
@@ -168,7 +168,7 @@ void Game::doEvents()
 	SDL_Event event;
 	while(SDL_PollEvent(&event))
 	{
-		mInputManager.updateKeys(event);
+		mInputManager.updateKeyByEvent(event);
 
 		if(event.type == SDL_QUIT)
 			quit();

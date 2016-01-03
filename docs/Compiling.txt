@@ -1,0 +1,9 @@
+cd build
+cmake ..
+
+To update or recreate the OpenGL Loader, launch glad or go to http://glad.dav1d.de/ (Git: https://github.com/dav1dde/glad-web).
+Include all extensions in the loader :)
+
+On some VisualStudio versions (for example, 2013) compiling in 32-bit, GLM causes an alignment error. To repair this, comment out "#define GLM_HAS_ANONYMOUS_UNION (GLM_LANG & GLM_LANG_CXXMS_FLAG)" at line 675 of glm/detail/setup.hpp.
+
+This code uses a number of C++11 features, so make sure your compiler supports them.

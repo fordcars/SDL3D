@@ -45,27 +45,26 @@ void InputManager::registerKey(int sdlKey) // Not const just in-case
 	}
 }
 
-void InputManager::registerKeys(int keys[], int length) // Not very safe
+void InputManager::registerKeys(int keys[], size_t length) // Not very safe
 {
-	for(int i=0; i<length; i++)
+	for(size_t i=0; i<length; i++)
 	{
 		registerKey(keys[i]);
 	}
 }
 
-void InputManager::updateKeys(SDL_Event event) // Call each frame! Takes an event, and checks and updates keys.
+// Call each frame! Takes an event, and checks and updates keys.
+// One event can only talk about one key, so iterate through the SDL events and call this each time
+void InputManager::updateKeyByEvent(SDL_Event event)
 {
 	if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) // Make sure this is a keyboard event
 	{
 		SDL_KeyboardEvent keyEvent = event.key;
+		sdlKeyMap::iterator sdlKeyIt = mKeys.find(keyEvent.keysym.sym); // Find the key in the map
 
-		// http://stackoverflow.com/questions/4844886/how-to-loop-through-a-c-map
-		for(auto &it : mKeys) // Iterate through map. Using auto for C++11
+		if(sdlKeyIt != mKeys.end()) // If it is there, the found registered key is being pressed
 		{
-			if(keyEvent.keysym.sym == it.first)
-			{
-				keyEvent.type == SDL_KEYDOWN ? it.second = true : it.second = false; // If keydown, set to true
-			}
+			keyEvent.type == SDL_KEYDOWN ? sdlKeyIt->second = true : sdlKeyIt->second = false; // If keydown, set to true
 		}
 	}
 }

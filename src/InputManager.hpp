@@ -24,6 +24,7 @@
 #include <SDL_keyboard.h>
 #include <SDL_keycode.h>
 #include <unordered_map>
+#include <cstdlib> // For size_t
 
 class InputManager
 {
@@ -37,8 +38,8 @@ public:
 	InputManager();
 	~InputManager();
 	void registerKey(int sdlKey);
-	void registerKeys(int keys[], int length);
-	void updateKeys(SDL_Event event);
+	void registerKeys(int keys[], size_t length);
+	void updateKeyByEvent(SDL_Event event);
 	bool isKeyPressed(const int sdlKey);
 };
 

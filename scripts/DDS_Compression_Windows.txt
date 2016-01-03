@@ -1,0 +1,8 @@
+Script depencies:
+- AmdCompressCLI
+- ImageMagick suite
+
+Currently, to use AmdCompressCLI, you must specify it's path in the script. (check out the compressorExeDirectory variable).
+You must add ImageMagick path to your Path environment variable.
+
+To compress a texture, drag-and-drop it over the compression script.
