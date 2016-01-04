@@ -24,9 +24,8 @@
 #ifndef GPU_BUFFER_HPP_
 #define GPU_BUFFER_HPP_
 
-#include <GLAD/glad.h>
+#include <glad/glad.h> // glad.h is compatible with C++
 #include <vector>
-
 #include <cstdlib> // For std::size_t
 
 template<typename bufferDataType>
@@ -156,7 +155,7 @@ public:
 	void modifyData(GLintptr offset, const std::vector<bufferDataType>& data)
 	{
 		bind();
-		glBufferSubData(mTarget, offset, Utils::getSizeOfVectorData(vertices), data.data());
+		glBufferSubData(mTarget, offset, sizeof(bufferDataType) * data.size(), data.data());
 	}
 };
 

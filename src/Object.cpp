@@ -59,7 +59,7 @@ void Object::setShader(constShaderPointer shaderPointer)
 void Object::render(const Camera& camera)
 {
 	ObjectGeometry::uintBuffer& indexBuffer = mObjectGeometry.getIndexBuffer();
-	ObjectGeometry::vec3Buffer& vertexBuffer = mObjectGeometry.getVertexBuffer();
+	ObjectGeometry::vec3Buffer& positionBuffer = mObjectGeometry.getPositionBuffer();
 
 	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
 
@@ -67,7 +67,7 @@ void Object::render(const Camera& camera)
 	glUniformMatrix4fv(mShaderPointer->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 
 	glEnableVertexAttribArray(0); // Number to give to OpenGL VertexAttribPointer
-	vertexBuffer.bind(GL_ARRAY_BUFFER);
+	positionBuffer.bind(GL_ARRAY_BUFFER);
 
 	// Give it to the shader. Each time the vertex shader runs, it will get the next element of this buffer.
 	glVertexAttribPointer(

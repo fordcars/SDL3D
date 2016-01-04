@@ -48,7 +48,7 @@ void TexturedObject::setTexture(constTexturePointer texturePointer)
 void TexturedObject::render(const Camera& camera)
 {
 	ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry().getIndexBuffer();
-	ObjectGeometry::vec3Buffer& vertexBuffer = getObjectGeometry().getVertexBuffer();
+	ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry().getPositionBuffer();
 	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
 
 	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
@@ -59,7 +59,7 @@ void TexturedObject::render(const Camera& camera)
 
 	// Positions
 	glEnableVertexAttribArray(0);
-	vertexBuffer.bind(GL_ARRAY_BUFFER);
+	positionBuffer.bind(GL_ARRAY_BUFFER);
 	glVertexAttribPointer(
 		0,					// Attribute 0, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
 		3,					// Size. Number of values per vertex, must be 1, 2, 3 or 4.

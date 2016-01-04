@@ -26,12 +26,7 @@
 #define BMP_TEXTURE 0
 #define DDS_TEXTURE 1
 
-#include <GLAD/glad.h>
-#include <array>
+#include <glad/glad.h>
 #include <unordered_map>
-
-// Useful typedefs
-typedef std::unordered_map<std::string, GLuint> GLuintMap;
-typedef std::pair<std::string, GLuint> GLuintMapPair;
 
 #endif /* DEFINITIONS_HPP_ */

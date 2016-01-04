@@ -25,6 +25,8 @@
 #include <memory> // For smart pointers
 
 #include <glm/glm.hpp> // For matrices and all
+#include <glad/glad.h> // For compability checks
+
 #include <Utils.hpp>
 #include <SimpleTimer.hpp> // For game loop
 #include <Definitions.hpp>
@@ -57,8 +59,22 @@ Game::~Game() // Deconstructor
 	quit();
 }
 
-void Game::checkCompability() // Checks if the game will work on the user's setup
+// Checks if the game will work on the user's setup. Also checks for compiling environment compability.
+void Game::checkCompability()
 {
+	// Check compiler environment compability
+	// http://stackoverflow.com/questions/13571898/c-opengl-glm-and-struct-padding
+
+	// Check if glm::vecX are correct (just in-case)
+	// This is vital since we are passing glm::vecX to GL as if it was a simple array. It must not have any padding!
+	static_assert(sizeof(glm::vec4) == sizeof(GLfloat) * 4,
+		"Compiling environment does not support glm::vec4 direct access. Please download another version of glm or contact the project's developpers.");
+	static_assert(sizeof(glm::vec3) == sizeof(GLfloat) * 3,
+		"Compiling environment does not support glm::vec3 direct access. Please download another version of glm or contact the project's developpers.");
+	static_assert(sizeof(glm::vec2) == sizeof(GLfloat) * 2,
+		"Compiling environment does not support glm::vec2 direct access. Please download another version of glm or contact the project's developpers.");
+
+	// Check for GL extension compability
 	std::string extensions[] = {"GL_EXT_texture_compression_s3tc"};
 	int numberOfExtensions = 1;
 

@@ -25,7 +25,7 @@
 #include <Camera.hpp>
 
 #include <glm/glm.hpp>
-#include <GLAD/glad.h> // OpenGL, rendering and all
+#include <glad/glad.h> // OpenGL, rendering and all
 
 class Object : public Entity
 {

@@ -20,7 +20,7 @@
 #ifndef RESOURCE_MANAGER_HPP_
 #define RESOURCE_MANAGER_HPP_
 
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <string>
 
 #include <unordered_map>

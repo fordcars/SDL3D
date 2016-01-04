@@ -26,7 +26,7 @@
 #define FOURCC_DXT5 0x35545844
 
 #include <string>
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 
 // Since I am not feeling like rewriting OpenGL, this class is more of a datatype with functions
 

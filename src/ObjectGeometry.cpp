@@ -23,14 +23,14 @@
 // ObjectGeometry
 
 ObjectGeometry::ObjectGeometry(const std::string& name,
-							   const uintVector& indices, const vec3Vector& vertices, const vec2Vector& UVs, const vec3Vector& normals)
+							   const uintVector& indices, const vec3Vector& positions, const vec2Vector& UVs, const vec3Vector& normals)
 							   : mIndexBuffer(GL_ELEMENT_ARRAY_BUFFER) // A special type of buffer
 {
 	mName = name;
 	
 	// GL_STATIC_DRAW as a hint to OpenGL that we probably won't change the data
 	mIndexBuffer.setMutableData(indices, GL_STATIC_DRAW);
-	mVertexBuffer.setMutableData(vertices, GL_STATIC_DRAW);
+	mPositionBuffer.setMutableData(positions, GL_STATIC_DRAW);
 	mUVBuffer.setMutableData(UVs, GL_STATIC_DRAW);
 	mNormalBuffer.setMutableData(normals, GL_STATIC_DRAW);
 }
@@ -50,9 +50,9 @@ ObjectGeometry::uintBuffer& ObjectGeometry::getIndexBuffer()
 	return mIndexBuffer;
 }
 
-ObjectGeometry::vec3Buffer& ObjectGeometry::getVertexBuffer()
+ObjectGeometry::vec3Buffer& ObjectGeometry::getPositionBuffer()
 {
-	return mVertexBuffer;
+	return mPositionBuffer;
 }
 
 ObjectGeometry::vec2Buffer& ObjectGeometry::getUVBuffer()

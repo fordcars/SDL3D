@@ -1,12 +1,3 @@
-TEMPPP TODOOO (in order)
--IMplement loadOBJFile() splitGeometries flag
-
--Have a way of creating all objectgeoms of a group as object at once (useful for levels, for example)
--HAve a way of detecting if the loaded object is made of triangles or quads because otherwise it crashes
-->>OR add the ability to use quads
--Rename vertexbuffer and friends to position buffer (including loadOBJFile()!)
--VBO indexing! Check out source code: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
-
 -USE UNIFORM BLOCK FOR LIGHTS?
 -Give lightSSSS to shader + don't care about lights that are too far away
 - CHECK FOR ONSTATE BEFORE SENDING!
@@ -51,7 +42,6 @@ TEMPPP TODOOO (in order)
 ------------------------------------
 
 -Advanced tutorials:
--VBO Indexing(?)
 -2D Text (+2d textures)
 
 FUTURE:

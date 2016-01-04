@@ -96,7 +96,7 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 		std::size_t numberOfVertices = currentShape.mesh.positions.size()/3; // Since positions are vec3
 
 		// Create the vectors with the right sizes
-		ObjectGeometry::vec3Vector vertices(numberOfVertices);
+		ObjectGeometry::vec3Vector positions(numberOfVertices);
 		ObjectGeometry::vec2Vector UVcoords(numberOfVertices);
 		ObjectGeometry::vec3Vector normals(numberOfVertices);
 
@@ -104,7 +104,7 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 		// Very annoying to iterate through all vertices, but seems to be the safest
 		for(std::size_t j=0; j<numberOfVertices; j++)
 		{
-			vertices[j] = glm::vec3(currentShape.mesh.positions[j*3],             // X
+			positions[j] = glm::vec3(currentShape.mesh.positions[j*3],             // X
 										 currentShape.mesh.positions[j*3 + 1],    // Y
 										 currentShape.mesh.positions[j*3 + 2]);   // Z
 
@@ -119,7 +119,7 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 		std::string name = getValidName(currentShape.name); // Make sure we have a unique name
 
 		objectGeometryPointer objectGeometryPointer(new ObjectGeometry(name,
-			currentShape.mesh.indices, vertices, UVcoords, normals));
+			currentShape.mesh.indices, positions, UVcoords, normals));
 		addObjectGeometry(objectGeometryPointer);
 	}
 }

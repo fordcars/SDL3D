@@ -53,7 +53,7 @@ void ShadedObject::setTexture(constTexturePointer texturePointer)
 void ShadedObject::render(const Camera& camera)
 {
 	ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry().getIndexBuffer();
-	ObjectGeometry::vec3Buffer& vertexBuffer = getObjectGeometry().getVertexBuffer();
+	ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry().getPositionBuffer();
 	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
 	ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry().getNormalBuffer();
 
@@ -77,7 +77,7 @@ void ShadedObject::render(const Camera& camera)
 
 	// Attribute 0, position buffer
 	glEnableVertexAttribArray(0);
-	vertexBuffer.bind(GL_ARRAY_BUFFER);
+	positionBuffer.bind(GL_ARRAY_BUFFER);
 	glVertexAttribPointer(
 		0,					// Attribute 0, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
 		3,					// Size. Number of values per vertex, must be 1, 2, 3 or 4.

@@ -21,14 +21,15 @@
 #define SHADER_HPP_
 
 #include <unordered_map>
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <string>
-
-#include <Definitions.hpp>
 
 class Shader
 {
 private:
+	typedef std::unordered_map<std::string, GLuint> GLuintMap;
+	typedef std::pair<std::string, GLuint> GLuintMapPair;
+
 	std::string mName; // Useful for error messages, don't change this stupidly
 
 	GLuint mID; // the ID of the shader, give this to OpenGL stuff. Could be const, but I left it non-const to make things easier.

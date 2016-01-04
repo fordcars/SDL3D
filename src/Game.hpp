@@ -20,7 +20,7 @@
 #ifndef GAME_HPP_
 #define GAME_HPP_
 
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <SDL.h>
 
 #include <ResourceManager.hpp>

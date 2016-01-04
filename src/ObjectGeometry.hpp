@@ -17,8 +17,7 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-// This class holds the vertices. Use this class as a member for other 3D objects.
-// There is also a group class defined under that groups together multiple geometries.
+// This class holds the vertex data. Use this class as a member for other 3D objects.
 
 #ifndef OBJECT_GEOMETRY_HPP_
 #define OBJECT_GEOMETRY_HPP_
@@ -49,19 +48,19 @@ private:
 	std::string mName; // Don't change this stupidly
 
 	uintBuffer mIndexBuffer;
-	vec3Buffer mVertexBuffer;
+	vec3Buffer mPositionBuffer;
 	vec2Buffer mUVBuffer;
 	vec3Buffer mNormalBuffer;
 
 public:
 	ObjectGeometry(const std::string& name,
-		const uintVector& indices, const vec3Vector& vertices, const vec2Vector& UVs, const vec3Vector& normals);
+		const uintVector& indices, const vec3Vector& positions, const vec2Vector& UVs, const vec3Vector& normals);
 	~ObjectGeometry();
 
 	std::string getName() const;
 
 	uintBuffer& getIndexBuffer();
-	vec3Buffer& getVertexBuffer();
+	vec3Buffer& getPositionBuffer();
 	vec2Buffer& getUVBuffer();
 	vec3Buffer& getNormalBuffer();
 };
