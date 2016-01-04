@@ -18,6 +18,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // A simple textureless object. Use it as a base class for different types of objects.
+// We only support triangles right now! Please triangulate the faces when loading the meshes.
 
 // In:
 // - layout location 0: vertex position in modelspace

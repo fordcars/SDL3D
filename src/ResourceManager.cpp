@@ -173,10 +173,10 @@ void ResourceManager::clearTextures()
 }
 
 ResourceManager::objectGeometryGroup_pointer
-	ResourceManager::addObjectGeometryGroup(const std::string& name, const std::string& objectFile, bool splitGeometries)
+	ResourceManager::addObjectGeometryGroup(const std::string& name, const std::string& objectFile)
 {
 	std::string path = getFullResourcePath(objectFile);
-	objectGeometryGroup_pointer group(new ObjectGeometryGroup(name, path, splitGeometries));
+	objectGeometryGroup_pointer group(new ObjectGeometryGroup(name, path));
 
 	objectGeometryGroup_mapPair groupPair(name, group);
 	std::pair<objectGeometryGroup_map::iterator, bool> newlyAddedPair = mObjectGeometryGroupMap.insert(groupPair);
@@ -192,11 +192,11 @@ ResourceManager::objectGeometryGroup_pointer
 }
 
 ResourceManager::objectGeometryGroup_pointer
-	ResourceManager::addObjectGeometryGroup(const std::string& objectFile, bool splitGeometries)
+	ResourceManager::addObjectGeometryGroup(const std::string& objectFile)
 {
 	std::string name = getBasename(objectFile);
 
-	return addObjectGeometryGroup(name, objectFile, splitGeometries); // Create the texture and return it
+	return addObjectGeometryGroup(name, objectFile); // Create the texture and return it
 }
 
 ResourceManager::objectGeometryGroup_pointer

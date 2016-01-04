@@ -63,7 +63,7 @@ GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a texture
 	unsigned int dataPos;
 	unsigned width, height;
 	unsigned int imageSize;
-	std::vector<char> data; // The actual pixel data
+	std::vector<char> pixelData; // The actual pixel data
 
 	std::ifstream file(texturePath, std::ios::binary);
 
@@ -74,7 +74,7 @@ GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a texture
 		return 0;
 	}
 
-	file.read(&header[0], headerSize); // Give the address of the first element, and read() makes a pointer to it (internally)
+	file.read(header.data(), headerSize); // Give the address of the first element, and read() makes a pointer to it (internally)
 
 	if(file.gcount() != 54) // If it's not 54 bytes, crash!
 	{
@@ -104,10 +104,10 @@ GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a texture
 	if(dataPos==0)	    dataPos = 54; // The header is done this way
 
 	// Create a buffer
-	data.resize(imageSize);
+	pixelData.resize(imageSize);
 
 	// Read the actual data
-	file.read(&data[0], imageSize);
+	file.read(pixelData.data(), imageSize);
 
 	// Everything is in memory now, close the file
 	file.close();
@@ -122,7 +122,7 @@ GLuint Texture::loadBMPTexture(const std::string& texturePath) // Adds a texture
 
 	// Give the image to OpenGL
 	// The second color format (GL_RGB or GL_BGR) can be changed to invert colors
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, &data[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, pixelData.data());
 
 	// Filtering
 	// When we stretch (magnify) the image, use linear filtering
@@ -154,9 +154,9 @@ GLuint Texture::loadDDSTexture(const std::string& texturePath)
 
 	// Verify the type of file
 	std::vector<char> filecode(4);
-	file.read(&filecode[0], 4);
+	file.read(filecode.data(), 4);
 
-	if(strncmp(&filecode[0], "DDS ", 4) != 0)
+	if(strncmp(filecode.data(), "DDS ", 4) != 0)
 	{
 		file.close();
 
@@ -166,7 +166,7 @@ GLuint Texture::loadDDSTexture(const std::string& texturePath)
 	}
 
 	// Get the surface description
-	file.read(&header[0], headerSize);
+	file.read(header.data(), headerSize);
 
 	unsigned int height        = *(unsigned int*)&(header[8]);
 	unsigned int width         = *(unsigned int*)&(header[12]);
@@ -174,14 +174,14 @@ GLuint Texture::loadDDSTexture(const std::string& texturePath)
 	unsigned int mipmapCount   = *(unsigned int*)&(header[24]);
 	unsigned int fourCC        = *(unsigned int*)&(header[80]);
 
-	std::vector <char> buffer;
+	std::vector<char> buffer;
 	unsigned int bufferSize;
 
 	// How big is it going to be, including all mipmaps?
 	bufferSize = mipmapCount > 1 ? linearSize * 2 : linearSize;
 	buffer.resize(bufferSize);
 
-	file.read(&buffer[0], bufferSize);
+	file.read(buffer.data(), bufferSize);
 
 	// Close the file
 	file.close();
@@ -224,7 +224,7 @@ GLuint Texture::loadDDSTexture(const std::string& texturePath)
 	for(unsigned int level = 0; level< mipmapCount && (width || height); ++level)
 	{
 		unsigned int size = ((width+3)/4) * ((height+3)/4) * blockSize;
-		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height, 0, size, &buffer[0] + offset);
+		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height, 0, size, buffer.data() + offset);
 
 		offset += size;
 		width /= 2;

@@ -46,10 +46,10 @@ private:
 
 public:
 	ObjectGeometryGroup(const std::string& name);
-	ObjectGeometryGroup(const std::string& name, const std::string& objectFile, bool splitGeometries);
+	ObjectGeometryGroup(const std::string& name, const std::string& objectFile);
 	~ObjectGeometryGroup();
 
-	void loadOBJFile(const std::string& OBJfilePath, bool splitGeometries);
+	void loadOBJFile(const std::string& OBJfilePath);
 
 	std::string getValidName(const std::string& objectGeometryName);
 

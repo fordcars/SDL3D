@@ -4,7 +4,7 @@ TEMPPP TODOOO (in order)
 -Have a way of creating all objectgeoms of a group as object at once (useful for levels, for example)
 -HAve a way of detecting if the loaded object is made of triangles or quads because otherwise it crashes
 ->>OR add the ability to use quads
--Rename vertexbuffer and friends to position buffer
+-Rename vertexbuffer and friends to position buffer (including loadOBJFile()!)
 -VBO indexing! Check out source code: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
 
 -USE UNIFORM BLOCK FOR LIGHTS?

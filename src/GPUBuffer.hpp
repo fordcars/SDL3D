@@ -128,20 +128,20 @@ public:
 		bind();
 
 		// Vector.size() returns the amount of elements
-		glBufferData(mTarget, sizeof(bufferDataType) * data.size(), &data[0], usage);
+		glBufferData(mTarget, sizeof(bufferDataType) * data.size(), data.data(), usage);
 	}
 
 	void setImmutableData(const std::vector<bufferDataType>& data, GLenum immutableFlags) // immutableFlags being a bitwise operation
 	{
 		bind();
-		glBufferStorage(mTarget, sizeof(bufferDataType) * data.size(), &data[0], immutableFlags);
+		glBufferStorage(mTarget, sizeof(bufferDataType) * data.size(), data.data(), immutableFlags);
 	}
 
 	std::vector<bufferDataType> readData(GLintptr offset, GLsizeiptr size) const
 	{
 		bind();
 		std::vector<bufferDataType> data(size / sizeof(bufferDataType)); // Allocate
-		glGetBufferSubData(mTarget, offset, size, &data[0]);
+		glGetBufferSubData(mTarget, offset, size, data.data());
 
 		return data;
 	}
@@ -156,7 +156,7 @@ public:
 	void modifyData(GLintptr offset, const std::vector<bufferDataType>& data)
 	{
 		bind();
-		glBufferSubData(mTarget, offset, Utils::getSizeOfVectorData(vertices), &data[0]);
+		glBufferSubData(mTarget, offset, Utils::getSizeOfVectorData(vertices), data.data());
 	}
 };
 
