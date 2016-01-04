@@ -33,7 +33,8 @@
 // - mat4 normalMatrix
 // - sampler2D textureSampler
 
-ShadedObject::ShadedObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer, constTexturePointer texturePointer)
+ShadedObject::ShadedObject(const ObjectGeometry& objectGeometry,
+						   constShaderPointer shaderPointer, constTexturePointer texturePointer)
 	: Object(objectGeometry, shaderPointer)
 {
 	mTexturePointer = texturePointer;
@@ -51,6 +52,11 @@ void ShadedObject::setTexture(constTexturePointer texturePointer)
 
 void ShadedObject::render(const Camera& camera)
 {
+	ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry().getIndexBuffer();
+	ObjectGeometry::vec3Buffer& vertexBuffer = getObjectGeometry().getVertexBuffer();
+	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
+	ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry().getNormalBuffer();
+
 	glm::mat4 modelMatrix = getModelMatrix();
 	glm::mat4 viewMatrix = camera.getViewMatrix();
 	glm::mat4 projectionMatrix = camera.getProjectionMatrix();
@@ -58,10 +64,6 @@ void ShadedObject::render(const Camera& camera)
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
 	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
 	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
-
-	ObjectGeometry::vec3Buffer& vertexBuffer = getObjectGeometry().getVertexBuffer();
-	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
-	ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry().getNormalBuffer();
 
 	glUseProgram(getShader()->getID());
 
@@ -73,10 +75,9 @@ void ShadedObject::render(const Camera& camera)
 
 	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now
 
-	// Attribute 0
+	// Attribute 0, position buffer
 	glEnableVertexAttribArray(0);
 	vertexBuffer.bind(GL_ARRAY_BUFFER);
-	
 	glVertexAttribPointer(
 		0,					// Attribute 0, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
 		3,					// Size. Number of values per vertex, must be 1, 2, 3 or 4.
@@ -86,7 +87,7 @@ void ShadedObject::render(const Camera& camera)
 		(void*)0			// Array buffer offset
 	);
 
-	// Attribute 1
+	// Attribute 1, UV buffer
 	glEnableVertexAttribArray(1);
 	UVBuffer.bind(GL_ARRAY_BUFFER);
 
@@ -99,10 +100,9 @@ void ShadedObject::render(const Camera& camera)
 		(void*)0          // Array buffer offset
 	);
 
-	// Attribute 2
+	// Attribute 2, normal buffer
 	glEnableVertexAttribArray(2);
 	normalBuffer.bind(GL_ARRAY_BUFFER);
-
 	glVertexAttribPointer(
 		2,                // Attribute
 		3,                // Size (values per vertex)
@@ -112,10 +112,20 @@ void ShadedObject::render(const Camera& camera)
 		(void*)0          // Array buffer offset
 	);
 
+	// Texture
 	glActiveTexture(GL_TEXTURE0); // Set the active texture unit, you can have more than 1 texture at once
 	glBindTexture(GL_TEXTURE_2D, mTexturePointer->getID());
 	
-	glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.getLength()); // Draw!
+	// Draw!
+	// Use the index buffer, more efficient!
+	glDrawElements(
+		GL_TRIANGLES,            // Mode
+		indexBuffer.getLength(), // Count
+		GL_UNSIGNED_INT,         // Type
+		(void*)0                 // Element array buffer offset
+	);
+
+	// Disable vertex attrib arrays
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);

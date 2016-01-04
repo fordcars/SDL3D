@@ -58,12 +58,11 @@ private:
 
 	std::string mResourceDir;
 
-	static std::string getBasename(const std::string& file);
-
 public:
 	ResourceManager(const std::string& resourceDir);
 	~ResourceManager();
 
+	static std::string getBasename(const std::string& path);
 	std::string getFullResourcePath(const std::string& fileName);
 
 	shaderPointer addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
@@ -75,8 +74,8 @@ public:
 	texturePointer findTexture(const std::string& textureName);
 	void clearTextures();
 
-	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& name, const std::string& objectFile);
-	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& objectFile);
+	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& name, const std::string& objectFile, bool splitGeometries);
+	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& objectFile, bool splitGeometries);
 	objectGeometryGroup_pointer findObjectGeometryGroup(const std::string& objectName);
 	void clearObjectGeometries();
 };

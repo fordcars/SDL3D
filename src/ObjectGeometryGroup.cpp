@@ -24,6 +24,7 @@
 #include <tiny_obj_loader.h>
 
 #include <Utils.hpp> // For vector stuff and error messages
+#include <ResourceManager.hpp> // For getting the basename of files
 
 #include <glm/gtc/type_ptr.hpp> //////////////////FOR TESTING
 
@@ -33,12 +34,13 @@ ObjectGeometryGroup::ObjectGeometryGroup(const std::string& name)
 	mGeneratedNames = 0;
 }
 
-ObjectGeometryGroup::ObjectGeometryGroup(const std::string& name, const std::string& objectGeometryGroupFile)
+ObjectGeometryGroup::ObjectGeometryGroup(const std::string& name, const std::string& objectGeometryGroupFile,
+										 bool splitGeometries)
 {
 	mName = name;
 	mGeneratedNames = 0;
 
-	loadOBJFile(objectGeometryGroupFile);
+	loadOBJFile(objectGeometryGroupFile, splitGeometries);
 }
 
 ObjectGeometryGroup::~ObjectGeometryGroup()
@@ -46,14 +48,19 @@ ObjectGeometryGroup::~ObjectGeometryGroup()
 	// Do nothing
 }
 
-void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
+void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath, bool splitGeometries)
 {
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
 
-	std::string tinyobjError;
+	ObjectGeometry::uintVector indices;
 
-	std::string materialBasePath = ""; // Same base path as the object. Is this the way to do it?
+	ObjectGeometry::vec3Vector vertices;
+	ObjectGeometry::vec2Vector UVcoords;
+	ObjectGeometry::vec3Vector normals;
+
+	std::string tinyobjError = "";
+	std::string materialBasePath = ""; // Same base path as the object
 
 	// First, load the file stream
 	std::ifstream file(OBJfilePath);
@@ -72,79 +79,72 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 	if(!success)
 	{
 		Utils::LOGPRINT(".obj file '" + OBJfilePath + "' failed to load!");
-		Utils::CRASH("Tinyobjloader error message: " + tinyobjError); // The error 'could' be an empty string, just sayin'
+		Utils::CRASH("Tinyobjloader message: " + tinyobjError); // The error 'could' be an empty string, just sayin'
 		return;
 	} else if(!tinyobjError.empty())
 	{
-		Utils::WARN("Tinyobjloader error message: " + tinyobjError); // The file should still load
+		Utils::WARN("Tinyobjloader message: " + tinyobjError); // The file should still load
 	}
 
 	// Loop through all shapes in the file and add them to the group
-	for(size_t i=0; i<shapes.size(); i++)
+	for(std::size_t i=0; i<shapes.size(); i++)
 	{
 		tinyobj::shape_t& currentShape = shapes[i];
+		std::size_t numberOfCurrentVertices = currentShape.mesh.positions.size()/3; // Since positions are vec3
 
-		// Annoyingly long but pretty efficient
-		size_t numberOfVertexValues = currentShape.mesh.positions.size();
-		size_t numberOfUVValues = currentShape.mesh.texcoords.size();
-		size_t numberOfNormalValues = currentShape.mesh.normals.size();
-		
-		//////////////DEBUG
-		/*Utils::LOGPRINT("Number of indices: " + std::to_string(currentShape.mesh.indices.size()));
-		Utils::LOGPRINT("-------------Vertex positions for: '" + currentShape.name + "'-------------");
-		for(size_t j=0; j<numberOfVertexValues/3; j++)
+		std::size_t indexToAppendTo = 0; 
+
+		if(splitGeometries)
 		{
-			Utils::LOGPRINT("x: " + std::to_string(currentShape.mesh.positions[j*3]) + ",");
-			Utils::LOGPRINT("y: " + std::to_string(currentShape.mesh.positions[j*3+1]) + ",");
-			Utils::LOGPRINT("z: " + std::to_string(currentShape.mesh.positions[j*3+2]));
+			// Resize vectors to the amount of glm::vecXs
+			// Any elements beyond the new size are destroyed
+			vertices.resize(numberOfCurrentVertices);
+			UVcoords.resize(numberOfCurrentVertices);
+			normals.resize(numberOfCurrentVertices);
 
-			Utils::LOGPRINT("\n");
-		}
-		Utils::LOGPRINT("-------------End vertex positions-------------");*/
-
-
-		//Utils::LOGPRINT("-------------Vertex positions for: '" + currentShape.name + "'-------------");
-
-		//////////////DEBUG
-
-		ObjectGeometry::vec3Vector vertices(currentShape.mesh.indices.size());
-		ObjectGeometry::vec2Vector UVcoords(currentShape.mesh.indices.size());
-		ObjectGeometry::vec3Vector normals(currentShape.mesh.indices.size());
-
-		// For testing purposes, iterate through the indexes to get positions, UVs, etc. Normally we would use OpenGL VBO indexing for this.
-		for(size_t j=0; j<currentShape.mesh.indices.size(); j++)
+			indexToAppendTo = 0; // We will append the new vertices to the vectors at this index
+		} else
 		{
-			// Hahah, this gets the vertex data at the index found and transforms it into a vec3 or vec2
-			vertices[j] = glm::make_vec3(&(  currentShape.mesh.positions[  currentShape.mesh.indices[j] *3  ])); // *3 for 3 values
+			// If we're not splitting the geometries, resize the vector to accommodate the next vertices
+			std::size_t oldSize = vertices.size();
+			std::size_t newSize = vertices.size() + numberOfCurrentVertices;
 
-			/*Utils::LOGPRINT("Index: " + std::to_string(currentShape.mesh.indices[j]));
-			Utils::LOGPRINT("x: " + std::to_string(vertices[j].x));
-			Utils::LOGPRINT("y: " + std::to_string(vertices[j].y));
-			Utils::LOGPRINT("z: " + std::to_string(vertices[j].z));
+			// Append new indices
+			indices.insert(indices.end(), currentShape.mesh.indices.begin(), currentShape.mesh.indices.end());
 
-			Utils::LOGPRINT("\n");
+			vertices.resize(newSize);
+			UVcoords.resize(newSize);
+			normals.resize(newSize);
 
-			if((j+1)%3 == 0) // A triangle
-				Utils::LOGPRINT("-\n\n\n");*/
-
-			UVcoords[j] = glm::make_vec2(&(  currentShape.mesh.texcoords[  currentShape.mesh.indices[j] *2 ])); // *2 for 2 values
-			normals[j] = glm::make_vec3(&(  currentShape.mesh.normals[  currentShape.mesh.indices[j] *3 ])); // *3 for 3 values
+			indexToAppendTo = oldSize; // Will append the new vertices right after the old ones
 		}
 
+		// Copy the data since I couldn't find a way to avoid it
+		// &Vertices[0] is a standard way to get a pointer to the data, whatever the type (including glm::vec3!)
+		// glm::vec3 is a struct of FLOATING_POINT numbers! Same as the loaded mesh.
+		std::memcpy(&vertices[indexToAppendTo], &currentShape.mesh.positions[0],
+			Utils::getSizeOfVectorData(currentShape.mesh.positions));
 
-		/*float* firstVertice = &currentShape.mesh.positions[0];
-		float* firstUV = &currentShape.mesh.texcoords[0];
-		float* firstNormal = &currentShape.mesh.normals[0];
+		std::memcpy(&UVcoords[indexToAppendTo], &currentShape.mesh.texcoords[0],
+			Utils::getSizeOfVectorData(currentShape.mesh.texcoords));
 
-		ObjectGeometry::vec3Vector vertices(firstVertice, firstVertice + numberOfVertexValues);
-		ObjectGeometry::vec2Vector UVcoords(firstUV, firstUV + numberOfUVValues);
-		ObjectGeometry::vec3Vector normals(firstNormal, firstNormal + numberOfNormalValues);*/
+		std::memcpy(&normals[indexToAppendTo], &currentShape.mesh.normals[0],
+			Utils::getSizeOfVectorData(currentShape.mesh.normals));
 
-		std::string name = getValidName(currentShape.name); // Make sure we have a unique name
+		if(splitGeometries)
+		{
+			std::string name = getValidName(currentShape.name); // Make sure we have a unique name
 
-Utils::LOGPRINT("ObjectGeometry name: '" + name);//// DEBUGGGGG
+			objectGeometryPointer objectGeometryPointer(new ObjectGeometry(name,
+				currentShape.mesh.indices, vertices, UVcoords, normals));
+			addObjectGeometry(objectGeometryPointer);
+		}
+	}
 
-		objectGeometryPointer objectGeometryPointer(new ObjectGeometry(name, vertices, UVcoords, normals));
+	if(!splitGeometries)
+	{
+		objectGeometryPointer objectGeometryPointer(new ObjectGeometry(mName,
+			indices, vertices, UVcoords, normals));
 		addObjectGeometry(objectGeometryPointer);
 	}
 }
@@ -183,7 +183,8 @@ ObjectGeometryGroup::objectGeometryPointer ObjectGeometryGroup::addObjectGeometr
 	
 	if(newlyAddedPair.second == false) // It already exists in the map
 	{
-		std::string error = "Object geometry '" + objectGeometryName + "' already exists in group '" + mName + "'. Try using 'getValidName()' before creating the object geometry!";
+		std::string error = "Object geometry '" + objectGeometryName + "' already exists in group '" + mName +
+			"' and can't be added again.";
 		Utils::CRASH(error);
 
 		return newlyAddedPair.first->second;

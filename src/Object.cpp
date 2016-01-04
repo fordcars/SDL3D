@@ -28,7 +28,7 @@
 #include <Object.hpp>
 
 // Objects copy objectGeometry instead of pointing to them, allow you to modify them
-Object::Object(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer)
+Object::Object(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer)
 	: mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
 {
 	mShaderPointer = shaderPointer;
@@ -43,13 +43,13 @@ ObjectGeometry& Object::getObjectGeometry()
 	return mObjectGeometry;
 }
 
-ObjectGeometry::constShaderPointer Object::getShader()
+Object::constShaderPointer Object::getShader()
 {
 	return mShaderPointer;
 }
 
  // Useful for changing the shader for different effects "on the fly"
-void Object::setShader(ObjectGeometry::constShaderPointer shaderPointer)
+void Object::setShader(constShaderPointer shaderPointer)
 {
 	mShaderPointer = shaderPointer;
 }
@@ -57,9 +57,10 @@ void Object::setShader(ObjectGeometry::constShaderPointer shaderPointer)
 // Virtual
 void Object::render(const Camera& camera)
 {
-	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
-
+	ObjectGeometry::uintBuffer& indexBuffer = mObjectGeometry.getIndexBuffer();
 	ObjectGeometry::vec3Buffer& vertexBuffer = mObjectGeometry.getVertexBuffer();
+
+	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
 
 	glUseProgram(mShaderPointer->getID());
 	glUniformMatrix4fv(mShaderPointer->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
@@ -77,6 +78,14 @@ void Object::render(const Camera& camera)
 		(void*)0			// Array buffer offset
 	);
 
-	glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.getLength()); // Draw!
+	// Draw!
+	// Use the index buffer, more efficient!
+	glDrawElements(
+		GL_TRIANGLES,            // Mode
+		indexBuffer.getLength(), // Count
+		GL_UNSIGNED_INT,         // Type
+		(void*)0                 // Element array buffer offset
+	);
+
 	glDisableVertexAttribArray(0);
 }

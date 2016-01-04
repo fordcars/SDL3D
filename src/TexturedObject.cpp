@@ -28,7 +28,8 @@
 // - mat4 MVP
 // - sampler2D textureSampler
 
-TexturedObject::TexturedObject(const ObjectGeometry& objectGeometry, ObjectGeometry::constShaderPointer shaderPointer, constTexturePointer texturePointer)
+TexturedObject::TexturedObject(const ObjectGeometry& objectGeometry,
+							   constShaderPointer shaderPointer,constTexturePointer texturePointer)
 	: Object(objectGeometry, shaderPointer) // Calls Object constructor with those arguments
 {
 	mTexturePointer = texturePointer;
@@ -46,19 +47,19 @@ void TexturedObject::setTexture(constTexturePointer texturePointer)
 
 void TexturedObject::render(const Camera& camera)
 {
-	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
-
+	ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry().getIndexBuffer();
 	ObjectGeometry::vec3Buffer& vertexBuffer = getObjectGeometry().getVertexBuffer();
 	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
+
+	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
 	
 	glUseProgram(getShader()->getID());
-
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now
 
+	// Positions
 	glEnableVertexAttribArray(0);
 	vertexBuffer.bind(GL_ARRAY_BUFFER);
-	
 	glVertexAttribPointer(
 		0,					// Attribute 0, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
 		3,					// Size. Number of values per vertex, must be 1, 2, 3 or 4.
@@ -68,9 +69,9 @@ void TexturedObject::render(const Camera& camera)
 		(void*)0			// Array buffer offset
 	);
 
+	// UV coords
 	glEnableVertexAttribArray(1);
 	UVBuffer.bind(GL_ARRAY_BUFFER);
-
 	glVertexAttribPointer(
 		1,					// Attribute 1, no particular reason but same as the vertex shader's layout and glEnableVertexAttribArray
 		2,					// Size. Number of values per cell, must be 1, 2, 3 or 4.
@@ -80,10 +81,19 @@ void TexturedObject::render(const Camera& camera)
 		(void*)0			// Array buffer offset
 	);
 
+	// Texture
 	glActiveTexture(GL_TEXTURE0); // Set the active texture unit, you can have more than 1 texture at once
 	glBindTexture(GL_TEXTURE_2D, mTexturePointer->getID());
 	
-	glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.getLength()); // Draw!
+	// Draw!
+	// Use the index buffer, more efficient!
+	glDrawElements(
+		GL_TRIANGLES,            // Mode
+		indexBuffer.getLength(), // Count
+		GL_UNSIGNED_INT,         // Type
+		(void*)0                 // Element array buffer offset
+	);
+
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 }

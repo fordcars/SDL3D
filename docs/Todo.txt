@@ -1,6 +1,5 @@
 TEMPPP TODOOO (in order)
--Clean some debugging
--Make objgeom loading have a flag for individual objects (? yes for now I think, but later mtl will make it different, not a problem though, still a fun feature to have)
+-IMplement loadOBJFile() splitGeometries flag
 
 -Have a way of creating all objectgeoms of a group as object at once (useful for levels, for example)
 -HAve a way of detecting if the loaded object is made of triangles or quads because otherwise it crashes

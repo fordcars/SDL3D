@@ -55,7 +55,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 	GLuint shader = glCreateShader(type);
 	GLint shaderOk;
 
-	size_t length = shaderCode.length();
+	std::size_t length = shaderCode.length();
 
 	if(length>INT_MAX)
 	{

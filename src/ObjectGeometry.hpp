@@ -35,8 +35,11 @@
 class ObjectGeometry
 {
 public:
+	typedef GPUBuffer<unsigned int> uintBuffer;
 	typedef GPUBuffer<glm::vec2> vec2Buffer;
 	typedef GPUBuffer<glm::vec3> vec3Buffer;
+
+	typedef std::vector<unsigned int> uintVector;
 	typedef std::vector<glm::vec2> vec2Vector;
 	typedef std::vector<glm::vec3> vec3Vector;
 
@@ -45,16 +48,19 @@ private:
 
 	std::string mName; // Don't change this stupidly
 
-	vec3Buffer mVertexBuffer; // The OpenGL vertex buffer
+	uintBuffer mIndexBuffer;
+	vec3Buffer mVertexBuffer;
 	vec2Buffer mUVBuffer;
 	vec3Buffer mNormalBuffer;
 
 public:
-	ObjectGeometry(const std::string& name, const vec3Vector& vertices, const vec2Vector& UVs, const vec3Vector& normals);
+	ObjectGeometry(const std::string& name,
+		const uintVector& indices, const vec3Vector& vertices, const vec2Vector& UVs, const vec3Vector& normals);
 	~ObjectGeometry();
 
 	std::string getName() const;
 
+	uintBuffer& getIndexBuffer();
 	vec3Buffer& getVertexBuffer();
 	vec2Buffer& getUVBuffer();
 	vec3Buffer& getNormalBuffer();

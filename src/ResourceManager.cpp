@@ -19,8 +19,10 @@
 
 #include <fstream>
 #include <vector>
-#include <cstdlib> // For size_t
+#include <cstdlib> // For std::size_t
 #include <fstream> // For object loading
+#include <regex>
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <ResourceManager.hpp>
@@ -42,9 +44,31 @@ ResourceManager::~ResourceManager()
 }
 
 // Static
-// Get the name of the file before the first dot '.'
-std::string ResourceManager::getBasename(const std::string& file)
+// Get the name of the file before the first dot '.'. Works with paths or files.
+// Example: C:\Users\File.dll -> File
+std::string ResourceManager::getBasename(const std::string& path)
 {
+	// IF the string is empty, don't bother!
+	if(path.empty())
+		return std::string();
+
+	// Get the file out of the path, example: thing.dll
+	// http://stackoverflow.com/questions/4154070/getting-just-the-file-name-from-full-path
+	std::smatch match;
+	std::regex regex("^.*[\\/\\\\]"); // C++ and character escaping
+	bool isPath = std::regex_search(path, match, regex); // If this is false, it is simply a file
+
+	std::string file = "";
+
+	if(isPath)
+		file = match.suffix().str();
+	else
+		// If it is not a path, it was already a file (or lets hope so)
+		file = path;
+
+	Utils::LOGPRINT(file);
+
+	// Get the basename, example: thing
 	std::size_t firstDot = file.find('.'); // Returns the index of the first found dot
 
 	if(firstDot == std::string::npos) // No dot in this file
@@ -148,10 +172,11 @@ void ResourceManager::clearTextures()
 	mTextureMap.clear();
 }
 
-ResourceManager::objectGeometryGroup_pointer ResourceManager::addObjectGeometryGroup(const std::string& name, const std::string& objectFile)
+ResourceManager::objectGeometryGroup_pointer
+	ResourceManager::addObjectGeometryGroup(const std::string& name, const std::string& objectFile, bool splitGeometries)
 {
 	std::string path = getFullResourcePath(objectFile);
-	objectGeometryGroup_pointer group(new ObjectGeometryGroup(name, path));
+	objectGeometryGroup_pointer group(new ObjectGeometryGroup(name, path, splitGeometries));
 
 	objectGeometryGroup_mapPair groupPair(name, group);
 	std::pair<objectGeometryGroup_map::iterator, bool> newlyAddedPair = mObjectGeometryGroupMap.insert(groupPair);
@@ -166,14 +191,16 @@ ResourceManager::objectGeometryGroup_pointer ResourceManager::addObjectGeometryG
 	return newlyAddedPair.first->second;
 }
 
-ResourceManager::objectGeometryGroup_pointer ResourceManager::addObjectGeometryGroup(const std::string& objectFile)
+ResourceManager::objectGeometryGroup_pointer
+	ResourceManager::addObjectGeometryGroup(const std::string& objectFile, bool splitGeometries)
 {
 	std::string name = getBasename(objectFile);
 
-	return addObjectGeometryGroup(name, objectFile); // Create the texture and return it
+	return addObjectGeometryGroup(name, objectFile, splitGeometries); // Create the texture and return it
 }
 
-ResourceManager::objectGeometryGroup_pointer ResourceManager::findObjectGeometryGroup(const std::string& name) // Gives a pointer
+ResourceManager::objectGeometryGroup_pointer
+	ResourceManager::findObjectGeometryGroup(const std::string& name) // Gives a pointer
 {
 	objectGeometryGroup_map::iterator got = mObjectGeometryGroupMap.find(name);
 

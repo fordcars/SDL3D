@@ -139,7 +139,7 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	//mEntityManager.addObject(monkey);
 
 	// This is nuts
-	for(size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
+	for(std::size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
 	{
 		EntityManager::objectPointer funTest(new ShadedObject(*mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("minecraft")));
 		funTest->setScaling(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -148,9 +148,6 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 
 	EntityManager::lightPointer light(new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60));
 	mEntityManager.addLight(light);
-
-	//mEntityManager.getObjects()[0]->setVelocity(glm::vec3(0.05f, 0.0f, 0.0f));
-	//mEntityManager.getObjects()[0]->setPosition(glm::vec3(5.0f, 0.0f, 0.0f));
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
@@ -219,9 +216,6 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 	}
 }
 
-
-float timeX = 0;  //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-float radius = 1; //DEBUUUUUUUUUUUUUUUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 void Game::step() // Movement and all
 {
 	float speed = 0.01f;
@@ -307,8 +301,6 @@ void Game::step() // Movement and all
 	{
 		mEntityManager.getGameCamera().setDirection(glm::rotateY(mEntityManager.getGameCamera().getDirection(), -rotateAngle));
 	}
-
-	//glm::vec3 position(radius * cos(timeX), mCamera.getPosition().y, radius * sin(timeX));
 
 	mEntityManager.step();
 }

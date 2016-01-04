@@ -27,7 +27,7 @@
 #include <GLAD/glad.h>
 #include <vector>
 
-#include <cstdlib> // For size_t
+#include <cstdlib> // For std::size_t
 
 template<typename bufferDataType>
 class GPUBuffer
@@ -39,10 +39,10 @@ private:
 
 public:
 	// Even if auto binding is not on, calling bind() will still bind to the default target
-	GPUBuffer(bool autoBind = true, GLenum target = GL_ARRAY_BUFFER)
+	GPUBuffer(GLenum target = GL_ARRAY_BUFFER, bool autoBind = true)
 	{
-		mAutoBind = autoBind;
 		setTarget(target);
+		mAutoBind = autoBind;
 
 		glGenBuffers(1, &mID); // 1 for 1 buffer
 	}
@@ -106,14 +106,14 @@ public:
 		bind(mTarget);
 	}
 
-	size_t getSize() const // Returns the buffer's size, in bytes. size_t is not in the std namespace since it is C, not C++.
+	std::size_t getSize() const // Returns the buffer's size, in bytes
 	{
 		GLint GLintBufferSize;
 
 		bind();
 		glGetBufferParameteriv(mTarget, GL_BUFFER_SIZE, &GLintBufferSize);
 
-		return GLintBufferSize; // Implicit conversion to size_t
+		return GLintBufferSize; // Implicit conversion to std::size_t
 	}
 
 	int getLength() const // Get the amount of elements in the buffer
@@ -126,7 +126,9 @@ public:
 	void setMutableData(const std::vector<bufferDataType>& data, GLenum usage)
 	{
 		bind();
-		glBufferData(mTarget, sizeof(bufferDataType) * data.size(), &data[0], usage); // vector.size() returns the amount of elements
+
+		// Vector.size() returns the amount of elements
+		glBufferData(mTarget, sizeof(bufferDataType) * data.size(), &data[0], usage);
 	}
 
 	void setImmutableData(const std::vector<bufferDataType>& data, GLenum immutableFlags) // immutableFlags being a bitwise operation

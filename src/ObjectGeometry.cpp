@@ -22,13 +22,17 @@
 
 // ObjectGeometry
 
-ObjectGeometry::ObjectGeometry(const std::string& name, const vec3Vector& vertices, const vec2Vector& UVs, const vec3Vector& normals)
+ObjectGeometry::ObjectGeometry(const std::string& name,
+							   const uintVector& indices, const vec3Vector& vertices, const vec2Vector& UVs, const vec3Vector& normals)
+							   : mIndexBuffer(GL_ELEMENT_ARRAY_BUFFER) // A special type of buffer
 {
 	mName = name;
 	
-	mVertexBuffer.setMutableData(vertices, GL_DYNAMIC_DRAW); // DYNAMIC_DRAW as a hint to OpenGL that we might change the vertices
-	mUVBuffer.setMutableData(UVs, GL_DYNAMIC_DRAW);
-	mNormalBuffer.setMutableData(normals, GL_DYNAMIC_DRAW);
+	// GL_STATIC_DRAW as a hint to OpenGL that we probably won't change the data
+	mIndexBuffer.setMutableData(indices, GL_STATIC_DRAW);
+	mVertexBuffer.setMutableData(vertices, GL_STATIC_DRAW);
+	mUVBuffer.setMutableData(UVs, GL_STATIC_DRAW);
+	mNormalBuffer.setMutableData(normals, GL_STATIC_DRAW);
 }
 
 ObjectGeometry::~ObjectGeometry()
@@ -39,6 +43,11 @@ ObjectGeometry::~ObjectGeometry()
 std::string ObjectGeometry::getName() const
 {
 	return mName;
+}
+
+ObjectGeometry::uintBuffer& ObjectGeometry::getIndexBuffer()
+{
+	return mIndexBuffer;
 }
 
 ObjectGeometry::vec3Buffer& ObjectGeometry::getVertexBuffer()

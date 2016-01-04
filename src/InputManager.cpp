@@ -45,9 +45,9 @@ void InputManager::registerKey(int sdlKey) // Not const just in-case
 	}
 }
 
-void InputManager::registerKeys(int keys[], size_t length) // Not very safe
+void InputManager::registerKeys(int keys[], std::size_t length) // Not very safe
 {
-	for(size_t i=0; i<length; i++)
+	for(std::size_t i=0; i<length; i++)
 	{
 		registerKey(keys[i]);
 	}
