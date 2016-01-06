@@ -1,3 +1,6 @@
+-Use LuaIntf (already linked and all, just USE it, make the interfaces!)
+
+
 -USE UNIFORM BLOCK FOR LIGHTS?
 -Give lightSSSS to shader + don't care about lights that are too far away
 - CHECK FOR ONSTATE BEFORE SENDING!

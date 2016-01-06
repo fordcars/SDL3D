@@ -223,11 +223,12 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 		Utils::WARN("Over " + std::to_string(maxGLErrors) + " OpenGL errors?!");
 
 	// SDL
-	const char *error = SDL_GetError();
+	// Most of the time the error will not be important since it includes internal diagnostics, so don't crash
+	std::string message = SDL_GetError();
 
-	if(*error!='\0')
+	if(!message.empty())
 	{
-		Utils::CRASH(error);
+		Utils::LOGPRINT("SDL message: " + message);
 		SDL_ClearError();
 	}
 }
@@ -364,8 +365,8 @@ void Game::init() // Starts the game
 {
 	Utils::clearDataOutput();
 	
-	if(SDL_Init(SDL_INIT_VIDEO) < 0)
-		Utils::CRASH("Unable to initialize SDL");
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+		Utils::CRASH("Unable to initialize SDL!");
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -376,7 +377,7 @@ void Game::init() // Starts the game
 	mMainWindow = SDL_CreateWindow(mGameName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mGameWidth, mGameHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	
 	if(!mMainWindow) // If the window failed to create, crash
-		Utils::CRASH("Unable to create window!");
+		Utils::CRASH_FROM_SDL("Unable to create window!");
 
 	mMainContext = SDL_GL_CreateContext(mMainWindow); // Create OpenGL context!
 

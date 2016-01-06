@@ -1,0 +1,5 @@
+- SDL2
+- glm
+- Lua 5.1+
+- Glad generated OpenGL loader
+- TinyObjLoader

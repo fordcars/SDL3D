@@ -38,7 +38,7 @@ public:
 	~ShadedObject();
 
 	void setTexture(constTexturePointer texturePointer);
-	void render(const Camera& camera); // Overriding
+	void render(const Camera& camera) override;
 };
 
 #endif /* SHADED_OBJECT_HPP_ */

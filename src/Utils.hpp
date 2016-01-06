@@ -28,9 +28,12 @@
 
 // Macros simply replaces text
 #define LOGPRINT(msg) directly_logprint(msg) // Don't send the line and file for logprints, it would annoying
-#define LOGPRINT_WITH_INFO(msg) directly_logprint(msg, __LINE__, __FILE__) // But do whatever you want, fam
+#define LOGPRINT_DEBUG(msg) directly_logprint(msg, __LINE__, __FILE__) // But do whatever you want, fam
+
 #define WARN(msg) directly_warn(msg, __LINE__, __FILE__)
 #define CRASH(msg) directly_crash(msg, __LINE__, __FILE__)
+
+#define CRASH_FROM_SDL(msg) directly_crashFromSDL(msg, __LINE__, __FILE__)
 
 namespace Utils
 {
@@ -41,6 +44,7 @@ namespace Utils
 	void directly_logprint(const std::string& msg, int line = -1, const char *file = 0);
 	void directly_warn(const std::string& msg, int line = -1, const char *file = 0);
 	void directly_crash(const std::string& msg, int line = -1, const char *file = 0);
+	void directly_crashFromSDL(const std::string& msg, int line = -1, const char *file = 0);
 
 	std::string getFileContents(const std::string& filePath);
 

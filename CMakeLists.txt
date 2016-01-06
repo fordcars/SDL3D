@@ -22,6 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+# This file based off: https://github.com/mitsuhiko/immersedcode/blob/master/2011/4/6/sdl13-intro.rst
+
 # TODO: Make it work with everything (Linux, compile with -ldl), make it funner to use.
 
 # NOTES: CMAKE_CURRENT_SOURCE_DIR is the root directory of the project.
@@ -40,6 +42,7 @@ set(ARCHITECTURE x86)
 
 set(GLAD_DIR ${LIB_DIR}/glad)
 set(TINYOBJLOADER_DIR ${LIB_DIR}/tinyobjloader)
+set(LUAINTF_DIR ${LIB_DIR}/LuaIntf/LuaIntf)
 
 # A list of header and source files
 set(SOURCES
@@ -66,7 +69,7 @@ set(SOURCES
 	${TINYOBJLOADER_DIR}/tiny_obj_loader.cc
 )
 
- # Show up in VisualStudio
+ # Shows up in VisualStudio
 set(HEADERS
     src/SDL3D.hpp
 	src/Game.hpp
@@ -96,40 +99,50 @@ SET(CMAKE_CXX_FLAGS_DEBUG
 	"${CMAKE_CXX_FLAGS_DEBUG} /wd4100 /wd4127 /wd4189 /wd4512 /wd4702"
 	CACHE STRING "Debug builds CMAKE CXX flags " FORCE )
 
-# The following code finds SDL2-2.0.3 in your checkout on OS X, Linux
+# The following code finds SDL in your checkout on OS X, Linux
 # as well as Windows.
-set(SDL_FOLDER ${LIB_DIR}/SDL2-2.0.3
-    CACHE STRING "Path to SDL2-2.0.3" FORCE)
+set(SDL_DIR ${LIB_DIR}/SDL
+    CACHE STRING "Path to SDL" FORCE)
 find_library(SDL_LIBRARY
-    NAMES SDL2-2.0.3 SDL2
-    PATHS ${SDL_FOLDER}/lib/${ARCHITECTURE}
-    PATH_SUFFIXES local/lib VisualC/SDL2/Release
+    NAMES SDL2 SDL
+    PATHS ${SDL_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/SDL2/Release  VisualC/SDL/Release # Additional paths to check, appended after PATHS
     NO_DEFAULT_PATH
 )
 find_library(SDLMAIN_LIBRARY
-    NAMES SDL2main
-    PATHS ${SDL_FOLDER}/lib/${ARCHITECTURE}
-    PATH_SUFFIXES local/lib VisualC/SDL2main/Release
+    NAMES SDL2main SDLmain
+    PATHS ${SDL_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/SDL2main/Release VisualC/SDLmain/Release
     NO_DEFAULT_PATH
 )
 
-# we also need to find the system's OpenGL version
+set(LUA_DIR ${LIB_DIR}/lua
+    CACHE STRING "Path to Lua" FORCE)
+find_library(LUA_LIBRARY
+    NAMES lua lua5.3.2
+    PATHS ${LUA_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/lua/Release
+    NO_DEFAULT_PATH
+)
+
+# We also need to find the system's OpenGL
 find_package(OpenGL REQUIRED)
 
-# on OS X we also have to add '-framework Cocoa' as library.  This is
+# On OS X we also have to add '-framework Cocoa' as library.  This is
 # actually a bit of an hack but it's easy enough and reliable.
-set(EXTRA_LIBS "")
+set(EXTRA_LIBRARIES "")
 if (APPLE)
-    set(EXTRA_LIBS ${EXTRA_LIBS} "-framework Cocoa")
+    set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} "-framework Cocoa")
 endif()
 
-# our own include folder and the SDL one are additional folders we
-# want to have on our path. These files here can now be included.
+# Includes
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${SDL_FOLDER}/include # For shorter includes
+    ${SDL_DIR}/include # For shorter includes
+	${LUA_DIR}/include
 	${GLAD_DIR}/include
 	${TINYOBJLOADER_DIR}
+	${LUAINTF_DIR}
 	${LIB_DIR} # All other libraries
 )
 
@@ -152,28 +165,43 @@ target_link_libraries(
     SDL3D
     ${OPENGL_LIBRARIES}
     ${SDL_LIBRARY}
+	${LUA_LIBRARY}
     ${SDLMAIN_LIBRARY}
-    ${EXTRA_LIBS}
+    ${EXTRA_LIBRARIES}
 )
 
 # If this is Windows, copy the DLL next to the program
 if(WIN32)
+	# Copy SDL
     add_custom_command(TARGET SDL3D POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${SDL_FOLDER}/lib/${ARCHITECTURE}/SDL2.dll ${VS_OUTPUT_DIR}/SDL2.dll)
-		
-	add_custom_command(TARGET SDL3D POST_BUILD # Copy resources
+        ${SDL_DIR}/lib/SDL2.dll ${VS_OUTPUT_DIR}/SDL2.dll)
+	
+	# Copy Lua
+    add_custom_command(TARGET SDL3D POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${LUA_DIR}/lib/lua.dll ${VS_OUTPUT_DIR}/lua.dll)
+	
+	# Copy resources
+	add_custom_command(TARGET SDL3D POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${RESOURCE_DIR} ${VS_OUTPUT_DIR}/${RESOURCE_DIR_EXE})
 endif()
 
 # If this is Apple, copy the DLL into the Frameworks folder of the .app using the script frameworkify.py
 if(APPLE)
+	# SDL
     add_custom_command(TARGET SDL3D POST_BUILD
         COMMAND python scripts/frameworkify.py ${XCODE_OUTPUT_DIR}
         ${SDL_LIBRARY})
-		
-	add_custom_command(TARGET SDL3D POST_BUILD # Copy resources
+	
+	# Lua
+    add_custom_command(TARGET SDL3D POST_BUILD
+        COMMAND python scripts/frameworkify.py ${XCODE_OUTPUT_DIR}
+        ${LUA_LIBRARY})
+	
+	# Copy resources
+	add_custom_command(TARGET SDL3D POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${RESOURCE_DIR} ${XCODE_OUTPUT_DIR}/${RESOURCE_DIR_EXE})
 endif()

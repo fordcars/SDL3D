@@ -1,0 +1,1 @@
+You must (or should) compile lua as C++ code!
