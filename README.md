@@ -1,4 +1,6 @@
-# SDL3D
+$project
+========
+
 This is a simple chunk of code that could be considered as a game engine. This obviously uses SDL :)
 
 Building:
