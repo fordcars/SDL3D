@@ -1,5 +1,7 @@
 @echo off
-REM Copyright 2015 Carl Hewett under the GNU GPL
+REM Copyright 2016 Carl Hewett under the GNU GPL
+REM See COPYING
+
 title DDS Texture Compressor
 
 setlocal EnableDelayedExpansion

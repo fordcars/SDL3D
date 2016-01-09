@@ -1,4 +1,4 @@
-//// Copyright 2015 Carl Hewett
+//// Copyright 2016 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////

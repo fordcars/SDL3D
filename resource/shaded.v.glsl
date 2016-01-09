@@ -1,4 +1,4 @@
-//// Copyright 2015 Carl Hewett
+//// Copyright 2016 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -16,6 +16,8 @@
 //// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
+
+// This file is heavily based off http://www.opengl-tutorial.org/, see SpecialThanks.txt
 
 #version 330 core
 

@@ -1,5 +1,7 @@
 @echo off
-REM Thanks to http://blog.spreendigital.de/2015/01/16/how-to-compile-lua-5-3-0-for-windows/
+REM Originally by Dennis D. Spreen, http://blog.spreendigital.de/2015/01/16/how-to-compile-lua-5-3-0-for-windows/
+REM Modified by Carl Hewett
+
 REM Modified to compile as C++ code
 REM Compiled files are left in their directory
 

@@ -1,4 +1,4 @@
-//// Copyright 2015 Carl Hewett
+//// Copyright 2016 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -90,6 +90,15 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 		{
 			Utils::WARN("OBJ data for geometry '" + currentShape.name + "' in file '" + OBJfilePath +
 				"' for group '" + mName + "' is invalid! Skipping this geometry.");
+			continue;
+		}
+
+		if (currentShape.mesh.indices.size() % 3 != 0) // Not triangles, but Tinyobjloader should of taken care of this
+		{
+			Utils::WARN("OBJ data for geometry '" + currentShape.name + "' in file '" + OBJfilePath +
+				"' for group '" + mName + "' does not contain triangles! Tinyobjloader should of taken care of this. Bug?" +
+				" To fix this, open your model in a object modeling software, triangulate the faces and the export it as" + 
+				" .obj (Wavefront).");
 			continue;
 		}
 
