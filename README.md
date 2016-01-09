@@ -1,11 +1,25 @@
-$project
+SDL3D
 ========
 
-This is a simple chunk of code that could be considered as a game engine. This obviously uses SDL :)
+This is a very simple 3D Lua-scriptable game engine using SDL and OpenGL.
 
-Building:
-- cd build
-- cmake ..
+Features
+--------
 
-Released under the GNU GPLv3 license.
+- Todoooo after Lua API
+
+Compiling
+--------
+
+Check out Compiling.txt.
+
+Support
+--------
+
+Feel free to add issues at [our issue tracker](https://github.com/fordcars/SDL3D/issues).
+
+License
+--------
+
+Released under the GNU GPLv3 license. Check out COPYING.
 
