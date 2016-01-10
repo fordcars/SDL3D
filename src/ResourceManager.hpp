@@ -20,16 +20,17 @@
 #ifndef RESOURCE_MANAGER_HPP_
 #define RESOURCE_MANAGER_HPP_
 
+#include <Shader.hpp>
+#include <Texture.hpp>
+#include <ObjectGeometryGroup.hpp>
+#include <Script.hpp>
+#include <Definitions.hpp>
+
 #include <glad/glad.h>
 #include <string>
 
 #include <unordered_map>
 #include <memory> // For shared_ptr
-#include <Definitions.hpp>
-
-#include <Shader.hpp>
-#include <Texture.hpp>
-#include <ObjectGeometryGroup.hpp>
 
 // All paths are prefixed with mResourceDir
 
@@ -39,6 +40,7 @@ public:
 	typedef std::shared_ptr<Shader> shaderPointer;
 	typedef std::shared_ptr<Texture> texturePointer;
 	typedef std::shared_ptr<ObjectGeometryGroup> objectGeometryGroup_pointer; // Underscore for clarity
+	typedef std::shared_ptr<Script> scriptPointer;
 
 private:
 	// Each map will hold shared_ptrs to instances. When you remove this from the map, the instance will stay alive until all
@@ -52,20 +54,27 @@ private:
 	typedef std::unordered_map<std::string, objectGeometryGroup_pointer> objectGeometryGroup_map;
 	typedef std::pair<std::string, objectGeometryGroup_pointer> objectGeometryGroup_mapPair;
 
+	typedef std::unordered_map<std::string, scriptPointer> scriptMap;
+	typedef std::pair<std::string, scriptPointer> scriptMapPair;
+
 	shaderMap mShaderMap; // Map, faster access: shaders[shaderName] = shaderID etc
 	textureMap mTextureMap;
 	objectGeometryGroup_map mObjectGeometryGroupMap;
+	scriptMap mScriptMap;
 
-	std::string mResourceDir;
+	std::string mBasePath; // This is directory the game is in or, in a Mac bundle, the bundle's Resources directory. Absolute path.
 
 public:
-	ResourceManager(const std::string& resourceDir);
+	ResourceManager(const std::string& basePath);
 	~ResourceManager();
 
 	static std::string getBasename(const std::string& path);
-	std::string getFullResourcePath(const std::string& fileName);
+	std::string getFullResourcePath(const std::string& path);
+	std::string getFullScriptPath(const std::string& path);
 
+	// Factories
 	shaderPointer addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
+	shaderPointer addShader(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
 	shaderPointer findShader(const std::string& name);
 	void clearShaders();
 
@@ -78,6 +87,11 @@ public:
 	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& objectFile);
 	objectGeometryGroup_pointer findObjectGeometryGroup(const std::string& objectName);
 	void clearObjectGeometries();
+
+	scriptPointer addScript(const std::string& name, const std::string& mainScriptFile);
+	scriptPointer addScript(const std::string& mainScriptFile);
+	scriptPointer findScript(const std::string& name);
+	void clearScripts();
 };
 
 #endif /* RESOURCE_MANAGER_HPP_ */

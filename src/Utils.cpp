@@ -37,10 +37,9 @@ void closeLogFile() // Log file opens by itself, but doesn't close by itself
 void clearDataOutput()
 {
 	if(gLogFile.is_open()) // Close the file
-	{
 		gLogFile.close();
-	}
 
+	// Open in non-append mode
 	std::ofstream dataFile(LOG_FILE); // No error checking necessairy
 	dataFile << "";
 	dataFile.close();
@@ -123,9 +122,9 @@ std::string getFileContents(const std::string& filePath)
 		return(contents);
 	} else // Can't open the file!
 	{
-		std::string crashLog = filePath + " doesn't exist or cannot be opened!";
+		std::string crashLog = "'" + filePath + "' doesn't exist or cannot be opened!";
 		CRASH(crashLog);
-		return 0;
+		return std::string();
 	}
 }
 

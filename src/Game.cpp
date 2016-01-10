@@ -35,14 +35,14 @@
 // https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_%28C_/_SDL%29
 // http://glew.sourceforge.net/basic.html
 
-Game::Game(const std::string& gameName, int width, int height, int maxFrameRate, const std::string& resourceDir)
-	: mResourceManager(resourceDir) // Constructor
+Game::Game(const std::string& gameName, int width, int height, int maxFrameRate)
+	: mResourceManager(getBasePath()) // Constructor
 {
-	mGameName = gameName; // Copy string
+	mName = gameName; // Copy string
 
-	mGameWidth = width;
-	mGameHeight = height;
-	mMinTimePerFrame = (int)(1000 / maxFrameRate); // Trucation
+	mWidth = width;
+	mHeight = height;
+	mMinTimePerFrame = (int)(1000 / maxFrameRate); // Truncation
 
 	mLastFrameTime = 0;
 
@@ -59,8 +59,32 @@ Game::~Game() // Deconstructor
 	quit();
 }
 
+// Static
+// Returns the directory where the game is being run (absolute path)
+// In Mac application bundles, this returns the bundle.app/Contents/Resources directory.
+// Fairly heavy function!
+std::string Game::getBasePath()
+{
+	char *basePathPointer = SDL_GetBasePath(); // Must free this after!
+
+	// SDL failed to get the base path
+	if(!basePathPointer)
+	{
+		SDL_free(basePathPointer); // Free the memory!
+
+		std::string error = "Failed to get base path! Does your system support it? Search online on 'SDL_GetBasePath()' with your system for more information.";
+		Utils::CRASH_FROM_SDL(error);
+		return std::string();
+	}
+
+	std::string basePath = basePathPointer;
+	SDL_free(basePathPointer); // SDL_free is a more cross-platform version of free()
+
+	return basePath;
+}
+
 // Checks if the game will work on the user's setup. Also checks for compiling environment compability.
-void Game::checkCompability()
+bool Game::checkCompability()
 {
 	// Check compiler environment compability
 	// http://stackoverflow.com/questions/13571898/c-opengl-glm-and-struct-padding
@@ -74,6 +98,7 @@ void Game::checkCompability()
 	static_assert(sizeof(glm::vec2) == sizeof(GLfloat) * 2,
 		"Compiling environment does not support glm::vec2 direct access. Please download another version of glm or contact the project's developpers.");
 
+	// Check system's compability (runtime)
 	// Check for GL extension compability
 	std::string extensions[] = {"GL_EXT_texture_compression_s3tc"};
 	int numberOfExtensions = 1;
@@ -81,7 +106,7 @@ void Game::checkCompability()
 	GLint numExt;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
 
-	bool isCompatible = true; // True if the game is compatible with the setup (after we are done checking the setup here)
+	bool isCompatible = true; // True if the game is compatible with the system (after we are done checking the setup here)
 	
 	for(int i = 0; i < numberOfExtensions; i++)
 	{
@@ -107,9 +132,15 @@ void Game::checkCompability()
 	}
 
 	if(isCompatible)
+	{
 		Utils::LOGPRINT("Your system seems to be compatible with the game!");
+		return true;
+	}
 	else
+	{
 		Utils::CRASH("Your system is not compatible with the game. Please take a look at the generated warnings.");
+		return false;
+	}
 }
 
 void Game::setupGraphics() // VAO and OpenGL options
@@ -132,35 +163,43 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	mInputManager.registerKeys(keys, 11);
 
 	// Shaders
-	mResourceManager.addShader("basic", "basic.v.glsl", "basic.f.glsl");
-	mResourceManager.addShader("textured", "textured.v.glsl", "textured.f.glsl");
-	mResourceManager.addShader("shaded", "shaded.v.glsl", "shaded.f.glsl");
+	mResourceManager.addShader("basic.v.glsl", "basic.f.glsl");
+	mResourceManager.addShader("textured.v.glsl", "textured.f.glsl");
+	mResourceManager.addShader("shaded.v.glsl", "shaded.f.glsl");
+
+	// Textures
 	mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
 	mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
 	mResourceManager.addTexture("building.dds", DDS_TEXTURE);
 	mResourceManager.addTexture("minecraft.dds", DDS_TEXTURE);
 	
-	// Test (Game.h, render() and here)
+	// Scripts
+	mResourceManager.addScript(MAIN_SCRIPT_FILE);
+
+	// Object groups
 	mResourceManager.addObjectGeometryGroup("suzanne.obj");
 	mResourceManager.addObjectGeometryGroup("building.obj");
-	mResourceManager.addObjectGeometryGroup("minecraft.obj");
+	//mResourceManager.addObjectGeometryGroup("minecraft.obj");
 
-	mEntityManager.getGameCamera().setAspectRatio((float)(mGameWidth/mGameHeight));
+	mEntityManager.getGameCamera().setAspectRatio((float)(mWidth/mHeight));
 	mEntityManager.getGameCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
 	mEntityManager.getGameCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
 
 	mEntityManager.getGameCamera().setDirection(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)); // 0 for orientation
 
-	//EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
-	//mEntityManager.addObject(monkey);
+	EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
+	mEntityManager.addObject(monkey);
 
-	// This is nuts
+	mResourceManager.findScript(MAIN_SCRIPT_NAME)->bindInterface();
+	mResourceManager.findScript(MAIN_SCRIPT_NAME)->run();
+
+	/*// This is nuts
 	for(std::size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
 	{
 		EntityManager::objectPointer funTest(new ShadedObject(*mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("minecraft")));
 		funTest->setScaling(glm::vec3(1.0f, 1.0f, 1.0f));
 		mEntityManager.addObject(funTest);
-	}
+	}*/
 
 	EntityManager::lightPointer light(new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60));
 	mEntityManager.addLight(light);
@@ -362,10 +401,8 @@ void Game::doMainLoop()
 // Public Interface //
 
 void Game::init() // Starts the game
-{
-	Utils::clearDataOutput();
-	
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+{	
+	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 		Utils::CRASH("Unable to initialize SDL!");
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -374,7 +411,7 @@ void Game::init() // Starts the game
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	mMainWindow = SDL_CreateWindow(mGameName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mGameWidth, mGameHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	mMainWindow = SDL_CreateWindow(mName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mWidth, mHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	
 	if(!mMainWindow) // If the window failed to create, crash
 		Utils::CRASH_FROM_SDL("Unable to create window!");
@@ -388,11 +425,16 @@ void Game::init() // Starts the game
 
 	// Output OpenGL version
 	std::string glVersion;
-	glVersion = (const char *)glGetString(GL_VERSION);
+	glVersion = (const char* )glGetString(GL_VERSION);
 	glVersion = "Graphics: " + glVersion;
 	Utils::LOGPRINT(glVersion);
 	
-	checkCompability();
+	if(!checkCompability()) // Logs errors if it is not compatible
+	{
+		Utils::CRASH("System not compatible, cancelling init.");
+		return;
+	}
+	
 	setupGraphics();
 	checkForErrors();
 

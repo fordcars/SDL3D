@@ -1,5 +1,6 @@
--Use LuaIntf (already linked and all, just USE it, make the interfaces!)
+-Make Lua Interface
 
+-Write a template container and keep those instances instead of a bunch of maps in ResourceManager? Maybe not, since we have factories there, too.
 
 -USE UNIFORM BLOCK FOR LIGHTS?
 -Give lightSSSS to shader + don't care about lights that are too far away
@@ -10,14 +11,13 @@
 
 -Don't make uniforms obligatory
 
--Get rid of Game::initMainLoop() (from lua!!)
+-Get rid of key inits and resources and all in Game::initMainLoop() (FROM LUA!!!)
 
 -Lua API?
 -Colision detection (in Entity step function?) - Either point or box (and add collision on and off):
 ---Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!
 
 -Load all files at the same place?
--Seperate resources in directories? Textures, objects, etc
 
 -Update to VS 2015 to:
 ->>Update arrays (uniforms and keys) to std::arrays(VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)

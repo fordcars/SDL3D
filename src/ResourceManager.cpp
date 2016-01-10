@@ -33,9 +33,9 @@
 
 // Resource names are also kept in their instances, so don't change them randomly without updating the resources
 
-ResourceManager::ResourceManager(const std::string& resourceDir)
+ResourceManager::ResourceManager(const std::string& basePath)
 {
-	mResourceDir = resourceDir;
+	mBasePath = basePath;
 }
 
 ResourceManager::~ResourceManager()
@@ -66,8 +66,6 @@ std::string ResourceManager::getBasename(const std::string& path)
 		// If it is not a path, it was already a file (or lets hope so)
 		file = path;
 
-	Utils::LOGPRINT(file);
-
 	// Get the basename, example: thing
 	std::size_t firstDot = file.find('.'); // Returns the index of the first found dot
 
@@ -77,14 +75,23 @@ std::string ResourceManager::getBasename(const std::string& path)
 		return file.substr(0, firstDot); // The index of the first dot aka the length of the name
 }
 
-// Returns the full resource oath
-std::string ResourceManager::getFullResourcePath(const std::string& resourcePath)
+// Returns the full absolute resource path
+// Example: level1/fun.obj -> C:/Program Files/SDL3D/resources/level1/fun.obj
+// This makes sure it will on most platforms and if the game is being launched from somewhere else
+std::string ResourceManager::getFullResourcePath(const std::string& path)
 {
-	return mResourceDir + resourcePath;
+	return mBasePath + RESOURCE_PATH_PREFIX + path;
+}
+
+// Example: main.lua -> C:/Program Files/SDL3D/resources/scripts/main.lua
+std::string ResourceManager::getFullScriptPath(const std::string& path)
+{
+	return getFullResourcePath(SCRIPT_PATH_PREFIX + path);
 }
 
 // Factory
-ResourceManager::shaderPointer ResourceManager::addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
+ResourceManager::shaderPointer
+	ResourceManager::addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
 	std::string vertexShaderPath = getFullResourcePath(vertexShaderFile); // All resources are in the resource dir
 	std::string fragmentShaderPath = getFullResourcePath(fragmentShaderFile);
@@ -102,6 +109,13 @@ ResourceManager::shaderPointer ResourceManager::addShader(const std::string& nam
 	}
 
 	return newlyAddedPair.first->second; // Get the pair at pair.first, then the pointer at ->second
+}
+
+ResourceManager::shaderPointer
+	ResourceManager::addShader(const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
+{
+	std::string name = getBasename(vertexShaderFile); // Get the basename of one file, implying they are the same on both
+	return addShader(name, vertexShaderFile, fragmentShaderFile);
 }
 
 // Returns a smart pointer, so you can use it wherever you want however you want and it will never be invalid
@@ -196,7 +210,7 @@ ResourceManager::objectGeometryGroup_pointer
 {
 	std::string name = getBasename(objectFile);
 
-	return addObjectGeometryGroup(name, objectFile); // Create the texture and return it
+	return addObjectGeometryGroup(name, objectFile);
 }
 
 ResourceManager::objectGeometryGroup_pointer
@@ -217,4 +231,48 @@ ResourceManager::objectGeometryGroup_pointer
 void ResourceManager::clearObjectGeometries()
 {
 	mObjectGeometryGroupMap.clear();
+}
+
+ResourceManager::scriptPointer ResourceManager::addScript(const std::string& name, const std::string& mainScriptFile)
+{
+	std::string mainFilePath = getFullScriptPath(mainScriptFile);
+
+	scriptPointer script(new Script(name, mainFilePath, mBasePath));
+
+	scriptMapPair scriptPair(name, script);
+	std::pair<scriptMap::iterator, bool> newlyAddedPair = mScriptMap.insert(scriptPair);
+
+	if(newlyAddedPair.second == false) // It already exists in the map
+	{
+		std::string error = "Script '" + name + "' already exists and cannot be added again!";
+		Utils::CRASH(error);
+		return newlyAddedPair.first->second;
+	}
+
+	return newlyAddedPair.first->second; // Get the pair at pair.first, then the pointer at ->second
+}
+
+ResourceManager::scriptPointer ResourceManager::addScript(const std::string& mainScriptFile)
+{
+	std::string name = getBasename(mainScriptFile);
+	return addScript(name, mainScriptFile);
+}
+
+ResourceManager::scriptPointer ResourceManager::findScript(const std::string& name)
+{
+	scriptMap::iterator got = mScriptMap.find(name);
+
+	if(got == mScriptMap.end())
+	{
+		std::string error = "Script '" + name + "' not found!";
+		Utils::CRASH(error);
+		return got->second;
+	}
+
+	return got->second;
+}
+
+void ResourceManager::clearScripts()
+{
+	mScriptMap.clear();
 }

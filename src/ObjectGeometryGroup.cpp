@@ -73,7 +73,7 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 		Utils::LOGPRINT(".obj file '" + OBJfilePath + "' failed to load!");
 		Utils::CRASH("Tinyobjloader message: " + tinyobjError); // The error 'could' be an empty string, just sayin'
 		return;
-	} else if(!tinyobjError.empty())
+	} else if(!tinyobjError.empty()) // Success, but there is a warning
 	{
 		Utils::WARN("Tinyobjloader message: " + tinyobjError); // The file should still load
 	}
@@ -93,7 +93,7 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 			continue;
 		}
 
-		if (currentShape.mesh.indices.size() % 3 != 0) // Not triangles, but Tinyobjloader should of taken care of this
+		if(currentShape.mesh.indices.size() % 3 != 0) // Not triangles, but Tinyobjloader should of taken care of this
 		{
 			Utils::WARN("OBJ data for geometry '" + currentShape.name + "' in file '" + OBJfilePath +
 				"' for group '" + mName + "' does not contain triangles! Tinyobjloader should of taken care of this. Bug?" +

@@ -1,5 +1,7 @@
--The shaders are encoded in ASCII (or UTF-8, using the first bits)
--If there are holes in models, click the "invert normals" button in your 3D modeler.
+- The shaders are encoded in ASCII (or UTF-8, using the first bits)
+- If there are holes in models, click the "invert normals" button in your 3D modeler.
 
--Models are loaded as objects, not groups (.obj).
--When rendering mincraft scene, we see a lot of filtering artefacts since the textures are very close to each other (we shouldn't be using filtering at all when rendering Minecraft scenes). This has to do with the filtering when generating the mipmaps for the texture.
+- Models are loaded as objects, not groups (.obj).
+- When rendering mincraft scene, we see a lot of filtering artefacts since the textures are very close to each other (we shouldn't be using filtering at all when rendering Minecraft scenes). This has to do with the filtering when generating the mipmaps for the texture.
+
+- I added an int cast in LuaIntf's LuaState.h at line 591 to shush a warning about conversion. Hopefully LuaIntf will fix this!

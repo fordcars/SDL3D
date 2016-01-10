@@ -147,7 +147,7 @@ GLuint Texture::loadDDSTexture(const std::string& texturePath)
 
 	if(!file)
 	{
-		std::string error = "Texture '" + texturePath + "' cannot be opened!";
+		std::string error = "Texture '" + texturePath + "' cannot be opened or doesn't exist!";
 		Utils::CRASH(error);
 		return 0;
 	}

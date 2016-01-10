@@ -17,19 +17,34 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef DEFINITIONS_HPP_
-#define DEFINITIONS_HPP_
+// LuaIntf::LuaContext does not support copying or moving yet it seems
 
-// Files and paths
-#define LOG_FILE "Log.txt"
-#define RESOURCE_PATH_PREFIX "resources/" // Added before all resources
-#define SCRIPT_PATH_PREFIX "scripts/"
+#ifndef SCRIPT_MANAGER_HPP
+#define SCRIPT_MANAGER_HPP
 
-#define MAIN_SCRIPT_NAME "main"
-#define MAIN_SCRIPT_FILE MAIN_SCRIPT_NAME ".lua" // Concatenates both literals
+#include <LuaIntf.h>
+#include <string>
 
-// Texture types
-#define BMP_TEXTURE 0
-#define DDS_TEXTURE 1
+class Script
+{
+private:
+	std::string mName;
+	std::string mMainFilePath;
+	std::string mMainFileContents; // The contents of the main script file
 
-#endif /* DEFINITIONS_HPP_ */
+	// You cannot store a LuaIntf::LuaState for a long time! Those can only be temporary.
+	// You can only store a LuaIntf::LuaContext. You can get a state from the context.
+	// I learnt this the hard way.
+	LuaIntf::LuaContext mLuaContext;
+
+public:
+	Script(const std::string& name, const std::string& mainFilePath, const std::string& absoluteRequirePath);
+	~Script();
+
+	bool setLuaRequirePath(const std::string& absolutePath);
+
+	void bindInterface();
+	void run();
+};
+
+#endif /* SCRIPT_MANAGER_HPP */

@@ -29,8 +29,8 @@ set(VS_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
 set(XCODE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL3D.app/Contents/MacOS/SDL3D)
 
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource)
-set(RESOURCE_DIR_EXE resource) # The resource in the executable's directory
+set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
+set(RESOURCE_DIR_EXE resources) # The resource in the executable's directory
 set(ARCHITECTURE x86)
 
 set(GLAD_DIR ${LIB_DIR}/glad)
@@ -56,6 +56,7 @@ set(SOURCES
 	src/Light.cpp
 	src/Entity.cpp
 	src/EntityManager.cpp
+	src/Script.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -83,6 +84,7 @@ set(HEADERS
 	src/Light.hpp
 	src/Entity.hpp
 	src/EntityManager.hpp
+	src/Script.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.
@@ -124,7 +126,7 @@ find_package(OpenGL REQUIRED)
 # On OS X we also have to add '-framework Cocoa' as library.  This is
 # actually a bit of an hack but it's easy enough and reliable.
 set(EXTRA_LIBRARIES "")
-if (APPLE)
+if(APPLE)
     set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} "-framework Cocoa")
 endif()
 
@@ -182,18 +184,22 @@ if(WIN32)
 endif()
 
 # If this is Apple, copy the DLL into the Frameworks folder of the .app using the script frameworkify.py
+set(FRAMEWORKIFY_SCRIPT tools/Frameworkify/frameworkify.py)
+
 if(APPLE)
 	# SDL
     add_custom_command(TARGET SDL3D POST_BUILD
-        COMMAND python scripts/frameworkify.py ${XCODE_OUTPUT_DIR}
+        COMMAND python ${FRAMEWORKIFY_SCRIPT} ${XCODE_OUTPUT_DIR}
         ${SDL_LIBRARY})
 	
 	# Lua
     add_custom_command(TARGET SDL3D POST_BUILD
-        COMMAND python scripts/frameworkify.py ${XCODE_OUTPUT_DIR}
+        COMMAND python ${FRAMEWORKIFY_SCRIPT} ${XCODE_OUTPUT_DIR}
         ${LUA_LIBRARY})
 	
 	# Copy resources
+	# I think this works as long as the application is not a bundle, otherwise we have to change this:
+	# http://stackoverflow.com/questions/27181879/cmake-copy-icon-to-bundle-resources
 	add_custom_command(TARGET SDL3D POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${RESOURCE_DIR} ${XCODE_OUTPUT_DIR}/${RESOURCE_DIR_EXE})

@@ -35,11 +35,11 @@
 class Game
 {
 private:
-	std::string mGameName;
+	std::string mName;
 	std::string mLogFile;
 
-	int mGameWidth;
-	int mGameHeight;
+	int mWidth;
+	int mHeight;
 	int mMinTimePerFrame;
 	
 	int mLastFrameTime; // Time at last frame
@@ -56,10 +56,11 @@ private:
 									  // need a list initialization. See the Game constructor in Game.cpp
 
 	InputManager mInputManager;
-
 	EntityManager mEntityManager;
 
-	void checkCompability();
+	static std::string getBasePath();
+
+	bool checkCompability();
 	void setupGraphics();
 	void initMainLoop();
 	void cleanUp();
@@ -72,7 +73,7 @@ private:
 	void doMainLoop();
 
 public:
-	Game(const std::string& gameName, int width, int height, int frameRate, const std::string& resourceDir);
+	Game(const std::string& gameName, int width, int height, int frameRate);
 	~Game();
 	void init();
 	void startMainLoop();
