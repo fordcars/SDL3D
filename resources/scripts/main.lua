@@ -1,5 +1,3 @@
-function foo()
-	local var = "HELLO GUYS!!!"
-end
+local test = require("test")
 
-foo()
+test.foo()

@@ -78,6 +78,11 @@ public:
 	void init();
 	void startMainLoop();
 	void quit();
+
+	// Useful for scripting
+	ResourceManager& getResourceManager();
+	InputManager& getInputManager();
+	EntityManager& getEntityManager();
 };
 
 #endif /* GAME_HPP_ */

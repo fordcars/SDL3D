@@ -106,3 +106,8 @@ void Entity::step()
 	if(mVelocity != glm::vec3(0.0f, 0.0f, 0.0f)) // Since it will often be like this, optimize!
 		mPosition += mVelocity;
 }
+
+void Entity::TEST()
+{
+	setVelocity(glm::vec3(0.1f, 0.0f, 0.1f));
+}

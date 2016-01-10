@@ -35,7 +35,7 @@ private:
 
 public:
 	TexturedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
-	~TexturedObject();
+	~TexturedObject() override;
 
 	void setTexture(constTexturePointer texturePointer);
 	void render(const Camera& camera) override;

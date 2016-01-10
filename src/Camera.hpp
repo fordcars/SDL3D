@@ -45,7 +45,7 @@ private:
 public:
 	Camera();
 	Camera(float fieldOfView, float aspectRatio);
-	~Camera();
+	~Camera() override;
 
 	void setDirection(glm::vec4 direction);
 	glm::vec4 getDirection();

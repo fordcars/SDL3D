@@ -25,6 +25,9 @@
 #include <LuaIntf.h>
 #include <string>
 
+// Forward declare Game since we don't want to include Game.hpp again from ResourceManager.hpp!
+// This avoids circular dependencies.
+class Game;
 class Script
 {
 private:
@@ -43,7 +46,7 @@ public:
 
 	bool setLuaRequirePath(const std::string& absolutePath);
 
-	void bindInterface();
+	void bindInterface(Game& game);
 	void run();
 };
 

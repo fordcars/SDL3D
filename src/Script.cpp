@@ -17,12 +17,15 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// The whole interface is defined here! This class has A LOT of dependencies!
+
 // This class is a single script. A script can be multiple files, but this is Lua's job.
 // Happily, it looks like splitting the lua states per script, like here, is a good idea.
 // http://lua-users.org/lists/lua-l/2003-11/msg00011.html
 
 #include <Script.hpp>
 #include <Utils.hpp>
+#include <Game.hpp>
 
 #include <SDL.h>
 #include <exception> // For handling the script's exceptions
@@ -67,7 +70,7 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 		
 		std::string currentPath = luaState.toString(-1);
 		currentPath.append(";");
-		currentPath.append(absolutePath);
+		currentPath.append(absolutePath + "?.lua"); // ?.lua seems to be needed and works better for cross-platform
 
 		luaState.pop(1);
 		luaState.push(currentPath.c_str());
@@ -83,10 +86,40 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 	return true;
 }
 
-// Binds all of the classes and functions. This creates our API!
-void Script::bindInterface()
-{
+// All includes for the bindings
+#include <Game.hpp>
+#include <EntityManager.hpp>
+#include <Entity.hpp>
+#include <Object.hpp>
 
+#include <glm/glm.hpp>
+
+// Binds all of the classes and functions. This creates our API!
+// We need a Game instance to give it to the scripts.
+void Script::bindInterface(Game& game)
+{
+	LuaState luaState = mLuaContext.state();
+
+	LuaBinding(luaState).addFunction("getGame", [&game]
+	{
+		return game;
+	});
+
+	LuaBinding(luaState).beginClass<Game>("Game")
+		.addFunction("getEntityManager", &Game::getEntityManager)
+	.endClass();
+
+	LuaBinding(luaState).beginClass<EntityManager>("EntityManager")
+		.addFunction("getObjects", &EntityManager::getObjects)
+	.endClass();
+
+	LuaBinding(luaState).beginClass<Entity>("Entity")
+		.addFunction("TEST", &Entity::TEST)
+	.endClass();
+
+	// Entity must have at least one virtual function to be a base class
+	LuaBinding(luaState).beginExtendClass<Object, Entity>("Object")
+	.endClass();
 }
 
 // Running a script will probably not be too heavy since it will probably only be defining a bunch of callbacks.

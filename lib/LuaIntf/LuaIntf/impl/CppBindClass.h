@@ -414,7 +414,7 @@ class CppBindClass : public CppBindClassBase
     template <typename PX> friend class CppBindModule;
     template <typename TX, typename PX> friend class CppBindClass;
 
-private:
+public: // Modified, shitty fix, but it works
     explicit CppBindClass(const LuaRef& meta)
         : CppBindClassBase(meta)
         {}

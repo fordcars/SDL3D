@@ -20,6 +20,11 @@
 #ifndef DEFINITIONS_HPP_
 #define DEFINITIONS_HPP_
 
+#include <LuaIntf.h>
+#include <vector>
+#include <map>
+#include <memory>
+
 // Files and paths
 #define LOG_FILE "Log.txt"
 #define RESOURCE_PATH_PREFIX "resources/" // Added before all resources
@@ -31,5 +36,13 @@
 // Texture types
 #define BMP_TEXTURE 0
 #define DDS_TEXTURE 1
+
+// Scripting
+namespace LuaIntf
+{
+	LUA_USING_SHARED_PTR_TYPE(std::shared_ptr);
+	LUA_USING_LIST_TYPE(std::vector);
+	LUA_USING_MAP_TYPE(std::map);
+}
 
 #endif /* DEFINITIONS_HPP_ */

@@ -40,7 +40,7 @@ private:
 
 public:
 	Object(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer);
-	~Object();
+	virtual ~Object() override; // virtual here is just for looks
 
 	void setShader(constShaderPointer shaderPointer);
 	constShaderPointer getShader();

@@ -21,10 +21,12 @@
 
 EntityManager::EntityManager()
 {
+	// Do nothing
 }
 
 EntityManager::~EntityManager()
 {
+	// Do nothing
 }
 
 Camera& EntityManager::getGameCamera()

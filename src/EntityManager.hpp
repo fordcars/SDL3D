@@ -33,9 +33,10 @@ public: // Public typedefs
 	typedef std::shared_ptr<Object> objectPointer;
 	typedef std::shared_ptr<Light> lightPointer;
 
-private:
 	typedef std::vector<objectPointer> objectVector; // Vector containing shared pointers
 	typedef std::vector<lightPointer> lightVector;
+
+private:
 
 	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.
 

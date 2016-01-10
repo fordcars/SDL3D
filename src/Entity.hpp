@@ -38,7 +38,7 @@ private:
 public:
 	Entity();
 	Entity(glm::vec3 position, glm::vec3 scaling, glm::vec3 rotation, glm::vec3 velocity);
-	~Entity();
+	virtual ~Entity();
 
 	void setPosition(glm::vec3 position);
 	glm::vec3 getPosition() const;
@@ -55,6 +55,8 @@ public:
 	glm::mat4 getModelMatrix();
 
 	void step();
+
+	void TEST();
 };
 
 #endif /* ENTITY_HPP_ */

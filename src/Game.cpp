@@ -19,6 +19,10 @@
 
 #include <Game.hpp>
 
+#include <Utils.hpp>
+#include <SimpleTimer.hpp> // For game loop
+#include <Definitions.hpp>
+
 #include <string> // No .h for c++
 
 #include <math.h>
@@ -26,10 +30,6 @@
 
 #include <glm/glm.hpp> // For matrices and all
 #include <glad/glad.h> // For compability checks
-
-#include <Utils.hpp>
-#include <SimpleTimer.hpp> // For game loop
-#include <Definitions.hpp>
 
 // With the help of:
 // https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_%28C_/_SDL%29
@@ -190,7 +190,7 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
 	mEntityManager.addObject(monkey);
 
-	mResourceManager.findScript(MAIN_SCRIPT_NAME)->bindInterface();
+	mResourceManager.findScript(MAIN_SCRIPT_NAME)->bindInterface(*this);
 	mResourceManager.findScript(MAIN_SCRIPT_NAME)->run();
 
 	/*// This is nuts
@@ -455,10 +455,7 @@ void Game::startMainLoop() // Starts the main loop
 
 		cleanUp();
 	} else
-	{
-		Utils::clearDataOutput(); // Just to make sure the log is empty
 		Utils::CRASH("Game was not initialized before launching the main loop!");
-	}
 
 	return; // Quit!
 }
@@ -466,4 +463,20 @@ void Game::startMainLoop() // Starts the main loop
 void Game::quit() // Call this when you want to quit to be clean
 {
 	mQuitting = true;
+}
+
+// Useful for scripting
+ResourceManager& Game::getResourceManager()
+{
+	return mResourceManager;
+}
+
+InputManager& Game::getInputManager()
+{
+	return mInputManager;
+}
+
+EntityManager& Game::getEntityManager()
+{
+	return mEntityManager;
 }

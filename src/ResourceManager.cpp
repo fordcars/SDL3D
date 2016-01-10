@@ -17,6 +17,9 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+#include <ResourceManager.hpp>
+#include <Utils.hpp>
+
 #include <fstream>
 #include <vector>
 #include <cstdlib> // For std::size_t
@@ -24,9 +27,6 @@
 #include <regex>
 
 #include <glm/gtc/type_ptr.hpp>
-
-#include <ResourceManager.hpp>
-#include <Utils.hpp>
 
 // Shaders must be ASCII or UTF-8
 // Reference: http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.2:-Shaders.html
@@ -237,7 +237,8 @@ ResourceManager::scriptPointer ResourceManager::addScript(const std::string& nam
 {
 	std::string mainFilePath = getFullScriptPath(mainScriptFile);
 
-	scriptPointer script(new Script(name, mainFilePath, mBasePath));
+	// getFullScriptPath("") will return the require directory, logically
+	scriptPointer script(new Script(name, mainFilePath, getFullScriptPath("")));
 
 	scriptMapPair scriptPair(name, script);
 	std::pair<scriptMap::iterator, bool> newlyAddedPair = mScriptMap.insert(scriptPair);
