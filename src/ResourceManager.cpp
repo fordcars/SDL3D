@@ -123,7 +123,7 @@ ResourceManager::shaderPointer
 // It returns a smart pointer instead of a reference since the objects store smart pointers
 ResourceManager::shaderPointer ResourceManager::findShader(const std::string& name)
 {
-	// http://www.cplusplus.com/reference/unordered_map/unordered_map/find/
+	// http://www.cplusplus.com/reference/map/map/find/
 	shaderMap::iterator got = mShaderMap.find(name); // Non-const iterator, since we want a non-const reference!
 
 	if(got==mShaderMap.end())

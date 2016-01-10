@@ -3,5 +3,3 @@ function foo()
 end
 
 foo()
-
-crashyuu

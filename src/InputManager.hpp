@@ -23,13 +23,13 @@
 #include <SDL.h>
 #include <SDL_keyboard.h>
 #include <SDL_keycode.h>
-#include <unordered_map>
+#include <map>
 #include <cstdlib> // For std::size_t
 
 class InputManager
 {
 private:
-	typedef std::unordered_map<int, bool> sdlKeyMap; // Using a non-const key seems to be more compatible with different implementations
+	typedef std::map<int, bool> sdlKeyMap; // Using a non-const key seems to be more compatible with different implementations
 	typedef std::pair<int, bool> sdlKeyMapPair;
 
 	sdlKeyMap mKeys;

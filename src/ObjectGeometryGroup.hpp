@@ -24,7 +24,7 @@
 
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 #include <ObjectGeometry.hpp>
 
@@ -33,7 +33,7 @@ class ObjectGeometryGroup
 {
 public:
 	typedef std::shared_ptr<ObjectGeometry> objectGeometryPointer;
-	typedef std::unordered_map<std::string, objectGeometryPointer> objectGeometryMap;
+	typedef std::map<std::string, objectGeometryPointer> objectGeometryMap;
 	typedef std::pair<std::string, objectGeometryPointer> objectGeometryMapPair;
 
 	typedef std::vector<objectGeometryPointer> objectGeometryVector;

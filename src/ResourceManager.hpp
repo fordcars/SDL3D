@@ -29,7 +29,7 @@
 #include <glad/glad.h>
 #include <string>
 
-#include <unordered_map>
+#include <map>
 #include <memory> // For shared_ptr
 
 // All paths are prefixed with mResourceDir
@@ -45,16 +45,16 @@ public:
 private:
 	// Each map will hold shared_ptrs to instances. When you remove this from the map, the instance will stay alive until all
 	// shared_ptrs pointing to it are gone.
-	typedef std::unordered_map<std::string, shaderPointer> shaderMap; // Map of pointers
+	typedef std::map<std::string, shaderPointer> shaderMap; // Map of pointers
 	typedef std::pair<std::string, shaderPointer> shaderMapPair; // These kinds of typedef are great inside the class definition like this
 
-	typedef std::unordered_map<std::string, texturePointer> textureMap;
+	typedef std::map<std::string, texturePointer> textureMap;
 	typedef std::pair<std::string, texturePointer> textureMapPair;
 
-	typedef std::unordered_map<std::string, objectGeometryGroup_pointer> objectGeometryGroup_map;
+	typedef std::map<std::string, objectGeometryGroup_pointer> objectGeometryGroup_map;
 	typedef std::pair<std::string, objectGeometryGroup_pointer> objectGeometryGroup_mapPair;
 
-	typedef std::unordered_map<std::string, scriptPointer> scriptMap;
+	typedef std::map<std::string, scriptPointer> scriptMap;
 	typedef std::pair<std::string, scriptPointer> scriptMapPair;
 
 	shaderMap mShaderMap; // Map, faster access: shaders[shaderName] = shaderID etc

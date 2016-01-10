@@ -20,14 +20,14 @@
 #ifndef SHADER_HPP_
 #define SHADER_HPP_
 
-#include <unordered_map>
+#include <map>
 #include <glad/glad.h>
 #include <string>
 
 class Shader
 {
 private:
-	typedef std::unordered_map<std::string, GLuint> GLuintMap;
+	typedef std::map<std::string, GLuint> GLuintMap;
 	typedef std::pair<std::string, GLuint> GLuintMapPair;
 
 	std::string mName; // Useful for error messages, don't change this stupidly
