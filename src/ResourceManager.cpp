@@ -33,6 +33,12 @@
 
 // Resource names are also kept in their instances, so don't change them randomly without updating the resources
 
+ResourceManager::ResourceManager()
+{
+	mBasePath = "";
+}
+
+
 ResourceManager::ResourceManager(const std::string& basePath)
 {
 	mBasePath = basePath;
@@ -75,12 +81,23 @@ std::string ResourceManager::getBasename(const std::string& path)
 		return file.substr(0, firstDot); // The index of the first dot aka the length of the name
 }
 
+// The base path will be used to fetch resources and setup the script's require paths
+void ResourceManager::setBasePath(const std::string& basePath)
+{
+	mBasePath = basePath;
+}
+
 // Returns the full absolute resource path
 // Example: level1/fun.obj -> C:/Program Files/SDL3D/resources/level1/fun.obj
 // This makes sure it will on most platforms and if the game is being launched from somewhere else
 std::string ResourceManager::getFullResourcePath(const std::string& path)
 {
 	return mBasePath + RESOURCE_PATH_PREFIX + path;
+}
+
+std::string ResourceManager::getFullShaderPath(const std::string& path)
+{
+	return getFullResourcePath(SHADER_PATH_PREFIX + path);
 }
 
 // Example: main.lua -> C:/Program Files/SDL3D/resources/scripts/main.lua
@@ -93,8 +110,8 @@ std::string ResourceManager::getFullScriptPath(const std::string& path)
 ResourceManager::shaderPointer
 	ResourceManager::addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
-	std::string vertexShaderPath = getFullResourcePath(vertexShaderFile); // All resources are in the resource dir
-	std::string fragmentShaderPath = getFullResourcePath(fragmentShaderFile);
+	std::string vertexShaderPath = getFullShaderPath(vertexShaderFile); // All resources are in the resource dir
+	std::string fragmentShaderPath = getFullShaderPath(fragmentShaderFile);
 
 	shaderPointer shader(new Shader(name, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
 
@@ -107,7 +124,7 @@ ResourceManager::shaderPointer
 		Utils::CRASH(error);
 		return newlyAddedPair.first->second; // Returns a pointer to the shader that was there before
 	}
-
+	
 	return newlyAddedPair.first->second; // Get the pair at pair.first, then the pointer at ->second
 }
 

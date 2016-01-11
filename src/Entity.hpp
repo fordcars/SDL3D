@@ -55,8 +55,6 @@ public:
 	glm::mat4 getModelMatrix();
 
 	void step();
-
-	void TEST();
 };
 
 #endif /* ENTITY_HPP_ */

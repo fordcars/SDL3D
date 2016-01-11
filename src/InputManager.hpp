@@ -21,10 +21,10 @@
 #define INPUT_MANAGER_HPP_
 
 #include <SDL.h>
-#include <SDL_keyboard.h>
-#include <SDL_keycode.h>
+
 #include <map>
 #include <cstdlib> // For std::size_t
+#include <vector>
 
 class InputManager
 {
@@ -35,12 +35,15 @@ private:
 	sdlKeyMap mKeys;
 
 public:
+	typedef std::vector<int> keyVector;
+
 	InputManager();
 	~InputManager();
 	void registerKey(int sdlKey);
-	void registerKeys(int keys[], std::size_t length);
-	void updateKeyByEvent(SDL_Event event);
+	void registerKeys(const keyVector& keys);
 	bool isKeyPressed(const int sdlKey);
+
+	void updateKeyByEvent(SDL_Event event);
 };
 
 #endif /* INPUT_MANAGER_HPP_ */

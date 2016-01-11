@@ -48,7 +48,7 @@ private:
 	bool mInitialized; // Set to true after initializing
 	bool mQuitting; // If set to true, the game will quit at the end of the frame
 
-	SDL_Window *mMainWindow;
+	SDL_Window *mMainWindow; // We might have multiple windows one day
 	SDL_GLContext mMainContext; // OpenGl context
 
 	ResourceManager mResourceManager; // On stack, calls its constructor by itself and cleans (deconstructs) itself like magic.
@@ -73,13 +73,18 @@ private:
 	void doMainLoop();
 
 public:
-	Game(const std::string& gameName, int width, int height, int frameRate);
+	Game();
 	~Game();
 	void init();
 	void startMainLoop();
 	void quit();
 
 	// Useful for scripting
+	void setName(const std::string& name);
+	void setSize(int width, int height);
+	void setMainWindowPosition(int x, int y);
+	void reCenterMainWindow();
+
 	ResourceManager& getResourceManager();
 	InputManager& getInputManager();
 	EntityManager& getEntityManager();

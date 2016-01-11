@@ -35,14 +35,15 @@
 // https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_%28C_/_SDL%29
 // http://glew.sourceforge.net/basic.html
 
-Game::Game(const std::string& gameName, int width, int height, int maxFrameRate)
-	: mResourceManager(getBasePath()) // Constructor
+Game::Game()
 {
-	mName = gameName; // Copy string
+	mName = DEFAULT_GAME_NAME; // Copy string
 
-	mWidth = width;
-	mHeight = height;
-	mMinTimePerFrame = (int)(1000 / maxFrameRate); // Truncation
+	mWidth = DEFAULT_GAME_WINDOW_WIDTH;
+	mHeight = DEFAULT_GAME_WINDOW_HEIGHT;
+
+	// Limits the frames per second
+	mMinTimePerFrame = (int)(1000 / DEFAULT_GAME_MAX_FPS); // Truncation
 
 	mLastFrameTime = 0;
 
@@ -145,6 +146,9 @@ bool Game::checkCompability()
 
 void Game::setupGraphics() // VAO and OpenGL options
 {
+	// Make sure the OpenGL context extends over the whole screen
+	glViewport(0, 0, mWidth, mHeight);
+
 	GLuint vertexArrayID; // VAO - vertex aray object
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
@@ -159,29 +163,35 @@ void Game::setupGraphics() // VAO and OpenGL options
 
 void Game::initMainLoop() // Initialize a few things before the main loop
 {
-	int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_SPACE, SDLK_LSHIFT, SDLK_LCTRL};
-	mInputManager.registerKeys(keys, 11);
+	//int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_SPACE, SDLK_LSHIFT, SDLK_LCTRL};
+	//mInputManager.registerKeys(keys, 11);
+
+	mResourceManager.setBasePath(getBasePath());
 
 	// Shaders
-	mResourceManager.addShader("basic.v.glsl", "basic.f.glsl");
-	mResourceManager.addShader("textured.v.glsl", "textured.f.glsl");
-	mResourceManager.addShader("shaded.v.glsl", "shaded.f.glsl");
+	//mResourceManager.addShader("basic.v.glsl", "basic.f.glsl");
+	//mResourceManager.addShader("textured.v.glsl", "textured.f.glsl");
+	//mResourceManager.addShader("shaded.v.glsl", "shaded.f.glsl");
 
 	// Textures
-	mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
-	mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
-	mResourceManager.addTexture("building.dds", DDS_TEXTURE);
-	mResourceManager.addTexture("minecraft.dds", DDS_TEXTURE);
+	//mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
+	//mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
+	//mResourceManager.addTexture("building.dds", DDS_TEXTURE);
+	//mResourceManager.addTexture("minecraft.dds", DDS_TEXTURE);
 	
 	// Scripts
-	mResourceManager.addScript(MAIN_SCRIPT_FILE);
+	mResourceManager.addScript(MAIN_SCRIPT_NAME, MAIN_SCRIPT_FILE);
+
+	mResourceManager.findScript(MAIN_SCRIPT_NAME)->bindInterface(*this);
+	mResourceManager.findScript(MAIN_SCRIPT_NAME)->run();
 
 	// Object groups
-	mResourceManager.addObjectGeometryGroup("suzanne.obj");
-	mResourceManager.addObjectGeometryGroup("building.obj");
+	//mResourceManager.addObjectGeometryGroup("suzanne.obj");
+	//mResourceManager.addObjectGeometryGroup("building.obj");
 	//mResourceManager.addObjectGeometryGroup("minecraft.obj");
 
-	mEntityManager.getGameCamera().setAspectRatio((float)(mWidth/mHeight));
+	// static_cast<>() is safer than a C-style cast
+	mEntityManager.getGameCamera().setAspectRatio(static_cast<float>(mWidth/mHeight));
 	mEntityManager.getGameCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
 	mEntityManager.getGameCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
 
@@ -189,9 +199,6 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 
 	EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
 	mEntityManager.addObject(monkey);
-
-	mResourceManager.findScript(MAIN_SCRIPT_NAME)->bindInterface(*this);
-	mResourceManager.findScript(MAIN_SCRIPT_NAME)->run();
 
 	/*// This is nuts
 	for(std::size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
@@ -466,6 +473,40 @@ void Game::quit() // Call this when you want to quit to be clean
 }
 
 // Useful for scripting
+void Game::setName(const std::string& name)
+{
+	mName = name;
+	SDL_SetWindowTitle(mMainWindow, name.c_str());
+}
+
+// Sets the game's size
+void Game::setSize(int width, int height)
+{
+	mWidth = width;
+	mHeight = height;
+	SDL_SetWindowSize(mMainWindow, width, height);
+	
+	// Resize the OpenGL viewport
+	glViewport(0, 0, width, height);
+
+	// Update camera
+
+	mEntityManager.getGameCamera().setAspectRatio(static_cast<float>(mWidth / mHeight));
+}
+
+// Sets the game's main window position
+// The coords are the top 
+void Game::setMainWindowPosition(int x, int y)
+{
+	SDL_SetWindowPosition(mMainWindow, x, y);
+}
+
+// Re-centers the game's main window on the first display
+void Game::reCenterMainWindow()
+{
+	setMainWindowPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+}
+
 ResourceManager& Game::getResourceManager()
 {
 	return mResourceManager;

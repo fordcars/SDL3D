@@ -46,6 +46,12 @@ ObjectGeometryGroup::~ObjectGeometryGroup()
 	// Do nothing
 }
 
+std::string ObjectGeometryGroup::getName()
+{
+	return mName;
+}
+
+// Loads an .obj file. The objects found will be added to this group.
 void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 {
 	std::vector<tinyobj::shape_t> shapes;
@@ -113,7 +119,7 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 		// Very annoying to iterate through all vertices, but seems to be the safest
 		for(std::size_t j=0; j<numberOfVertices; j++)
 		{
-			positions[j] = glm::vec3(currentShape.mesh.positions[j*3],             // X
+			positions[j] = glm::vec3(currentShape.mesh.positions[j*3],            // X
 										 currentShape.mesh.positions[j*3 + 1],    // Y
 										 currentShape.mesh.positions[j*3 + 2]);   // Z
 

@@ -130,7 +130,7 @@ namespace Lua
     {
         luaL_checktype(L, index, LUA_TTABLE);
         LIST list;
-        int n = luaL_len(L, index);
+        int n = static_cast<int>(luaL_len(L, index));
         for (int i = 1; i <= n; i++) {
             lua_rawgeti(L, index, i);
             list.push_back(pop<typename LIST::value_type>(L));
@@ -588,7 +588,7 @@ public:
         {
 			// Casting as an int to shush the warning.
 			// Hopefully this will be fixed in the future!
-			return (int)luaL_len(L, table_idx);
+			return static_cast<int>(luaL_len(L, table_idx));
 		}
 
 // set functions (stack -> Lua)

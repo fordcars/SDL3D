@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 	// able to log as quick as possible (ex: constructing the Game).
 	Utils::clearDataOutput();
 
-	Game game("SDL3D", 1024, 720, 60);
+	Game game;
 
 	game.init();
 	game.startMainLoop(); // Runs the game, returns when the game quits

@@ -25,9 +25,16 @@
 #include <map>
 #include <memory>
 
+// Default values
+#define DEFAULT_GAME_NAME "SDL3D"
+#define DEFAULT_GAME_WINDOW_WIDTH 800
+#define DEFAULT_GAME_WINDOW_HEIGHT 600
+#define DEFAULT_GAME_MAX_FPS 60
+
 // Files and paths
 #define LOG_FILE "Log.txt"
 #define RESOURCE_PATH_PREFIX "resources/" // Added before all resources
+#define SHADER_PATH_PREFIX "shaders/"
 #define SCRIPT_PATH_PREFIX "scripts/"
 
 #define MAIN_SCRIPT_NAME "main"

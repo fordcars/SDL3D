@@ -65,11 +65,15 @@ private:
 	std::string mBasePath; // This is directory the game is in or, in a Mac bundle, the bundle's Resources directory. Absolute path.
 
 public:
+	ResourceManager();
 	ResourceManager(const std::string& basePath);
 	~ResourceManager();
 
 	static std::string getBasename(const std::string& path);
+
+	void setBasePath(const std::string& basePath);
 	std::string getFullResourcePath(const std::string& path);
+	std::string getFullShaderPath(const std::string& path);
 	std::string getFullScriptPath(const std::string& path);
 
 	// Factories

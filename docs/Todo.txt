@@ -13,10 +13,10 @@
 
 -Get rid of key inits and resources and all in Game::initMainLoop() (FROM LUA!!!)
 
--Lua API?
 -Colision detection (in Entity step function?) - Either point or box (and add collision on and off):
 ---Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!
 
+-A Window class instead of functions in Game? It's fine for now, maybe an SDL window is enough.
 -Load all files at the same place?
 
 -Update to VS 2015 to:

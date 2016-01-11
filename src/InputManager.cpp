@@ -45,12 +45,23 @@ void InputManager::registerKey(int sdlKey) // Not const just in-case
 	}
 }
 
-void InputManager::registerKeys(int keys[], std::size_t length) // Not very safe
+void InputManager::registerKeys(const keyVector& keys)
 {
-	for(std::size_t i=0; i<length; i++)
+	for(auto &keyIt : keys)
+		registerKey(keyIt);
+}
+
+bool InputManager::isKeyPressed(const int sdlKey)
+{
+	sdlKeyMap::const_iterator got = mKeys.find(sdlKey);
+
+	if(got==mKeys.end()) // Not found!
 	{
-		registerKey(keys[i]);
+		Utils::WARN("Key not found! Please register before using it");
+		return false;
 	}
+
+	return got->second;
 }
 
 // Call each frame! Takes an event, and checks and updates keys.
@@ -67,17 +78,4 @@ void InputManager::updateKeyByEvent(SDL_Event event)
 			keyEvent.type == SDL_KEYDOWN ? sdlKeyIt->second = true : sdlKeyIt->second = false; // If keydown, set to true
 		}
 	}
-}
-
-bool InputManager::isKeyPressed(const int sdlKey)
-{
-	sdlKeyMap::const_iterator got = mKeys.find(sdlKey);
-
-	if(got==mKeys.end()) // Not found!
-	{
-		Utils::WARN("Key not found! Please register before using it");
-		return false;
-	}
-
-	return got->second;
 }
