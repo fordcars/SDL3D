@@ -35,7 +35,7 @@ out vec3 color;
 // Values that stay constant for the whole mesh
 uniform sampler2D textureSampler;
 //uniform vec3 lightColor;
-//uniform vec3 lightPower
+//uniform float lightPower
 
 void main()
 {
@@ -44,8 +44,10 @@ void main()
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
 	float lightPower = 300000.0;
 	
-	vec3 materialDiffuseColor = texture(textureSampler, UV).rgb;
-	vec3 materialAmbientColor = vec3(0.8, 0.8, 0.8) * materialDiffuseColor;
+	vec3 textureColor = texture(textureSampler, UV).rgb;
+
+	vec3 materialDiffuseColor = textureColor;
+	vec3 materialAmbientColor = vec3(0.5, 0.5, 0.5) * materialDiffuseColor;
 	vec3 materialSpecularColor = vec3(1.0, 1.0, 1.0);
 	
 	float squareDistance = pow(length(lightPosition_worldspace - vertexPosition_worldspace), 2);
@@ -61,13 +63,11 @@ void main()
 	vec3 R = reflect(-ld, n);
 	float cosAlpha = clamp(dot(E, R), 0, 1);
 	
-	//vec3 materialAmbientColor
-	
-	// Ouput color = color at that specific UV
-	color =
+	color = 
 	// Ambient : simulates indirect lighting
 	materialAmbientColor +
 	// Diffuse : "color" of the object
+	// In GLSL, multiplications are just the multiplications of the vector's components
 	materialDiffuseColor * lightColor * lightPower * cosTheta / squareDistance +
 	// Specular " reflective highlight, like a mirror
 	// Multiplying by cos theta removes annoying artefacts http://www.gamedev.net/topic/672374-blinn-phong-artifact-in-shader/

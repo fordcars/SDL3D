@@ -55,7 +55,9 @@ void main()
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
 	float lightPower = 10.0;
 	
-	vec3 materialDiffuseColor = texture(textureSampler, UV).rgb;
+	vec3 textureColor = texture(textureSampler, UV).rgb;
+	
+	vec3 materialDiffuseColor = textureColor;
 	vec3 materialAmbientColor = vec3(0.1, 0.1, 0.1) * materialDiffuseColor;
 	vec3 materialSpecularColor = vec3(1.0, 1.0, 1.0);
 	
@@ -65,10 +67,7 @@ void main()
 	
 	vec2 lighting = blinnPhongDir(lightDirection_cameraspace, lightPower, diffuseIntensity, specularIntensity, shininess);
 	
-	//vec3 materialAmbientColor
-	
-	// Ouput color = color at that specific UV
-	color =
+	color = 
 	// Ambient : simulates indirect lighting
 	materialAmbientColor +
 	// Diffuse : "color" of the object

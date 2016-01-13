@@ -22,6 +22,7 @@ local function foo()
 	
 	resourceManager:addObjectGeometryGroup("suzanne.obj");
 	resourceManager:addObjectGeometryGroup("building.obj");
+	resourceManager:addObjectGeometryGroup("minecraft.obj");
 	
 	inputManager:registerKeys({KeyCode.SDLK_UP, KeyCode.SDLK_DOWN, KeyCode.SDLK_LEFT, KeyCode.SDLK_RIGHT,
 		KeyCode.SDLK_w, KeyCode.SDLK_a, KeyCode.SDLK_s, KeyCode.SDLK_d, KeyCode.SDLK_SPACE, KeyCode.SDLK_LSHIFT, KeyCode.SDLK_LCTRL})
