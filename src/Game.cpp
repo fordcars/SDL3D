@@ -43,7 +43,7 @@ Game::Game()
 	mHeight = DEFAULT_GAME_WINDOW_HEIGHT;
 
 	// Limits the frames per second
-	mMinTimePerFrame = (int)(1000 / DEFAULT_GAME_MAX_FPS); // Truncation
+	mMinTimePerFrame = static_cast<int>(1000 / DEFAULT_GAME_MAX_FRAMES_PER_SECOND); // Truncation
 
 	mLastFrameTime = 0;
 
@@ -472,7 +472,6 @@ void Game::quit() // Call this when you want to quit to be clean
 	mQuitting = true;
 }
 
-// Useful for scripting
 void Game::setName(const std::string& name)
 {
 	mName = name;
@@ -492,6 +491,11 @@ void Game::setSize(int width, int height)
 	// Update camera
 
 	mEntityManager.getGameCamera().setAspectRatio(static_cast<float>(mWidth / mHeight));
+}
+
+void Game::setMaxFramesPerSecond(int maxFPS)
+{
+	mMinTimePerFrame = static_cast<int>(1000 / maxFPS);
 }
 
 // Sets the game's main window position

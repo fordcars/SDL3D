@@ -20,24 +20,19 @@
 #ifndef SHADED_OBJECT_HPP_
 #define SHADED_OBJECT_HPP_
 
-#include <Object.hpp>
+#include <TexturedObject.hpp>
 #include <ObjectGeometry.hpp>
 #include <Texture.hpp>
 #include <Camera.hpp>
 
 #include <memory> // For smart pointers
 
-class ShadedObject : public Object // Inherit! 'public' is required here
+class ShadedObject : public TexturedObject // Inherit! 'public' is required here
 {
-private:
-	typedef std::shared_ptr<const Texture> constTexturePointer; // We can't modify the texture
-	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
-
 public:
 	ShadedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
 	~ShadedObject() override;
 
-	void setTexture(constTexturePointer texturePointer);
 	void render(const Camera& camera) override;
 };
 

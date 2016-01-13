@@ -45,6 +45,11 @@ void TexturedObject::setTexture(constTexturePointer texturePointer)
 	mTexturePointer = texturePointer;
 }
 
+TexturedObject::constTexturePointer TexturedObject::getTexture()
+{
+	return mTexturePointer;
+}
+
 void TexturedObject::render(const Camera& camera)
 {
 	ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry().getIndexBuffer();

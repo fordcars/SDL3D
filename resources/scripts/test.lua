@@ -4,6 +4,7 @@ local function foo()
 	local game = getGame()
 	game:setName("Testing 123!")
 	game:setSize(1024, 600)
+	game:setMaxFramesPerSecond(60)
 	game:reCenterMainWindow()
 	
 	local resourceManager = game:getResourceManager()
@@ -25,7 +26,7 @@ local function foo()
 	inputManager:registerKeys({KeyCode.SDLK_UP, KeyCode.SDLK_DOWN, KeyCode.SDLK_LEFT, KeyCode.SDLK_RIGHT,
 		KeyCode.SDLK_w, KeyCode.SDLK_a, KeyCode.SDLK_s, KeyCode.SDLK_d, KeyCode.SDLK_SPACE, KeyCode.SDLK_LSHIFT, KeyCode.SDLK_LCTRL})
 	
-	
+	Utils.logprint("Hello, world!");
 end
 
 M.foo = foo

@@ -29,8 +29,10 @@
 
 class TexturedObject : public Object // Inherit! 'public' is required here
 {
-private:
+public:
 	typedef std::shared_ptr<const Texture> constTexturePointer; // We can't modify the texture
+
+private:
 	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
 
 public:
@@ -38,6 +40,8 @@ public:
 	~TexturedObject() override;
 
 	void setTexture(constTexturePointer texturePointer);
+	constTexturePointer getTexture();
+
 	void render(const Camera& camera) override;
 };
 

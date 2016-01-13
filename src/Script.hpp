@@ -40,6 +40,8 @@ private:
 	// I learnt this the hard way.
 	LuaIntf::LuaContext mLuaContext;
 
+	bool clarifyError(const std::string& errorMessage);
+
 public:
 	Script(const std::string& name, const std::string& mainFilePath, const std::string& absoluteRequirePath);
 	~Script();

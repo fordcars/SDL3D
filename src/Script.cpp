@@ -29,6 +29,7 @@
 
 #include <exception> // For handling the script's exceptions
 #include <memory> // For smart pointers
+#include <vector>
 
 using namespace LuaIntf; // Will make things way clearer
 
@@ -54,6 +55,31 @@ Script::Script(const std::string& name, const std::string& mainFilePath, const s
 Script::~Script()
 {
 	// Do nothing
+}
+
+// Will logprint a clarified error message and it's solutions if it was a know error
+// Returns true if there was a know error that was clarified
+bool Script::clarifyError(const std::string& errorMessage)
+{
+	// The error messages found here were found by trial and error
+	// These are only guesses and might not be 100% acurate
+	bool clarifiedError = false; // True if we clarified an error
+
+	// A function is returning an object that wasn't binded!
+	if(errorMessage.find("bad argument #-2") != std::string::npos)
+	{
+		clarifiedError = true;
+		Utils::WARN("We predict a function is returning a non-binded object. If this is the case, this is a bug in this engine! Please contact the developpers.");
+	}
+
+	// A module fonction is being called using the ':' syntax instead of the '.' syntax!
+	if(errorMessage.find("on bad self") != std::string::npos)
+	{
+		clarifiedError = true;
+		Utils::WARN("We predict you are attempting to call a module function using the ':'. Please use the '.' syntax instead!");
+	}
+
+	return clarifiedError;
 }
 
 // Lua will search in this path when using require().
@@ -96,7 +122,15 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 #include <Texture.hpp>
 #include <ObjectGeometryGroup.hpp>
 #include <ObjectGeometry.hpp>
+#include <GPUBuffer.hpp>
+#include <Entity.hpp>
+#include <Camera.hpp>
+
 #include <Object.hpp>
+#include <TexturedObject.hpp>
+#include <ShadedObject.hpp>
+
+#include <Utils.hpp>
 
 #include <Definitions.hpp>
 #include <glm/glm.hpp>
@@ -107,11 +141,12 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 void Script::bindInterface(Game& game)
 {
 	// Notes:
-	// If you have a Lua error arg #-2 is nil, it is propably because the failing function is returning an object that is not binded!
+	// If you get an 'arg #-2 is nil' error, it is propably because the failing function is returning an object that is not binded!
 	// You cannot give Lua different functions with the same name (overloaded Lua side). You have to give them different names (only on the Lua side).
 	// Use a static_Cast to get the right overload.
 	// You need to add a constructor to construct an object on the Lua side
 	// You need to specify args with LUA_ARGS when binding a constructor with LUA_SP container (shared_ptr)
+	// When you get a 'calling on bad self' error from a module function call, make sure that you are calling this module fonction with the '.' sintax! (Not ':')
 
 	LuaState luaState = mLuaContext.state();
 
@@ -124,6 +159,7 @@ void Script::bindInterface(Game& game)
 		.addFunction("quit", &Game::quit) // &Game::quit returns quit()'s address
 		.addFunction("setName", &Game::setName)
 		.addFunction("setSize", &Game::setSize)
+		.addFunction("setMaxFramesPerSecond", &Game::setMaxFramesPerSecond)
 		.addFunction("setMainWindowPosition", &Game::setMainWindowPosition)
 		.addFunction("reCenterMainWindow", &Game::reCenterMainWindow)
 
@@ -197,14 +233,46 @@ void Script::bindInterface(Game& game)
 
 	LuaBinding(luaState).beginClass<ObjectGeometry>("ObjectGeometry")
 		// You can create this type of object, but it will be stored as an std::shared_ptr
-		// You need to specify args with a shared pointer
+		// You need to specify LUA_ARGS with a LUA_SP container
 		.addConstructor(LUA_SP(std::shared_ptr<ObjectGeometry>), LUA_ARGS(
 			const std::string&,
 			const ObjectGeometry::uintVector&,
 			const ObjectGeometry::vec3Vector&,
 			const ObjectGeometry::vec2Vector&,
 			const ObjectGeometry::vec3Vector&))
+
 		.addFunction("getName", &ObjectGeometry::getName)
+	.endClass();
+
+
+	// Bind a few useful GPUBuffers
+	LuaBinding(luaState).beginClass<ObjectGeometry::uintBuffer>("GPUBuffer_uint>")
+		.addFunction("setMutableData", &ObjectGeometry::uintBuffer::setMutableData)
+		.addFunction("setImmutableData", &ObjectGeometry::uintBuffer::setImmutableData)
+
+		// No argument version of readData()
+		.addFunction("readData",
+			static_cast<std::vector<unsigned int>(ObjectGeometry::uintBuffer::*)() const> (&ObjectGeometry::uintBuffer::readData))
+	.endClass();
+
+
+	LuaBinding(luaState).beginClass<ObjectGeometry::vec2Buffer>("GPUBuffer_vec2>")
+		.addFunction("setMutableData", &ObjectGeometry::vec2Buffer::setMutableData)
+		.addFunction("setImmutableData", &ObjectGeometry::vec2Buffer::setImmutableData)
+
+		// No argument version of readData()
+		.addFunction("readData",
+			static_cast<std::vector<glm::vec2>(ObjectGeometry::vec2Buffer::*)() const> (&ObjectGeometry::vec2Buffer::readData))
+	.endClass();
+
+
+	LuaBinding(luaState).beginClass<ObjectGeometry::vec3Buffer>("GPUBuffer_vec3>")
+		.addFunction("setMutableData", &ObjectGeometry::vec3Buffer::setMutableData)
+		.addFunction("setImmutableData", &ObjectGeometry::vec3Buffer::setImmutableData)
+
+		// No argument version of readData()
+		.addFunction("readData",
+			static_cast<std::vector<glm::vec3>(ObjectGeometry::vec3Buffer::*)() const> (&ObjectGeometry::vec3Buffer::readData))
 	.endClass();
 
 
@@ -268,13 +336,82 @@ void Script::bindInterface(Game& game)
 	LuaBinding(luaState).beginClass<Entity>("Entity")
 		.addFunction("setPosition", &Entity::setPosition)
 		.addFunction("getPosition", &Entity::getPosition)
+
 		.addFunction("setScaling", &Entity::setScaling)
 		.addFunction("getScaling", &Entity::getScaling)
+
 		.addFunction("setRotation", &Entity::setRotation)
 		.addFunction("getRotation", &Entity::getRotation)
+
 		.addFunction("setVelocity", &Entity::setVelocity)
 		.addFunction("getVelocity", &Entity::getVelocity)
 	.endClass();
+
+
+	LuaBinding(luaState).beginExtendClass<Camera, Entity>("Camera")
+		.addFunction("setDirection", &Camera::setDirection)
+		.addFunction("getDirection", &Camera::getDirection)
+		.addFunction("setUpVector", &Camera::setUpVector)
+		.addFunction("getUpVector", &Camera::getUpVector)
+	.endClass();
+
+
+	LuaBinding(luaState).beginExtendClass<Object, Entity>("Object")
+		.addConstructor(LUA_SP(std::shared_ptr<Object>), LUA_ARGS(const ObjectGeometry&, Object::constShaderPointer))
+
+		.addFunction("getObjectGeometry", &Object::getObjectGeometry)
+		.addFunction("setShader", &Object::setShader)
+		.addFunction("getShader", &Object::getShader)
+	.endClass();
+
+
+	LuaBinding(luaState).beginExtendClass<TexturedObject, Object>("TexturedObject")
+		.addConstructor(LUA_SP(std::shared_ptr<TexturedObject>), LUA_ARGS(const ObjectGeometry&, Object::constShaderPointer,
+			TexturedObject::constTexturePointer))
+
+		.addFunction("setTexture", &TexturedObject::setTexture)
+	.endClass();
+
+
+	LuaBinding(luaState).beginExtendClass<ShadedObject, TexturedObject>("ShadedObject")
+		.addConstructor(LUA_SP(std::shared_ptr<ShadedObject>), LUA_ARGS(const ObjectGeometry&, Object::constShaderPointer,
+			ShadedObject::constTexturePointer))
+	.endClass();
+
+
+	LuaBinding(luaState).beginExtendClass<Light, Entity>("Light")
+		.addConstructor(LUA_SP(std::shared_ptr<Light>), LUA_ARGS(glm::vec3, glm::vec3, glm::vec3, float))
+
+		.addFunction("setDiffuseColor", &Light::setDiffuseColor)
+		.addFunction("getDiffuseColor", &Light::getDiffuseColor)
+
+		.addFunction("setSpecularColor", &Light::setSpecularColor)
+		.addFunction("getSpecularColor", &Light::getSpecularColor)
+
+		.addFunction("setPower", &Light::setPower)
+		.addFunction("getPower", &Light::getPower)
+
+		.addFunction("setOnState", &Light::setOnState)
+		.addFunction("isOn", &Light::isOn)
+	.endClass();
+
+
+	LuaBinding(luaState).beginModule("Utils")
+		.addFunction("logprint", [](const std::string& msg) // Use a lamda to make sure we don't need line numbers
+		{
+			Utils::directly_logprint(msg); // Use directly, we don't want C++ line numbers and files!
+		})
+
+		.addFunction("warn", [](const std::string& msg)
+		{
+			Utils::directly_warn(msg);
+		})
+
+		.addFunction("crash", [](const std::string& msg)
+		{
+			Utils::directly_crash(msg);
+		})
+	.endModule();
 
 
 	// Entity must have at least one virtual function to be a base class

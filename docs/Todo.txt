@@ -1,4 +1,6 @@
--Make Lua Interface
+-Do glm::vec2/3 in lua API
+-Put bindings in all of the classes instead of in Script?
+-Trasnparency (PROBABLY NOT! Unless we have one layer of transparency or something)? Sound?
 
 -Write a template container and keep those instances instead of a bunch of maps in ResourceManager? Maybe not, since we have factories there, too.
 

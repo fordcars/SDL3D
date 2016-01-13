@@ -29,10 +29,8 @@
 
 class Object : public Entity
 {
-protected:
+public:
 	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
-
-	ObjectGeometry& getObjectGeometry();
 
 private:
 	ObjectGeometry mObjectGeometry;
@@ -41,6 +39,8 @@ private:
 public:
 	Object(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer);
 	virtual ~Object() override; // virtual here is just for looks
+
+	ObjectGeometry& getObjectGeometry();
 
 	void setShader(constShaderPointer shaderPointer);
 	constShaderPointer getShader();

@@ -35,19 +35,14 @@
 
 ShadedObject::ShadedObject(const ObjectGeometry& objectGeometry,
 						   constShaderPointer shaderPointer, constTexturePointer texturePointer)
-	: Object(objectGeometry, shaderPointer)
+	: TexturedObject(objectGeometry, shaderPointer, texturePointer)
 {
-	mTexturePointer = texturePointer;
+	// Do nothing
 }
 
 ShadedObject::~ShadedObject()
 {
 	// Do nothing
-}
-
-void ShadedObject::setTexture(constTexturePointer texturePointer)
-{
-	mTexturePointer = texturePointer;
 }
 
 void ShadedObject::render(const Camera& camera)
@@ -114,7 +109,7 @@ void ShadedObject::render(const Camera& camera)
 
 	// Texture
 	glActiveTexture(GL_TEXTURE0); // Set the active texture unit, you can have more than 1 texture at once
-	glBindTexture(GL_TEXTURE_2D, mTexturePointer->getID());
+	glBindTexture(GL_TEXTURE_2D, getTexture()->getID());
 	
 	// Draw!
 	// Use the index buffer, more efficient!

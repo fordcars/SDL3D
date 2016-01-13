@@ -44,15 +44,15 @@ ObjectGeometry& Object::getObjectGeometry()
 	return mObjectGeometry;
 }
 
-Object::constShaderPointer Object::getShader()
-{
-	return mShaderPointer;
-}
-
  // Useful for changing the shader for different effects "on the fly"
 void Object::setShader(constShaderPointer shaderPointer)
 {
 	mShaderPointer = shaderPointer;
+}
+
+Object::constShaderPointer Object::getShader()
+{
+	return mShaderPointer;
 }
 
 // Virtual

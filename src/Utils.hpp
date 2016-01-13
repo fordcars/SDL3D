@@ -53,6 +53,7 @@ namespace Utils
 
 	// Template functions
 	// Returns the size of the vector's data, in bytes
+	// std::size_t seems to be the way most people use size_t
 	template<typename T>
 	std::size_t getSizeOfVectorData(const typename std::vector<T> &vec)
 	{

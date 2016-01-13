@@ -75,13 +75,16 @@ private:
 public:
 	Game();
 	~Game();
+
+	// Vital functions
 	void init();
 	void startMainLoop();
 	void quit();
 
-	// Useful for scripting
+	// Useful for scripting and other things
 	void setName(const std::string& name);
 	void setSize(int width, int height);
+	void setMaxFramesPerSecond(int maxFPS);
 	void setMainWindowPosition(int x, int y);
 	void reCenterMainWindow();
 

@@ -1,4 +1,4 @@
-This program is based off Sam Hocevar's amazing tutorial at http://www.opengl-tutorial.org/.
+This program is based off the amazing tutorial at http://www.opengl-tutorial.org/.
 
 Liscence to the source I based this project off of:
 
