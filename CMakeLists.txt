@@ -28,14 +28,14 @@ project(SDL3D)
 set(VS_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
 set(XCODE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL3D.app/Contents/MacOS/SDL3D)
 
-set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
 set(RESOURCE_DIR_EXE resources) # The resource in the executable's directory
 set(ARCHITECTURE x86)
 
-set(GLAD_DIR ${LIB_DIR}/glad)
-set(TINYOBJLOADER_DIR ${LIB_DIR}/tinyobjloader)
-set(LUAINTF_DIR ${LIB_DIR}/LuaIntf/LuaIntf)
+set(GLAD_DIR ${LIBRARY_DIR}/glad)
+set(TINYOBJLOADER_DIR ${LIBRARY_DIR}/tinyobjloader)
+set(LUAINTF_DIR ${LIBRARY_DIR}/LuaIntf/LuaIntf)
 
 # A list of header and source files
 set(SOURCES
@@ -57,6 +57,7 @@ set(SOURCES
 	src/Entity.cpp
 	src/EntityManager.cpp
 	src/Script.cpp
+	src/Sound.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -85,6 +86,7 @@ set(HEADERS
 	src/Entity.hpp
 	src/EntityManager.hpp
 	src/Script.hpp
+	src/Sound.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.
@@ -94,24 +96,42 @@ SET(CMAKE_CXX_FLAGS_DEBUG
 	"${CMAKE_CXX_FLAGS_DEBUG} /wd4100 /wd4127 /wd4189 /wd4512 /wd4702"
 	CACHE STRING "Debug builds CMAKE CXX flags " FORCE )
 
-# The following code finds SDL in your checkout on OS X, Linux
+# The following code finds SDL2 in your checkout on OS X, Linux
 # as well as Windows.
-set(SDL_DIR ${LIB_DIR}/SDL
-    CACHE STRING "Path to SDL" FORCE)
-find_library(SDL_LIBRARY
-    NAMES SDL2 SDL
-    PATHS ${SDL_DIR}/lib
-    PATH_SUFFIXES local/lib VisualC/SDL2/Release VisualC/SDL/Release # Additional paths to check, appended after PATHS
+set(SDL2_DIR ${LIBRARY_DIR}/SDL2
+    CACHE STRING "Path to SDL2" FORCE)
+find_library(SDL2_LIBRARY # LIBRARY instead of LIB since OpenGL has LIBRARY as it's variable name
+    NAMES SDL2
+    PATHS ${SDL2_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/SDL2/Release # Additional paths to check, appended after PATHS
     NO_DEFAULT_PATH
 )
-find_library(SDLMAIN_LIBRARY
-    NAMES SDL2main SDLmain
-    PATHS ${SDL_DIR}/lib
-    PATH_SUFFIXES local/lib VisualC/SDL2main/Release VisualC/SDLmain/Release
+find_library(SDL2MAIN_LIBRARY
+    NAMES SDL2main
+    PATHS ${SDL2_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/SDL2main/Release
+    NO_DEFAULT_PATH
+)
+find_library(SDL2_MIXER_LIBRARY
+    NAMES SDL2_mixer
+    PATHS ${SDL2_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/SDL2_mixer/Release
+    NO_DEFAULT_PATH
+)
+find_library(NATIVE_MIDI_LIBRARY
+    NAMES native_midi
+    PATHS ${SDL2_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/native_library/Release
+    NO_DEFAULT_PATH
+)
+find_library(TIMIDITY_LIBRARY
+    NAMES timidity
+    PATHS ${SDL2_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/timidity/Release
     NO_DEFAULT_PATH
 )
 
-set(LUA_DIR ${LIB_DIR}/lua
+set(LUA_DIR ${LIBRARY_DIR}/lua
     CACHE STRING "Path to Lua" FORCE)
 find_library(LUA_LIBRARY
     NAMES lua lua5.3.2
@@ -133,12 +153,12 @@ endif()
 # Includes
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${SDL_DIR}/include # For shorter includes
+    ${SDL2_DIR}/include # Includes SDL2 extensions, too
 	${LUA_DIR}/include
 	${GLAD_DIR}/include
 	${TINYOBJLOADER_DIR}
 	${LUAINTF_DIR}
-	${LIB_DIR} # All other libraries
+	${LIBRARY_DIR} # All other libraries
 )
 
 # Now we define what makes our executable.  First thing is the name,
@@ -153,29 +173,33 @@ add_executable(
     ${HEADERS}
 )
 
-# Lastly we have to link the OpenGL libraries, SDL and the cocoa
+# Lastly we have to link the OpenGL libraries, SDL2 and the cocoa
 # framework to our application.  The latter is only happening on
 # OS X obviously.
 target_link_libraries(
     SDL3D
     ${OPENGL_LIBRARIES}
-    ${SDL_LIBRARY}
+    ${SDL2_LIBRARY}
+	${SDL2MAIN_LIBRARY}
+	${SDL2_MIXER_LIBRARY}
+	${NATIVE_MIDI_LIBRARY}
+	${TIMIDITY_LIBRARY}
 	${LUA_LIBRARY}
-    ${SDLMAIN_LIBRARY}
     ${EXTRA_LIBRARIES}
 )
 
 # If this is Windows, copy the DLL next to the program
 if(WIN32)
 	# Copy SDL
+	# Copies the whole .dll directory
     add_custom_command(TARGET SDL3D POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${SDL_DIR}/lib/SDL2.dll ${VS_OUTPUT_DIR}/SDL2.dll)
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${SDL2_DIR}/lib/x86 ${VS_OUTPUT_DIR})
 	
 	# Copy Lua
     add_custom_command(TARGET SDL3D POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${LUA_DIR}/lib/lua.dll ${VS_OUTPUT_DIR}/lua.dll)
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${LUA_DIR}/lib/x86 ${VS_OUTPUT_DIR})
 	
 	# Copy resources
 	add_custom_command(TARGET SDL3D POST_BUILD
@@ -190,7 +214,7 @@ if(APPLE)
 	# SDL
     add_custom_command(TARGET SDL3D POST_BUILD
         COMMAND python ${FRAMEWORKIFY_SCRIPT} ${XCODE_OUTPUT_DIR}
-        ${SDL_LIBRARY})
+        ${SDL2_LIBRARY})
 	
 	# Lua
     add_custom_command(TARGET SDL3D POST_BUILD
@@ -198,7 +222,7 @@ if(APPLE)
         ${LUA_LIBRARY})
 	
 	# Copy resources
-	# I think this works as long as the application is not a bundle, otherwise we have to change this:
+	# I think this works as long as the application is not a bundle, otherwise we have to change this. Info:
 	# http://stackoverflow.com/questions/27181879/cmake-copy-icon-to-bundle-resources
 	add_custom_command(TARGET SDL3D POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory

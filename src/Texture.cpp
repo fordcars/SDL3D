@@ -26,30 +26,47 @@
 #include <vector>
 #include <cstring> // For strncmp
 
-Texture::Texture(const std::string& name, const std::string& texturePath, int type)
+Texture::Texture(const std::string& name, const std::string& path, int type)
 {
 	mName = name;
+	mPath = path;
+	mType = type;
 
-	switch(type)
-	{
-	case BMP_TEXTURE:
-		mID = loadBMPTexture(texturePath);
-		break;
+	load();
+}
 
-	case DDS_TEXTURE:
-		mID = loadDDSTexture(texturePath);
-		break;
+// Heavy! Reloads the texture. (Maybe we should change this, but it's quite a lot of work depending on the method)
+Texture::Texture(const Texture& other)
+{
+	// Looks like the easiest way to copy a texture is to reload it.
+	mName = other.mName;
+	mPath = other.mPath;
+	mType = other.mType;
 
-	default:
-		std::string warning = "No texture type specified for textue '" + name + "'! Assuming it is bipmap";
-		Utils::WARN(warning);
-		break;
-	}
+	load();
 }
 
 Texture::~Texture()
 {
 	glDeleteTextures(1, &mID); // Delete this texture. Might save memory.
+}
+
+bool Texture::load()
+{
+	switch(mType)
+	{
+	case TEXTURE_BMP:
+		mID = loadBMPTexture(mPath);
+		return true;
+
+	case TEXTURE_DDS:
+		mID = loadDDSTexture(mPath);
+		return true;
+
+	default:
+		Utils::CRASH("Texture type specified for '" + mName + "' is invalid!");
+		return false;
+	}
 }
 
 // Static

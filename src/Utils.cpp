@@ -21,6 +21,7 @@
 #include <Definitions.hpp>
 
 #include <SDL.h> // For quitting
+#include <SDL_mixer.h> // For quitting
 #include <fstream>
 
 #include <sstream> // For std::getLine()
@@ -75,19 +76,23 @@ void directly_logprint(const std::string& msg, int line, const char* file)
 
 void directly_warn(const std::string& msg, int line, const char* file)
 {
-	std::string fullString = "Warning: " + msg; // Concentenate
+	std::string fullString = "\nWarning: " + msg; // Concentenate
 	directly_logprint(fullString, line, file);
 }
 
 // This quits the game, so don't expect to be able to do other things after calling this (including logging)!
 void directly_crash(const std::string& msg, int line, const char* file)
 {
-	std::string fullString = "Crash: " + msg; // Concentenate
+	std::string fullString = "\nCrash: " + msg; // Concentenate
 
 	directly_logprint(fullString, line, file);
 
 	closeLogFile();
+
+	// Lets be at least a bit nice
 	SDL_Quit();
+	Mix_CloseAudio();
+
 	exit(1); // Not the best
 }
 
@@ -96,7 +101,7 @@ void directly_crashFromSDL(const std::string& msg, int line, const char* file)
 {
 	std::string sdlError = SDL_GetError();
 
-	Utils::directly_logprint(msg, line, file);
+	Utils::directly_logprint("\n" + msg, line, file); // Newline for looks
 
 	if(!sdlError.empty())
 		Utils::directly_crash("SDL error: " + sdlError); // We already showed the line number and file up top
@@ -107,6 +112,7 @@ void directly_crashFromSDL(const std::string& msg, int line, const char* file)
 }
 
 // Does checks and returns the contents of the file
+// If it failed, it returns an empty string
 std::string getFileContents(const std::string& filePath)
 {
 	std::ifstream fileStream(filePath, std::ios::in | std::ios::binary);

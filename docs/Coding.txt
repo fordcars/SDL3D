@@ -1,4 +1,8 @@
--Try to always use std::strings. When you have function taking an std::string, define that as (const string& param) when you don't need to modify the string. This creates a read-only reference to the string. It is faster than passing the string itself, since doing this copies the string.
+- Try to always use std::strings. When you have function taking an std::string, define that as (const string& param) when you don't need to modify the string. This creates a read-only reference to the string. It is faster than passing the string itself, since doing this copies the string.
 -Use references or smart pointers instead of pointers.
--Include files only where they are used. In .cpp if they are used there, not in .h (?)
--Normally, a 'file' is the actual file (ex: file.dll), and the 'path' is the full file path (ex: resource/file.dll)
+- Include files only where they are used. In .cpp if they are used there, not in .h (?)
+- Normally, a 'file' is the actual file (ex: file.dll), and the 'path' is the full file path (ex: C:/Users/Game/resource/file.dll)
+
+- Normally, error messages are printed in the function themselves and not where the functions are being called from. This is gives the ability to give coherent error messages throughout the code.
+
+- Functions that can fail should return true (success) or false (failed) when possible. Most of the time, we will not grab onto this return value, though.

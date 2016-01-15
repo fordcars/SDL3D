@@ -23,6 +23,8 @@
 #include <SimpleTimer.hpp> // For game loop
 #include <Definitions.hpp>
 
+#include <SDL_mixer.h>
+
 #include <string> // No .h for c++
 
 #include <math.h>
@@ -174,12 +176,13 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	//mResourceManager.addShader("shaded.v.glsl", "shaded.f.glsl");
 
 	// Textures
-	//mResourceManager.addTexture("test.bmp", BMP_TEXTURE);
-	//mResourceManager.addTexture("suzanne.dds", DDS_TEXTURE);
-	//mResourceManager.addTexture("building.dds", DDS_TEXTURE);
-	//mResourceManager.addTexture("minecraft.dds", DDS_TEXTURE);
+	//mResourceManager.addTexture("test.bmp", TEXTURE_BMP);
+	//mResourceManager.addTexture("suzanne.dds", TEXTURE_DDS);
+	//mResourceManager.addTexture("building.dds", TEXTURE_DDS);
+	//mResourceManager.addTexture("minecraft.dds", TEXTURE_DDS);
 	
 	// Scripts
+	// Only one script for now
 	mResourceManager.addScript(MAIN_SCRIPT_NAME, MAIN_SCRIPT_FILE);
 
 	mResourceManager.findScript(MAIN_SCRIPT_NAME)->bindInterface(*this);
@@ -190,8 +193,13 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	//mResourceManager.addObjectGeometryGroup("building.obj");
 	//mResourceManager.addObjectGeometryGroup("minecraft.obj");
 
+	//mResourceManager.addSound("music", "texasradiofish_-_Funk_n_Jazz.ogg", SOUND_MUSIC);
+	//mResourceManager.findSound("music")->play(-1);
+
+	//mResourceManager.addSound("soundEffect.ogg", SOUND_CHUNK);
+
 	// static_cast<>() is safer than a C-style cast
-	mEntityManager.getGameCamera().setAspectRatio(static_cast<float>(mWidth/mHeight));
+	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
 	mEntityManager.getGameCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
 	mEntityManager.getGameCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
 
@@ -200,13 +208,13 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
 	mEntityManager.addObject(monkey);
 
-	// This is nuts
+	/*// This is nuts
 	for(std::size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
 	{
 		EntityManager::objectPointer funTest(new ShadedObject(*mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("minecraft")));
 		funTest->setScaling(glm::vec3(1.0f, 1.0f, 1.0f));
 		mEntityManager.addObject(funTest);
-	}
+	}*/
 
 	EntityManager::lightPointer light(new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60));
 	mEntityManager.addLight(light);
@@ -214,6 +222,19 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 
 void Game::cleanUp() // Cleans up everything. Call before quitting
 {
+	// Quit
+	// From https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_10.html#SEC10
+	for(int i = 0; i < 1000; i++) // I don't like infinite loops
+	{
+		if(Mix_Init(0))
+		{
+			Mix_Quit();
+			break;
+		}
+	}
+
+	Mix_CloseAudio();
+
 	SDL_GL_DeleteContext(mMainContext);
 	SDL_DestroyWindow(mMainWindow);
 	SDL_Quit();
@@ -274,11 +295,17 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 
 	if(!message.empty())
 	{
-		Utils::LOGPRINT("SDL message: " + message);
+		Utils::LOGPRINT("SDL message (most of the time you can ignore these): " + message);
 		SDL_ClearError();
 	}
 }
 
+float Game::calculateAspectRatio()
+{
+	return (  static_cast<float>(mWidth) / static_cast<float>(mHeight)  );
+}
+
+bool qpressedlastframe = false; //DEBUUGGGGG
 void Game::step() // Movement and all
 {
 	float speed = 0.01f;
@@ -365,6 +392,23 @@ void Game::step() // Movement and all
 		mEntityManager.getGameCamera().setDirection(glm::rotateY(mEntityManager.getGameCamera().getDirection(), -rotateAngle));
 	}
 
+	if(mInputManager.isKeyPressed(SDLK_m))
+	{
+		if(!qpressedlastframe)
+		{
+			qpressedlastframe = true;
+			mResourceManager.findSound("soundEffect")->play();
+
+			if(mResourceManager.findSound("music")->isPaused())
+				mResourceManager.findSound("music")->resume();
+			else
+				mResourceManager.findSound("music")->pause();
+		}
+	} else
+	{
+		qpressedlastframe = false;
+	}
+
 	mEntityManager.step();
 }
 
@@ -407,10 +451,35 @@ void Game::doMainLoop()
 
 // Public Interface //
 
-void Game::init() // Starts the game
+// Initializes the game
+// Returns false if it failed
+bool Game::init()
 {	
-	if(SDL_Init(SDL_INIT_VIDEO) < 0)
-		Utils::CRASH("Unable to initialize SDL!");
+	// SDL_INIT_AUDIO for SDL_mixer
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO) < 0)
+	{
+		// Failed
+		Utils::CRASH_FROM_SDL("Unable to initialize SDL!");
+		return false;
+	}
+
+	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) // 2 for stereo
+	{
+		Utils::CRASH_FROM_SDL("Unable to open SDL_mixer!");
+		return false;
+	}
+
+	if(Mix_Init(MIX_INIT_FLAC | MIX_INIT_OGG) < 0)
+	{
+		Utils::CRASH_FROM_SDL("Unable to initialize SDL_mixer!");
+		return false;
+	}
+
+	if(Mix_AllocateChannels(MAX_SOUND_CHANNELS) < 0)
+	{
+		Utils::CRASH_FROM_SDL("Unable to allocate SDL_mixer channels!");
+		return false;
+	}
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -421,14 +490,20 @@ void Game::init() // Starts the game
 	mMainWindow = SDL_CreateWindow(mName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mWidth, mHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	
 	if(!mMainWindow) // If the window failed to create, crash
+	{
 		Utils::CRASH_FROM_SDL("Unable to create window!");
+		return false;
+	}
 
 	mMainContext = SDL_GL_CreateContext(mMainWindow); // Create OpenGL context!
 
 	SDL_GL_SetSwapInterval(1); // Kind of VSync?
 
 	if(!gladLoadGL()) // Load OpenGL at runtime. I don't use SDL's loader, so no need to use gladLoadGLLoader().
+	{
 		Utils::CRASH("GLAD failed to load OpenGL!");
+		return false;
+	}
 
 	// Output OpenGL version
 	std::string glVersion;
@@ -439,7 +514,7 @@ void Game::init() // Starts the game
 	if(!checkCompability()) // Logs errors if it is not compatible
 	{
 		Utils::CRASH("System not compatible, cancelling init.");
-		return;
+		return false;
 	}
 	
 	setupGraphics();
@@ -447,6 +522,8 @@ void Game::init() // Starts the game
 
 	Utils::LOGPRINT("Initialization finished!");
 	mInitialized = true;
+
+	return true;
 }
 
 void Game::startMainLoop() // Starts the main loop
@@ -490,7 +567,7 @@ void Game::setSize(int width, int height)
 
 	// Update camera
 
-	mEntityManager.getGameCamera().setAspectRatio(static_cast<float>(mWidth / mHeight));
+	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
 }
 
 void Game::setMaxFramesPerSecond(int maxFPS)

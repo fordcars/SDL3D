@@ -48,6 +48,7 @@ private:
 	bool mInitialized; // Set to true after initializing
 	bool mQuitting; // If set to true, the game will quit at the end of the frame
 
+	// Pointers for SDL stuff needed
 	SDL_Window *mMainWindow; // We might have multiple windows one day
 	SDL_GLContext mMainContext; // OpenGl context
 
@@ -68,6 +69,8 @@ private:
 	void doEvents();
 	void checkForErrors();
 
+	float calculateAspectRatio();
+
 	void step();
 	void render();
 	void doMainLoop();
@@ -77,7 +80,7 @@ public:
 	~Game();
 
 	// Vital functions
-	void init();
+	bool init();
 	void startMainLoop();
 	void quit();
 

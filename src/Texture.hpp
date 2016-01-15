@@ -34,15 +34,19 @@ class Texture
 {
 private:
 	std::string mName; // May be useful, for error messages for example. Don't change this stupidly.
+	std::string mPath;
 	int mType;
 
 	GLuint mID;
+
+	bool load();
 
 	static GLuint loadBMPTexture(const std::string& texturePath);
 	static GLuint loadDDSTexture(const std::string& texturePath);
 
 public:
-	Texture(const std::string& name, const std::string& texturePath, int type);
+	Texture(const std::string& name, const std::string& path, int type);
+	Texture(const Texture& other);
 	~Texture();
 
 	std::string getName() const;

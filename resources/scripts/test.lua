@@ -15,17 +15,23 @@ local function foo()
 	resourceManager:addShader("textured.v.glsl", "textured.f.glsl")
 	resourceManager:addShader("shaded.v.glsl", "shaded.f.glsl")
 	
-	resourceManager:addTexture("test.bmp", TextureType.BMP_TEXTURE)
-	resourceManager:addTexture("suzanne.dds", TextureType.DDS_TEXTURE)
-	resourceManager:addTexture("building.dds", TextureType.DDS_TEXTURE)
-	resourceManager:addTexture("minecraft.dds", TextureType.DDS_TEXTURE)
+	resourceManager:addTexture("test.bmp", TextureType.BMP)
+	resourceManager:addTexture("suzanne.dds", TextureType.DDS)
+	resourceManager:addTexture("building.dds", TextureType.DDS)
+	resourceManager:addTexture("minecraft.dds", TextureType.DDS)
 	
 	resourceManager:addObjectGeometryGroup("suzanne.obj");
 	resourceManager:addObjectGeometryGroup("building.obj");
-	resourceManager:addObjectGeometryGroup("minecraft.obj");
+	--resourceManager:addObjectGeometryGroup("minecraft.obj");
 	
-	inputManager:registerKeys({KeyCode.SDLK_UP, KeyCode.SDLK_DOWN, KeyCode.SDLK_LEFT, KeyCode.SDLK_RIGHT,
-		KeyCode.SDLK_w, KeyCode.SDLK_a, KeyCode.SDLK_s, KeyCode.SDLK_d, KeyCode.SDLK_SPACE, KeyCode.SDLK_LSHIFT, KeyCode.SDLK_LCTRL})
+	resourceManager:addNamedSound("music", "texasradiofish_-_Funk_n_Jazz.ogg", SoundType.Music)
+	resourceManager:addSound("soundEffect.ogg", SoundType.Chunk)
+	
+	resourceManager:findSound("music"):play(-1)
+	--resourceManager:findSound("music"):setVolume(resourceManager:findSound("music"):getVolume()-120)
+	
+	inputManager:registerKeys({KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
+		KeyCode.w, KeyCode.a, KeyCode.s, KeyCode.d, KeyCode.SPACE, KeyCode.LSHIFT, KeyCode.LCTRL, KeyCode.m})
 	
 	Utils.logprint("Hello, world!");
 end

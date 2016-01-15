@@ -1,6 +1,5 @@
 -Do glm::vec2/3 in lua API
--Put bindings in all of the classes instead of in Script?
--Trasnparency (PROBABLY NOT! Unless we have one layer of transparency or something)? Sound?
+-Put bindings in all of the classes instead of in Script!
 
 -Write a template container and keep those instances instead of a bunch of maps in ResourceManager? Maybe not, since we have factories there, too.
 
@@ -50,7 +49,9 @@
 -2D Text (+2d textures)
 
 FUTURE:
--Use .mtl material files (with ObjectGeometry, check out addObjectGeometryGroup())
+- Use .mtl material files (with ObjectGeometry, check out addObjectGeometryGroup())
 ->>> .mtl can specify textures!
+
+- Transparency
 
 -Dynamic shadows (static shadows are made in 3d modeling program)

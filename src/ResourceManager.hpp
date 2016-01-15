@@ -24,6 +24,8 @@
 #include <Texture.hpp>
 #include <ObjectGeometryGroup.hpp>
 #include <Script.hpp>
+#include <Sound.hpp>
+
 #include <Definitions.hpp>
 
 #include <glad/glad.h>
@@ -41,6 +43,7 @@ public:
 	typedef std::shared_ptr<Texture> texturePointer;
 	typedef std::shared_ptr<ObjectGeometryGroup> objectGeometryGroup_pointer; // Underscore for clarity
 	typedef std::shared_ptr<Script> scriptPointer;
+	typedef std::shared_ptr<Sound> soundPointer;
 
 private:
 	// Each map will hold shared_ptrs to instances. When you remove this from the map, the instance will stay alive until all
@@ -57,10 +60,17 @@ private:
 	typedef std::map<std::string, scriptPointer> scriptMap;
 	typedef std::pair<std::string, scriptPointer> scriptMapPair;
 
+	typedef std::map<std::string, scriptPointer> scriptMap;
+	typedef std::pair<std::string, scriptPointer> scriptMapPair;
+
+	typedef std::map<std::string, soundPointer> soundMap;
+	typedef std::pair<std::string, soundPointer> soundMapPair;
+
 	shaderMap mShaderMap; // Map, faster access: shaders[shaderName] = shaderID etc
 	textureMap mTextureMap;
 	objectGeometryGroup_map mObjectGeometryGroupMap;
 	scriptMap mScriptMap;
+	soundMap mSoundMap;
 
 	std::string mBasePath; // This is directory the game is in or, in a Mac bundle, the bundle's Resources directory. Absolute path.
 
@@ -84,18 +94,23 @@ public:
 
 	texturePointer addTexture(const std::string& name, const std::string& textureFile, int type);
 	texturePointer addTexture(const std::string& textureFile, int type);
-	texturePointer findTexture(const std::string& textureName);
+	texturePointer findTexture(const std::string& name);
 	void clearTextures();
 
 	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& name, const std::string& objectFile);
 	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& objectFile);
 	objectGeometryGroup_pointer findObjectGeometryGroup(const std::string& objectName);
-	void clearObjectGeometries();
+	void clearObjectGeometryGroups();
 
 	scriptPointer addScript(const std::string& name, const std::string& mainScriptFile);
 	scriptPointer addScript(const std::string& mainScriptFile);
 	scriptPointer findScript(const std::string& name);
 	void clearScripts();
+
+	soundPointer addSound(const std::string& name, const std::string& soundFile, int type);
+	soundPointer addSound(const std::string& soundFile, int type);
+	soundPointer findSound(const std::string& name);
+	void clearSounds();
 };
 
 #endif /* RESOURCE_MANAGER_HPP_ */

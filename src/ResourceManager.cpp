@@ -106,6 +106,7 @@ std::string ResourceManager::getFullScriptPath(const std::string& path)
 	return getFullResourcePath(SCRIPT_PATH_PREFIX + path);
 }
 
+/////// Shaders ///////
 // Factory
 ResourceManager::shaderPointer
 	ResourceManager::addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
@@ -158,10 +159,11 @@ void ResourceManager::clearShaders() // For freeing memory, you don't have to ca
 	mShaderMap.clear(); // Clears all shaders (if you want to know, calls all deconstructors)
 }
 
+/////// Textures ///////
 ResourceManager::texturePointer ResourceManager::addTexture(const std::string& name, const std::string& textureFile, int type)
 {
 	std::string path = getFullResourcePath(textureFile);
-
+	
 	texturePointer texture(new Texture(name, path, type));
 	textureMapPair texturePair(name, texture);
 
@@ -184,13 +186,13 @@ ResourceManager::texturePointer ResourceManager::addTexture(const std::string& t
 	return addTexture(name, textureFile, type); // Create the texture and return it
 }
 
-ResourceManager::texturePointer ResourceManager::findTexture(const std::string& textureName)
+ResourceManager::texturePointer ResourceManager::findTexture(const std::string& name)
 {
-	textureMap::iterator got = mTextureMap.find(textureName);
+	textureMap::iterator got = mTextureMap.find(name);
 
 	if(got == mTextureMap.end())
 	{
-		std::string error = "Texture '" + textureName + "' not found!";
+		std::string error = "Texture '" + name + "' not found!";
 		Utils::CRASH(error);
 		return got->second;
 	}
@@ -203,6 +205,8 @@ void ResourceManager::clearTextures()
 	mTextureMap.clear();
 }
 
+
+/////// ObjectGeometryGroups ///////
 ResourceManager::objectGeometryGroup_pointer
 	ResourceManager::addObjectGeometryGroup(const std::string& name, const std::string& objectFile)
 {
@@ -226,7 +230,6 @@ ResourceManager::objectGeometryGroup_pointer
 	ResourceManager::addObjectGeometryGroup(const std::string& objectFile)
 {
 	std::string name = getBasename(objectFile);
-
 	return addObjectGeometryGroup(name, objectFile);
 }
 
@@ -245,16 +248,17 @@ ResourceManager::objectGeometryGroup_pointer
 	return got->second;
 }
 
-void ResourceManager::clearObjectGeometries()
+void ResourceManager::clearObjectGeometryGroups()
 {
 	mObjectGeometryGroupMap.clear();
 }
 
+/////// Scripts ///////
 ResourceManager::scriptPointer ResourceManager::addScript(const std::string& name, const std::string& mainScriptFile)
 {
 	std::string mainFilePath = getFullScriptPath(mainScriptFile);
 
-	// getFullScriptPath("") will return the require directory, logically
+	// getFullScriptPath("") will return a good require directory, logically
 	scriptPointer script(new Script(name, mainFilePath, getFullScriptPath("")));
 
 	scriptMapPair scriptPair(name, script);
@@ -293,4 +297,49 @@ ResourceManager::scriptPointer ResourceManager::findScript(const std::string& na
 void ResourceManager::clearScripts()
 {
 	mScriptMap.clear();
+}
+
+/////// Sounds ///////
+ResourceManager::soundPointer ResourceManager::addSound(const std::string& name, const std::string& soundFile, int type)
+{
+	std::string soundFilePath = getFullResourcePath(soundFile);
+
+	soundPointer sound(new Sound(name, soundFilePath, type));
+
+	soundMapPair soundPair(name, sound);
+	std::pair<soundMap::iterator, bool> newlyAddedPair = mSoundMap.insert(soundPair);
+
+	if(newlyAddedPair.second == false) // It already exists in the map
+	{
+		std::string error = "Sound '" + name + "' already exists and cannot be added again!";
+		Utils::CRASH(error);
+		return newlyAddedPair.first->second;
+	}
+
+	return newlyAddedPair.first->second; // Get the pair at pair.first, then the pointer at ->second
+}
+
+ResourceManager::soundPointer ResourceManager::addSound(const std::string& soundFile, int type)
+{
+	std::string name = getBasename(soundFile);
+	return addSound(name, soundFile, type);
+}
+
+ResourceManager::soundPointer ResourceManager::findSound(const std::string& name)
+{
+	soundMap::iterator got = mSoundMap.find(name);
+
+	if(got == mSoundMap.end())
+	{
+		std::string error = "Sound '" + name + "' not found!";
+		Utils::CRASH(error);
+		return got->second;
+	}
+
+	return got->second;
+}
+
+void ResourceManager::clearSounds()
+{
+	mSoundMap.clear();
 }

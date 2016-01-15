@@ -69,7 +69,10 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 	const int shaderFilesLength[] = {shaderLength}; // Array
 
 	if(shaderLength==0) // If there is no source
+	{
 		Utils::CRASH("No shader source found!");
+		return 0;
+	}
 	
 	glShaderSource(shader, 1, shaderFiles, shaderFilesLength);
 	glCompileShader(shader);

@@ -25,6 +25,8 @@
 #include <map>
 #include <memory>
 
+#define MAX_SOUND_CHANNELS 20 // Defines how many sounds can play at the same time
+
 // Default values
 #define DEFAULT_GAME_NAME "SDL3D"
 #define DEFAULT_GAME_WINDOW_WIDTH 800
@@ -41,8 +43,12 @@
 #define MAIN_SCRIPT_FILE MAIN_SCRIPT_NAME ".lua" // Concatenates both literals
 
 // Texture types
-#define BMP_TEXTURE 0
-#define DDS_TEXTURE 1
+#define TEXTURE_BMP 0
+#define TEXTURE_DDS 1
+
+// Sound types
+#define SOUND_MUSIC 0
+#define SOUND_CHUNK 1 // Short sound effects would use this type
 
 // Scripting
 namespace LuaIntf

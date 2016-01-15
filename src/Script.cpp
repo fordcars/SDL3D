@@ -122,6 +122,7 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 #include <Texture.hpp>
 #include <ObjectGeometryGroup.hpp>
 #include <ObjectGeometry.hpp>
+#include <Sound.hpp>
 #include <GPUBuffer.hpp>
 #include <Entity.hpp>
 #include <Camera.hpp>
@@ -170,46 +171,51 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginClass<ResourceManager>("ResourceManager")
-		.addConstant("BMP_TEXTURE", BMP_TEXTURE)
-		.addConstant("DDS_TEXTURE", DDS_TEXTURE)
-
 		.addFunction("addShader",
 			// Specify which overload we want. Lua doesn't support functions with same names, though.
 			static_cast<ResourceManager::shaderPointer(ResourceManager::*)(const std::string&, const std::string&)>
 				(&ResourceManager::addShader))
 
-		.addFunction("addShaderWithName",
+		.addFunction("addNamedShader",
 			static_cast<ResourceManager::shaderPointer(ResourceManager::*)(const std::string&, const std::string&, const std::string&)>
 				(&ResourceManager::addShader))
 
 		.addFunction("findShader", &ResourceManager::findShader)
+		.addFunction("clearShaders", &ResourceManager::clearShaders)
 
 		.addFunction("addTexture",
 			static_cast<ResourceManager::texturePointer(ResourceManager::*)(const std::string&, int)>
 				(&ResourceManager::addTexture))
 
-		.addFunction("addTextureWithName",
+		.addFunction("addNamedTexture",
 			static_cast<ResourceManager::texturePointer(ResourceManager::*)(const std::string&, const std::string&, int)>
 				(&ResourceManager::addTexture))
 
 		.addFunction("findTexture", &ResourceManager::findTexture)
+		.addFunction("clearTextures", &ResourceManager::clearTextures)
 
 		.addFunction("addObjectGeometryGroup",
 			static_cast<ResourceManager::objectGeometryGroup_pointer(ResourceManager::*)(const std::string&)>
 			(&ResourceManager::addObjectGeometryGroup))
 
-		.addFunction("addObjectGeometryGroupWithName",
+		.addFunction("addNamedObjectGeometryGroup",
 			static_cast<ResourceManager::objectGeometryGroup_pointer(ResourceManager::*)(const std::string&, const std::string&)>
 			(&ResourceManager::addObjectGeometryGroup))
 
 		.addFunction("findObjectGeometryGroup", &ResourceManager::findObjectGeometryGroup)
+		.addFunction("clearObjectGeometryGroups", &ResourceManager::clearObjectGeometryGroups)
+
+		.addFunction("addSound",
+			static_cast<ResourceManager::soundPointer(ResourceManager::*)(const std::string&, int)>
+			(&ResourceManager::addSound))
+
+		.addFunction("addNamedSound",
+			static_cast<ResourceManager::soundPointer(ResourceManager::*)(const std::string&, const std::string&, int)>
+			(&ResourceManager::addSound))
+
+		.addFunction("findSound", &ResourceManager::findSound)
+		.addFunction("clearSounds", &ResourceManager::clearSounds)
 	.endClass();
-
-
-	LuaBinding(luaState).beginModule("TextureType")
-		.addConstant("BMP_TEXTURE", BMP_TEXTURE)
-		.addConstant("DDS_TEXTURE", DDS_TEXTURE)
-	.endModule();
 
 
 	LuaBinding(luaState).beginClass<Shader>("Shader")
@@ -221,6 +227,12 @@ void Script::bindInterface(Game& game)
 		.addFunction("getName", &Texture::getName)
 		.addFunction("getType", &Texture::getType)
 	.endClass();
+
+
+	LuaBinding(luaState).beginModule("TextureType")
+		.addConstant("BMP", TEXTURE_BMP)
+		.addConstant("DDS", TEXTURE_DDS)
+	.endModule();
 
 
 	LuaBinding(luaState).beginClass<ObjectGeometryGroup>("ObjectGeometryGroup")
@@ -243,6 +255,24 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("getName", &ObjectGeometry::getName)
 	.endClass();
+
+
+	LuaBinding(luaState).beginClass<Sound>("Sound")
+		.addFunction("getName", &Sound::getName)
+		.addFunction("play", &Sound::play, LUA_ARGS(_def<int, 0>))
+		.addFunction("pause", &Sound::pause)
+		.addFunction("isPaused", &Sound::isPaused)
+		.addFunction("resume", &Sound::resume)
+
+		.addFunction("setVolume", &Sound::setVolume)
+		.addFunction("getVolume", &Sound::getVolume)
+	.endClass();
+
+
+	LuaBinding(luaState).beginModule("SoundType")
+		.addConstant("Music", SOUND_MUSIC)
+		.addConstant("Chunk", SOUND_CHUNK)
+	.endModule();
 
 
 	// Bind a few useful GPUBuffers
@@ -285,42 +315,42 @@ void Script::bindInterface(Game& game)
 
 	// Bind SDL key codes (not all of them, we are lazy)
 	LuaBinding(luaState).beginModule("KeyCode")
-		.addConstant("SDLK_UP", SDLK_UP)
-		.addConstant("SDLK_DOWN", SDLK_DOWN)
-		.addConstant("SDLK_LEFT", SDLK_LEFT)
-		.addConstant("SDLK_RIGHT", SDLK_RIGHT)
-		.addConstant("SDLK_LSHIFT", SDLK_LSHIFT)
-		.addConstant("SDLK_RSHIFT", SDLK_RSHIFT)
-		.addConstant("SDLK_LCTRL", SDLK_LCTRL)
-		.addConstant("SDLK_RCTRL", SDLK_RCTRL)
-		.addConstant("SDLK_SPACE", SDLK_SPACE)
-		.addConstant("SDLK_BACKSPACE", SDLK_BACKSPACE)
-		.addConstant("SDLK_a", SDLK_a)
-		.addConstant("SDLK_b", SDLK_b)
-		.addConstant("SDLK_c", SDLK_c)
-		.addConstant("SDLK_d", SDLK_d)
-		.addConstant("SDLK_e", SDLK_e)
-		.addConstant("SDLK_f", SDLK_f)
-		.addConstant("SDLK_g", SDLK_g)
-		.addConstant("SDLK_h", SDLK_h)
-		.addConstant("SDLK_i", SDLK_i)
-		.addConstant("SDLK_j", SDLK_j)
-		.addConstant("SDLK_k", SDLK_k)
-		.addConstant("SDLK_l", SDLK_l)
-		.addConstant("SDLK_m", SDLK_m)
-		.addConstant("SDLK_n", SDLK_n)
-		.addConstant("SDLK_o", SDLK_o)
-		.addConstant("SDLK_p", SDLK_p)
-		.addConstant("SDLK_q", SDLK_q)
-		.addConstant("SDLK_r", SDLK_r)
-		.addConstant("SDLK_s", SDLK_s)
-		.addConstant("SDLK_t", SDLK_t)
-		.addConstant("SDLK_u", SDLK_u)
-		.addConstant("SDLK_v", SDLK_v)
-		.addConstant("SDLK_w", SDLK_w)
-		.addConstant("SDLK_x", SDLK_x)
-		.addConstant("SDLK_y", SDLK_y)
-		.addConstant("SDLK_z", SDLK_z)
+		.addConstant("UP", SDLK_UP)
+		.addConstant("DOWN", SDLK_DOWN)
+		.addConstant("LEFT", SDLK_LEFT)
+		.addConstant("RIGHT", SDLK_RIGHT)
+		.addConstant("LSHIFT", SDLK_LSHIFT)
+		.addConstant("RSHIFT", SDLK_RSHIFT)
+		.addConstant("LCTRL", SDLK_LCTRL)
+		.addConstant("RCTRL", SDLK_RCTRL)
+		.addConstant("SPACE", SDLK_SPACE)
+		.addConstant("BACKSPACE", SDLK_BACKSPACE)
+		.addConstant("a", SDLK_a)
+		.addConstant("b", SDLK_b)
+		.addConstant("c", SDLK_c)
+		.addConstant("d", SDLK_d)
+		.addConstant("e", SDLK_e)
+		.addConstant("f", SDLK_f)
+		.addConstant("g", SDLK_g)
+		.addConstant("h", SDLK_h)
+		.addConstant("i", SDLK_i)
+		.addConstant("j", SDLK_j)
+		.addConstant("k", SDLK_k)
+		.addConstant("l", SDLK_l)
+		.addConstant("m", SDLK_m)
+		.addConstant("n", SDLK_n)
+		.addConstant("o", SDLK_o)
+		.addConstant("p", SDLK_p)
+		.addConstant("q", SDLK_q)
+		.addConstant("r", SDLK_r)
+		.addConstant("s", SDLK_s)
+		.addConstant("t", SDLK_t)
+		.addConstant("u", SDLK_u)
+		.addConstant("v", SDLK_v)
+		.addConstant("w", SDLK_w)
+		.addConstant("x", SDLK_x)
+		.addConstant("y", SDLK_y)
+		.addConstant("z", SDLK_z)
 	.endModule();
 
 
