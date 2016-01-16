@@ -40,11 +40,8 @@ private:
 	float mNearClippingPlane;
 	float mFarClippingPlane;
 
-	void init();
-
 public:
 	Camera();
-	Camera(float fieldOfView, float aspectRatio);
 	~Camera() override;
 
 	void setDirection(glm::vec4 direction);

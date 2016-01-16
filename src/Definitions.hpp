@@ -25,7 +25,8 @@
 #include <map>
 #include <memory>
 
-#define MAX_SOUND_CHANNELS 20 // Defines how many sounds can play at the same time
+// Defines how many chunk sounds can exist. A super high number exceeding memory could segfault!
+#define MAX_SOUND_CHANNELS 50
 
 // Default values
 #define DEFAULT_GAME_NAME "SDL3D"

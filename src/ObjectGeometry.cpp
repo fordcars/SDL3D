@@ -49,8 +49,16 @@ ObjectGeometry::uintBuffer& ObjectGeometry::getIndexBuffer()
 {
 	return mIndexBuffer;
 }
+const ObjectGeometry::uintBuffer& ObjectGeometry::getIndexBuffer() const
+{
+	return mIndexBuffer;
+}
 
 ObjectGeometry::vec3Buffer& ObjectGeometry::getPositionBuffer()
+{
+	return mPositionBuffer;
+}
+const ObjectGeometry::vec3Buffer& ObjectGeometry::getPositionBuffer() const
 {
 	return mPositionBuffer;
 }
@@ -59,8 +67,16 @@ ObjectGeometry::vec2Buffer& ObjectGeometry::getUVBuffer()
 {
 	return mUVBuffer;
 }
+const ObjectGeometry::vec2Buffer& ObjectGeometry::getUVBuffer() const
+{
+	return mUVBuffer;
+}
 
 ObjectGeometry::vec3Buffer& ObjectGeometry::getNormalBuffer()
+{
+	return mNormalBuffer;
+}
+const ObjectGeometry::vec3Buffer& ObjectGeometry::getNormalBuffer() const
 {
 	return mNormalBuffer;
 }

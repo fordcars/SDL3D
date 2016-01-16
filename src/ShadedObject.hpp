@@ -27,10 +27,10 @@
 
 #include <memory> // For smart pointers
 
-class ShadedObject : public TexturedObject // Inherit! 'public' is required here
+class ShadedObject : public TexturedObject // Inherit! 'public' makes the TexturedObject interface public.
 {
 public:
-	ShadedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
+	ShadedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
 	~ShadedObject() override;
 
 	void render(const Camera& camera) override;

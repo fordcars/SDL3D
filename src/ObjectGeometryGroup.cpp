@@ -157,7 +157,6 @@ std::string ObjectGeometryGroup::getValidName(const std::string& name)
 }
 
 // Adds an object geometry. Will use the object's name as the key, or generate one if it has no name.
-// Object geometries are copied to make them easily modifiable. They are, however, stored as shared pointers for efficiency.
 ObjectGeometryGroup::objectGeometryPointer ObjectGeometryGroup::addObjectGeometry(objectGeometryPointer objectGeometryPointer)
 {
 	std::string objectGeometryName = objectGeometryPointer->getName();

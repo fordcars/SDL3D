@@ -36,7 +36,7 @@ private:
 	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
 
 public:
-	TexturedObject(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
+	TexturedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
 	~TexturedObject() override;
 
 	void setTexture(constTexturePointer texturePointer);

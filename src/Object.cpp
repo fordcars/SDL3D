@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // A simple textureless object. Use it as a base class for different types of objects.
-// We only support triangles right now! Please triangulate the faces when loading the meshes.
+// We only support triangles right now!
 
 // In:
 // - layout location 0: vertex position in modelspace
@@ -29,7 +29,7 @@
 #include <Object.hpp>
 
 // Objects copy objectGeometry instead of pointing to them, allow you to modify them
-Object::Object(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer)
+Object::Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer)
 	: mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
 {
 	mShaderPointer = shaderPointer;
@@ -39,7 +39,12 @@ Object::~Object()
 {
 }
 
-ObjectGeometry& Object::getObjectGeometry()
+void Object::setObjectGeometry(constObjectGeometryPointer objectGeometry)
+{
+	mObjectGeometry = objectGeometry;
+}
+
+Object::constObjectGeometryPointer Object::getObjectGeometry() const
 {
 	return mObjectGeometry;
 }
@@ -50,7 +55,7 @@ void Object::setShader(constShaderPointer shaderPointer)
 	mShaderPointer = shaderPointer;
 }
 
-Object::constShaderPointer Object::getShader()
+Object::constShaderPointer Object::getShader() const
 {
 	return mShaderPointer;
 }
@@ -58,8 +63,8 @@ Object::constShaderPointer Object::getShader()
 // Virtual
 void Object::render(const Camera& camera)
 {
-	ObjectGeometry::uintBuffer& indexBuffer = mObjectGeometry.getIndexBuffer();
-	ObjectGeometry::vec3Buffer& positionBuffer = mObjectGeometry.getPositionBuffer();
+	const ObjectGeometry::uintBuffer& indexBuffer = mObjectGeometry->getIndexBuffer();
+	const ObjectGeometry::vec3Buffer& positionBuffer = mObjectGeometry->getPositionBuffer();
 
 	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
 

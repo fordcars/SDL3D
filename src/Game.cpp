@@ -200,18 +200,17 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 
 	// static_cast<>() is safer than a C-style cast
 	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
-	mEntityManager.getGameCamera().setFieldOfView(70.0f); // Divided by: horizontal fov to vertical fov
 	mEntityManager.getGameCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
 
 	mEntityManager.getGameCamera().setDirection(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)); // 0 for orientation
 
-	EntityManager::objectPointer monkey(new ShadedObject(*mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
+	std::shared_ptr<ShadedObject> monkey(new ShadedObject(mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
 	mEntityManager.addObject(monkey);
 
 	/*// This is nuts
 	for(std::size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
 	{
-		EntityManager::objectPointer funTest(new ShadedObject(*mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("minecraft")));
+		EntityManager::objectPointer funTest(new ShadedObject(mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("minecraft")));
 		funTest->setScaling(glm::vec3(1.0f, 1.0f, 1.0f));
 		mEntityManager.addObject(funTest);
 	}*/

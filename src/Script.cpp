@@ -260,9 +260,14 @@ void Script::bindInterface(Game& game)
 	LuaBinding(luaState).beginClass<Sound>("Sound")
 		.addFunction("getName", &Sound::getName)
 		.addFunction("play", &Sound::play, LUA_ARGS(_def<int, 0>))
+		.addFunction("isPlaying", &Sound::isPlaying)
+		.addFunction("halt", &Sound::halt)
 		.addFunction("pause", &Sound::pause)
 		.addFunction("isPaused", &Sound::isPaused)
 		.addFunction("resume", &Sound::resume)
+
+		.addFunction("fadeIn", &Sound::fadeIn, LUA_ARGS(int, _def<int, 0>))
+		.addFunction("fadeOut", &Sound::fadeOut)
 
 		.addFunction("setVolume", &Sound::setVolume)
 		.addFunction("getVolume", &Sound::getVolume)
@@ -360,7 +365,7 @@ void Script::bindInterface(Game& game)
 		.addFunction("getObjects", &EntityManager::getObjects)
 		.addFunction("addLight", &EntityManager::addLight)
 		.addFunction("getLights", &EntityManager::getLights)
-	.endClass();
+		.endClass();
 
 
 	LuaBinding(luaState).beginClass<Entity>("Entity")
@@ -375,7 +380,7 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("setVelocity", &Entity::setVelocity)
 		.addFunction("getVelocity", &Entity::getVelocity)
-	.endClass();
+		.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<Camera, Entity>("Camera")
@@ -383,12 +388,14 @@ void Script::bindInterface(Game& game)
 		.addFunction("getDirection", &Camera::getDirection)
 		.addFunction("setUpVector", &Camera::setUpVector)
 		.addFunction("getUpVector", &Camera::getUpVector)
+		.addFunction("setFieldOfView", &Camera::setFieldOfView)
 	.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<Object, Entity>("Object")
-		.addConstructor(LUA_SP(std::shared_ptr<Object>), LUA_ARGS(const ObjectGeometry&, Object::constShaderPointer))
+		.addConstructor(LUA_SP(std::shared_ptr<Object>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer))
 
+		.addFunction("setObjectGeometry", &Object::setObjectGeometry)
 		.addFunction("getObjectGeometry", &Object::getObjectGeometry)
 		.addFunction("setShader", &Object::setShader)
 		.addFunction("getShader", &Object::getShader)
@@ -396,16 +403,16 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginExtendClass<TexturedObject, Object>("TexturedObject")
-		.addConstructor(LUA_SP(std::shared_ptr<TexturedObject>), LUA_ARGS(const ObjectGeometry&, Object::constShaderPointer,
-			TexturedObject::constTexturePointer))
+		.addConstructor(LUA_SP(std::shared_ptr<TexturedObject>), LUA_ARGS(Object::constObjectGeometryPointer,
+			Object::constShaderPointer, TexturedObject::constTexturePointer))
 
 		.addFunction("setTexture", &TexturedObject::setTexture)
 	.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<ShadedObject, TexturedObject>("ShadedObject")
-		.addConstructor(LUA_SP(std::shared_ptr<ShadedObject>), LUA_ARGS(const ObjectGeometry&, Object::constShaderPointer,
-			ShadedObject::constTexturePointer))
+		.addConstructor(LUA_SP(std::shared_ptr<ShadedObject>), LUA_ARGS(Object::constObjectGeometryPointer,
+			Object::constShaderPointer, ShadedObject::constTexturePointer))
 	.endClass();
 
 

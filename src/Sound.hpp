@@ -34,10 +34,13 @@ private:
 	static int mInstanceCount; // Number of Sound instances
 
 	// SDL_mixer needs pointers
-	// Only one of these will be NULL (the one according to mType). Smells like C!
-	Mix_Music *mMusicPointer;
-	Mix_Chunk *mChunkPointer;
-	int mChunkChannel; // Only used for chuncks
+	// Smells like C!
+	Mix_Music* mMusicPointer;
+	// The music that last played, might still be playing or not
+	static Mix_Music* mLastPlayedMusic; // Only used for music, don't clear this!!!
+
+	Mix_Chunk* mChunkPointer;
+	int mChunkChannel; // Only used for chunks
 
 	bool load();
 
@@ -49,9 +52,15 @@ public:
 	std::string getName();
 
 	bool play(int numberOfLoops = 0);
+	bool isPlaying();
+
+	void halt();
 	void pause();
 	bool isPaused();
 	void resume();
+
+	bool fadeIn(int fadeTime, int loops = 0);
+	bool fadeOut(int fadeTime);
 
 	void setVolume(int volume);
 	int getVolume();

@@ -22,25 +22,6 @@
 
 Camera::Camera() // Constructor
 {
-	init();
-}
-
-Camera::Camera(float fieldOfView, float aspectRatio)
-{
-	init();
-
-	mFieldOfViewX = fieldOfView;
-	mAspectRatio = aspectRatio;
-}
-
-Camera::~Camera()
-{
-	// Do nothing
-}
-
-// Private
-void Camera::init() // Called when constructed, private
-{
 	// Default values
 	mViewMatrix = glm::mat4(1.0f); // Identity matrix
 	mProjectionMatrix = glm::mat4(1.0f);
@@ -49,9 +30,14 @@ void Camera::init() // Called when constructed, private
 	mUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	mFieldOfViewX = 90.0f;
-	mAspectRatio = 4/3;
+	mAspectRatio = 4 / 3;
 	mNearClippingPlane = 0.1f;
 	mFarClippingPlane = 100.0f;
+}
+
+Camera::~Camera()
+{
+	// Do nothing
 }
 
 void Camera::setDirection(glm::vec4 direction) // vec4 since this can be a position or a direction

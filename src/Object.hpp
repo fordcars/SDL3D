@@ -30,20 +30,22 @@
 class Object : public Entity
 {
 public:
+	typedef std::shared_ptr<const ObjectGeometry> constObjectGeometryPointer;
 	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
 
 private:
-	ObjectGeometry mObjectGeometry;
+	constObjectGeometryPointer mObjectGeometry;
 	constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
 public:
-	Object(const ObjectGeometry& objectGeometry, constShaderPointer shaderPointer);
+	Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer);
 	virtual ~Object() override; // virtual here is just for looks
 
-	ObjectGeometry& getObjectGeometry();
+	void setObjectGeometry(constObjectGeometryPointer objectGeometry);
+	constObjectGeometryPointer getObjectGeometry() const;
 
 	void setShader(constShaderPointer shaderPointer);
-	constShaderPointer getShader();
+	constShaderPointer getShader() const;
 
 	virtual void render(const Camera& camera); // Override this if you need to!
 };

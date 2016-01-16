@@ -28,8 +28,8 @@
 // - mat4 MVP
 // - sampler2D textureSampler
 
-TexturedObject::TexturedObject(const ObjectGeometry& objectGeometry,
-							   constShaderPointer shaderPointer,constTexturePointer texturePointer)
+TexturedObject::TexturedObject(constObjectGeometryPointer objectGeometry,
+							   constShaderPointer shaderPointer, constTexturePointer texturePointer)
 	: Object(objectGeometry, shaderPointer) // Calls Object constructor with those arguments
 {
 	mTexturePointer = texturePointer;
@@ -52,9 +52,9 @@ TexturedObject::constTexturePointer TexturedObject::getTexture()
 
 void TexturedObject::render(const Camera& camera)
 {
-	ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry().getIndexBuffer();
-	ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry().getPositionBuffer();
-	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
+	const ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry()->getIndexBuffer();
+	const ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry()->getPositionBuffer();
+	const ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry()->getUVBuffer();
 
 	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
 	

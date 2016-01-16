@@ -59,10 +59,18 @@ public:
 
 	std::string getName() const;
 
+	// Return a const buffer if we need it, could be useful
 	uintBuffer& getIndexBuffer();
+	const uintBuffer& getIndexBuffer() const;
+
 	vec3Buffer& getPositionBuffer();
+	const vec3Buffer& getPositionBuffer() const;
+
 	vec2Buffer& getUVBuffer();
+	const vec2Buffer& getUVBuffer() const;
+
 	vec3Buffer& getNormalBuffer();
+	const vec3Buffer& getNormalBuffer() const;
 };
 
 #endif /* OBJECT_GEOMETRY_HPP_ */

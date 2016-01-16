@@ -1,7 +1,7 @@
 -Do glm::vec2/3 in lua API
 -Put bindings in all of the classes instead of in Script!
 
--Write a template container and keep those instances instead of a bunch of maps in ResourceManager? Maybe not, since we have factories there, too.
+-Write a template container and keep those instances instead of a bunch of maps in ResourceManager. Add the ability to duplicate resources in this container!
 
 -USE UNIFORM BLOCK FOR LIGHTS?
 -Give lightSSSS to shader + don't care about lights that are too far away
@@ -11,8 +11,9 @@
 ->>>>> http://stackoverflow.com/questions/7954927/glsl-passing-a-list-of-values-to-fragment-shader
 
 -Don't make uniforms obligatory
-
+-Work on CMake lists to make adding libraries easier and other things.
 -Get rid of key inits and resources and all in Game::initMainLoop() (FROM LUA!!!)
+-Render to texture, so we can have some awesome effects!
 
 -Colision detection (in Entity step function?) - Either point or box (and add collision on and off):
 ---Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!

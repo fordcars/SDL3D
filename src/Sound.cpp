@@ -19,6 +19,8 @@
 
 // A wrapper class that generalizes the SDL_mixer API
 // Only one music can play at once!
+// Also, don't expect music sounds to store their pause/volume and all if they are replaced by another
+// Sound chunks are fine since each of them have their own software channel
 
 #include <Sound.hpp>
 
@@ -28,6 +30,7 @@
 // Done once
 // Static member initialized
 int Sound::mInstanceCount = 0;
+Mix_Music* Sound::mLastPlayedMusic = nullptr;
 
 Sound::Sound(const std::string& name, const std::string& path, int type)
 {
@@ -100,7 +103,7 @@ bool Sound::load()
 
 	case SOUND_CHUNK:
 		mChunkPointer = Mix_LoadWAV(mPath.c_str()); // Hey, guess what. WAV doesn't mean it can only load .WAVE :)
-		mChunkChannel = mInstanceCount; // Each Sound of type chunck will have it's own channel
+		mChunkChannel = mInstanceCount; // Each Sound of type chunk will have it's own channel
 
 		if(mChunkPointer == nullptr)
 		{
@@ -122,7 +125,7 @@ std::string Sound::getName()
 	return mName;
 }
 
-// Plays, don't call this to recover from a pause! Use resume() instead.
+// Plays, don't call this to recover from a pause (it will restart). Use resume() instead.
 // 1 loop = plays twice
 // -1 loop = forever!
 // Will replace the song that is already playing
@@ -137,6 +140,9 @@ bool Sound::play(int numberOfLoops)
 			Utils::CRASH_FROM_SDL("Failed to play music sound '" + mName + "'!");
 			return false;
 		}
+
+		// Keep track of the last played music, it's useful since only one can play at a time
+		mLastPlayedMusic = mMusicPointer;
 		return true;
 
 	case SOUND_CHUNK:
@@ -152,22 +158,65 @@ bool Sound::play(int numberOfLoops)
 	}
 }
 
-// Pausing can't fail
+// Check if this sound is playing
+// Does NOT check if it is paused! Only checks if play() or similar was called.
+bool Sound::isPlaying()
+{
+	switch(mType)
+	{
+	case SOUND_MUSIC:
+		// Same music that last played and it is playing, for safety and clarity
+		// mLastPlayedMusic might be null, but mMusicPointer can't
+		if(mMusicPointer == mLastPlayedMusic && Mix_PlayingMusic() == 1)
+				return true;
+
+		return false; // Not the same music that last played or not playing
+
+	case SOUND_CHUNK:
+		if(Mix_Playing(mChunkChannel) == 1)
+			return true;
+		else
+			return false;
+
+	default:
+		return false;
+	}
+}
+
+// Halts the sound. You will need to call play() to play the sound again.
+void Sound::halt()
+{
+	switch(mType)
+	{
+	case SOUND_MUSIC:
+		if(mMusicPointer == mLastPlayedMusic)
+			Mix_HaltMusic();
+
+		break;
+
+	case SOUND_CHUNK:
+		Mix_HaltChannel(mChunkChannel);
+		break;
+
+	default:
+		break;
+	}
+}
+
+// Pausing can't fail, it will pause anything, including a halted sound.
 void Sound::pause()
 {
 	switch(mType)
 	{
 	case SOUND_MUSIC:
-		if(Mix_PausedMusic() == 1) // Already paused, is this check needed?
-			break;
+		// Will not do anything if this is not the right music
+		// mLastPlayedMusic might be null, but mMusicPointer can't
+		if(mMusicPointer == mLastPlayedMusic)
+			Mix_PauseMusic();
 
-		Mix_PauseMusic();
 		break;
 
 	case SOUND_CHUNK:
-		if(Mix_Paused(mChunkChannel) == 1) // Already paused
-			break;
-
 		Mix_Pause(mChunkChannel);
 		break;
 
@@ -176,15 +225,18 @@ void Sound::pause()
 	}
 }
 
+// Does not check if the sound is playing or was halted
 bool Sound::isPaused()
 {
 	switch(mType)
 	{
 	case SOUND_MUSIC:
-		if(Mix_PausedMusic() == 1)
-			return true;
-		else
-			return false;
+		// We don't care if any music is playing
+		// Same music that last played and is paused
+		if(mMusicPointer == mLastPlayedMusic && Mix_PausedMusic() == 1)
+				return true;
+		
+		return false; // Music not currently playing don't have a pause state, so lets say it wasn't paused
 
 	case SOUND_CHUNK:
 		if(Mix_Paused(mChunkChannel) == 1)
@@ -198,24 +250,82 @@ bool Sound::isPaused()
 }
 
 // Can't fail
+// Resumes from a pause
 void Sound::resume()
 {
 	switch(mType)
 	{
 	case SOUND_MUSIC:
-		if(Mix_PausedMusic() == 1) // Already paused, is this check needed?
+		// Don't do anything if this is not the right music
+		if(mMusicPointer == mLastPlayedMusic)
 			Mix_ResumeMusic();
 
 		break;
 
 	case SOUND_CHUNK:
-		if(Mix_Paused(mChunkChannel) == 1) // Already paused
-			Mix_Resume(mChunkChannel);
-
+		Mix_Resume(mChunkChannel);
 		break;
 
 	default:
 		break;
+	}
+}
+
+// Fade time in miliseconds
+// Plays the sound (no need to call play())
+bool Sound::fadeIn(int fadeTime, int loops)
+{
+	switch(mType)
+	{
+	case SOUND_MUSIC:
+		if(Mix_FadeInMusic(mMusicPointer, loops, fadeTime) < 0)
+		{
+			Utils::CRASH_FROM_SDL("Failed to fade in for music sound '" + mName + "'!");
+			return false;
+		}
+
+		mLastPlayedMusic = mMusicPointer;
+		return true;
+
+	case SOUND_CHUNK:
+		if(Mix_FadeInChannel(mChunkChannel, mChunkPointer, loops, fadeTime) < 0)
+		{
+			Utils::CRASH_FROM_SDL("Failed to fade in for chunk sound '" + mName + "'!");
+			return false;
+		}
+		return true;
+
+	default:
+		return false;
+	}
+}
+
+// In miliseconds
+// When finished, halts the sound
+bool Sound::fadeOut(int fadeTime)
+{
+	switch(mType)
+	{
+	case SOUND_MUSIC:
+		if(Mix_FadeOutMusic(fadeTime) == 0) // Why SDL_mixer, WHY 0!
+		{
+			// Failed
+			Utils::CRASH_FROM_SDL("Failed to fade out for music sound '" + mName + "'!");
+			return false;
+		}
+		return true;
+
+	case SOUND_CHUNK:
+		if(Mix_FadeOutChannel(mChunkChannel, fadeTime) == 0) // Oh, this is why
+		{
+			// Failed
+			Utils::CRASH_FROM_SDL("Failed to fade out for chunk sound '" + mName + "'!");
+			return false;
+		}
+		return true;
+
+	default:
+		return false;
 	}
 }
 
@@ -224,7 +334,8 @@ void Sound::setVolume(int volume)
 	switch(mType)
 	{
 	case SOUND_MUSIC:
-		Mix_VolumeMusic(volume);
+		if(mMusicPointer == mLastPlayedMusic) // Right music
+			Mix_VolumeMusic(volume);
 		break;
 
 	case SOUND_CHUNK:
@@ -241,7 +352,10 @@ int Sound::getVolume()
 	switch(mType)
 	{
 	case SOUND_MUSIC:
-		return Mix_VolumeMusic(-1); // -1 volume will not change the volume, but will still return it
+		if(mMusicPointer == mLastPlayedMusic) // Right music
+			return Mix_VolumeMusic(-1); // -1 volume will not change the volume, but will still return it
+
+		return 0;
 
 	case SOUND_CHUNK:
 		return Mix_Volume(mChunkChannel, -1);

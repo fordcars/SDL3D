@@ -33,7 +33,7 @@
 // - mat4 normalMatrix
 // - sampler2D textureSampler
 
-ShadedObject::ShadedObject(const ObjectGeometry& objectGeometry,
+ShadedObject::ShadedObject(constObjectGeometryPointer objectGeometry,
 						   constShaderPointer shaderPointer, constTexturePointer texturePointer)
 	: TexturedObject(objectGeometry, shaderPointer, texturePointer)
 {
@@ -47,10 +47,10 @@ ShadedObject::~ShadedObject()
 
 void ShadedObject::render(const Camera& camera)
 {
-	ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry().getIndexBuffer();
-	ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry().getPositionBuffer();
-	ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry().getUVBuffer();
-	ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry().getNormalBuffer();
+	const ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry()->getIndexBuffer();
+	const ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry()->getPositionBuffer();
+	const ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry()->getUVBuffer();
+	const ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry()->getNormalBuffer();
 
 	glm::mat4 modelMatrix = getModelMatrix();
 	glm::mat4 viewMatrix = camera.getViewMatrix();
