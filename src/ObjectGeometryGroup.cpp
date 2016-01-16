@@ -22,6 +22,7 @@
 #include <sstream>
 #include <fstream> // For file stuff
 #include <algorithm>
+#include <cstddef> // For std::size_t
 #include <tiny_obj_loader.h>
 
 #include <Utils.hpp> // For vector stuff and error messages

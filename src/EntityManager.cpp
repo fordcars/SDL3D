@@ -17,7 +17,13 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// This class will hold onto all entities, but it will NOT take ownership!
+
 #include <EntityManager.hpp>
+#include <Utils.hpp>
+
+#include <algorithm> // For finding in vector
+#include <string>
 
 EntityManager::EntityManager()
 {
@@ -39,15 +45,89 @@ void EntityManager::addObject(objectPointer object) // Give it a shared pointer
 	mObjects.push_back(object);
 }
 
+// Removes an object from the manager. Does not delete them if they are still referenced somewhere, logically (shared pointers).
+// Returns the removed object, or an empty pointer on error.
+EntityManager::objectPointer EntityManager::removeObject(std::size_t index)
+{
+	if(index+1 <= mObjects.size()) // Check if vector subscript out of range, I really hate runtime errors
+	{
+		objectPointer removedItem = mObjects[index];
+
+		objectVector::iterator iterator = mObjects.begin() + index; // We need to do this for std
+		mObjects.erase(iterator);
+
+		return removedItem;
+	} else
+	{
+		Utils::CRASH("Cannot remove object at index '" + std::to_string(index) +
+			"', the index is higher than the amount of objects!");
+		return objectPointer();
+	}
+}
+
+// Removes a specific object
+bool EntityManager::removeObject(objectPointer object)
+{
+	objectVector::iterator found = std::find(mObjects.begin(), mObjects.end(), object);
+
+	if(found != mObjects.end()) // If it is found
+	{
+		mObjects.erase(found); // Remove it
+		return true;
+	}
+	else
+	{
+		Utils::CRASH("Cannot remove object pointer; it is not in the manager!");
+		return false;
+	}
+}
+
 EntityManager::objectVector& EntityManager::getObjects()
 {
 	return mObjects;
 }
 
+
+
 void EntityManager::addLight(lightPointer light) // Give it an actual object
 {
 	mLights.push_back(light);
 }
+
+EntityManager::lightPointer EntityManager::removeLight(std::size_t index)
+{
+	if(index + 1 > mLights.size())
+	{
+		lightPointer removedItem = mLights[index];
+
+		lightVector::iterator iterator = mLights.begin() + index;
+		mLights.erase(iterator);
+
+		return removedItem;
+	}
+	else
+	{
+		Utils::CRASH("Cannot remove light at index '" + std::to_string(index) +
+			"'; the index is higher than the amount of lights!");
+		return lightPointer(); // Return an empty pointer
+	}
+}
+
+bool EntityManager::removeLight(lightPointer light)
+{
+	lightVector::iterator found = std::find(mLights.begin(), mLights.end(), light);
+
+	if(found != mLights.end()) // If it is found
+	{
+		mLights.erase(found); // Remove it
+		return true;
+	} else
+	{
+		Utils::CRASH("Cannot remove light pointer; it is not in the manager!");
+		return false;
+	}
+}
+
 
 EntityManager::lightVector& EntityManager::getLights()
 {

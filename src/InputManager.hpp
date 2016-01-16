@@ -23,7 +23,7 @@
 #include <SDL.h>
 
 #include <map>
-#include <cstdlib> // For std::size_t
+#include <cstddef> // For std::size_t
 #include <vector>
 
 class InputManager

@@ -14,6 +14,7 @@
 -Work on CMake lists to make adding libraries easier and other things.
 -Get rid of key inits and resources and all in Game::initMainLoop() (FROM LUA!!!)
 -Render to texture, so we can have some awesome effects!
+-When a C++ error happens (that is caught), crash() it with the Lua line (when it is called from Lua)!
 
 -Colision detection (in Entity step function?) - Either point or box (and add collision on and off):
 ---Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!

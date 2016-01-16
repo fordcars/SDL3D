@@ -26,6 +26,7 @@
 
 #include <memory>
 #include <vector>
+#include <cstddef> // For std::size_t
 
 class EntityManager
 {
@@ -37,7 +38,6 @@ public: // Public typedefs
 	typedef std::vector<lightPointer> lightVector;
 
 private:
-
 	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.
 
 	objectVector mObjects;
@@ -50,9 +50,13 @@ public:
 	Camera& getGameCamera();
 
 	void addObject(objectPointer object);
+	objectPointer removeObject(std::size_t index);
+	bool removeObject(objectPointer object);
 	objectVector& getObjects();
 
 	void addLight(lightPointer light);
+	lightPointer removeLight(std::size_t index);
+	bool removeLight(lightPointer light);
 	lightVector& getLights();
 
 	void step();

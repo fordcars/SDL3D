@@ -39,6 +39,7 @@
 class ResourceManager
 {
 public:
+	// Since these values are returned
 	typedef std::shared_ptr<Shader> shaderPointer;
 	typedef std::shared_ptr<Texture> texturePointer;
 	typedef std::shared_ptr<ObjectGeometryGroup> objectGeometryGroup_pointer; // Underscore for clarity

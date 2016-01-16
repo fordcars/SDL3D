@@ -53,21 +53,21 @@ void directly_logprint(const std::string& msg, int line, const char* file)
 	gLogFile << msg << '\n';
 
 #ifndef NDEBUG // Debug
-	bool parametersValid = false;
+	bool parametersDefined = false;
 
 	if(file != 0) // If file is defined
 	{
 		gLogFile << "----- from file: " << file << '\n';
-		parametersValid = true;
+		parametersDefined = true;
 	}
 
 	if(line != -1) // If line is defined
 	{
 		gLogFile << "----- at line: " << line << '\n';
-		parametersValid = true;
+		parametersDefined = true;
 	}
 
-	if(parametersValid) // Add a newline if you outputted something, for prettyness.
+	if(parametersDefined) // Add a newline if you outputted something, for prettyness.
 		gLogFile << '\n';
 
 	gLogFile.flush(); // Whatever happens, flush out the buffer so we get logs even if it exploded: this is debug!
@@ -76,14 +76,14 @@ void directly_logprint(const std::string& msg, int line, const char* file)
 
 void directly_warn(const std::string& msg, int line, const char* file)
 {
-	std::string fullString = "\nWarning: " + msg; // Concentenate
+	std::string fullString = "\nWarning: " + msg; // Newline for looks
 	directly_logprint(fullString, line, file);
 }
 
 // This quits the game, so don't expect to be able to do other things after calling this (including logging)!
 void directly_crash(const std::string& msg, int line, const char* file)
 {
-	std::string fullString = "\nCrash: " + msg; // Concentenate
+	std::string fullString = "\nCrash: " + msg;
 
 	directly_logprint(fullString, line, file);
 
@@ -101,7 +101,7 @@ void directly_crashFromSDL(const std::string& msg, int line, const char* file)
 {
 	std::string sdlError = SDL_GetError();
 
-	Utils::directly_logprint("\n" + msg, line, file); // Newline for looks
+	Utils::directly_logprint("\n" + msg, line, file);
 
 	if(!sdlError.empty())
 		Utils::directly_crash("SDL error: " + sdlError); // We already showed the line number and file up top

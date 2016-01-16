@@ -24,7 +24,7 @@
 
 #include <string>
 #include <vector>
-#include <cstdlib> // For std::size_t
+#include <cstddef> // For std::size_t
 
 // Macros simply replaces text
 #define LOGPRINT(msg) directly_logprint(msg) // Don't send the line and file for logprints, it would annoying

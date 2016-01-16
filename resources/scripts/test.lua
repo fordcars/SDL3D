@@ -35,7 +35,7 @@ local function foo()
 	inputManager:registerKeys({KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
 		KeyCode.w, KeyCode.a, KeyCode.s, KeyCode.d, KeyCode.SPACE, KeyCode.LSHIFT, KeyCode.LCTRL, KeyCode.m})
 	
-	Utils.logprint("Hello, world!");
+	Utils.logprint("Hello, world!!!!")
 end
 
 M.foo = foo

@@ -30,6 +30,7 @@
 #include <exception> // For handling the script's exceptions
 #include <memory> // For smart pointers
 #include <vector>
+#include <cstddef> // For std::size_t
 
 using namespace LuaIntf; // Will make things way clearer
 
@@ -64,21 +65,23 @@ bool Script::clarifyError(const std::string& errorMessage)
 	// The error messages found here were found by trial and error
 	// These are only guesses and might not be 100% acurate
 	bool clarifiedError = false; // True if we clarified an error
+	std::string clarifiedErrorMessage = "";
 
 	// A function is returning an object that wasn't binded!
 	if(errorMessage.find("bad argument #-2") != std::string::npos)
 	{
 		clarifiedError = true;
-		Utils::WARN("We predict a function is returning a non-binded object. If this is the case, this is a bug in this engine! Please contact the developpers.");
+		clarifiedErrorMessage = "We predict a function is returning an object of a non-binded class. If this is the case, this is a bug in this engine (!), please contact the developpers.";
 	}
 
 	// A module fonction is being called using the ':' syntax instead of the '.' syntax!
 	if(errorMessage.find("on bad self") != std::string::npos)
 	{
 		clarifiedError = true;
-		Utils::WARN("We predict you are attempting to call a module function using the ':'. Please use the '.' syntax instead!");
+		clarifiedErrorMessage = "We predict you are attempting to call a module function using the ':'. Please use the '.' syntax instead!";
 	}
 
+	Utils::WARN(clarifiedErrorMessage);
 	return clarifiedError;
 }
 
@@ -173,44 +176,44 @@ void Script::bindInterface(Game& game)
 	LuaBinding(luaState).beginClass<ResourceManager>("ResourceManager")
 		.addFunction("addShader",
 			// Specify which overload we want. Lua doesn't support functions with same names, though.
-			static_cast<ResourceManager::shaderPointer(ResourceManager::*)(const std::string&, const std::string&)>
+			static_cast<ResourceManager::shaderPointer(ResourceManager::*) (const std::string&, const std::string&)>
 				(&ResourceManager::addShader))
 
 		.addFunction("addNamedShader",
-			static_cast<ResourceManager::shaderPointer(ResourceManager::*)(const std::string&, const std::string&, const std::string&)>
+			static_cast<ResourceManager::shaderPointer(ResourceManager::*) (const std::string&, const std::string&, const std::string&)>
 				(&ResourceManager::addShader))
 
 		.addFunction("findShader", &ResourceManager::findShader)
 		.addFunction("clearShaders", &ResourceManager::clearShaders)
 
 		.addFunction("addTexture",
-			static_cast<ResourceManager::texturePointer(ResourceManager::*)(const std::string&, int)>
+			static_cast<ResourceManager::texturePointer(ResourceManager::*) (const std::string&, int)>
 				(&ResourceManager::addTexture))
 
 		.addFunction("addNamedTexture",
-			static_cast<ResourceManager::texturePointer(ResourceManager::*)(const std::string&, const std::string&, int)>
+			static_cast<ResourceManager::texturePointer(ResourceManager::*) (const std::string&, const std::string&, int)>
 				(&ResourceManager::addTexture))
 
 		.addFunction("findTexture", &ResourceManager::findTexture)
 		.addFunction("clearTextures", &ResourceManager::clearTextures)
 
 		.addFunction("addObjectGeometryGroup",
-			static_cast<ResourceManager::objectGeometryGroup_pointer(ResourceManager::*)(const std::string&)>
+			static_cast<ResourceManager::objectGeometryGroup_pointer(ResourceManager::*) (const std::string&)>
 			(&ResourceManager::addObjectGeometryGroup))
 
 		.addFunction("addNamedObjectGeometryGroup",
-			static_cast<ResourceManager::objectGeometryGroup_pointer(ResourceManager::*)(const std::string&, const std::string&)>
+			static_cast<ResourceManager::objectGeometryGroup_pointer(ResourceManager::*) (const std::string&, const std::string&)>
 			(&ResourceManager::addObjectGeometryGroup))
 
 		.addFunction("findObjectGeometryGroup", &ResourceManager::findObjectGeometryGroup)
 		.addFunction("clearObjectGeometryGroups", &ResourceManager::clearObjectGeometryGroups)
 
 		.addFunction("addSound",
-			static_cast<ResourceManager::soundPointer(ResourceManager::*)(const std::string&, int)>
+			static_cast<ResourceManager::soundPointer(ResourceManager::*) (const std::string&, int)>
 			(&ResourceManager::addSound))
 
 		.addFunction("addNamedSound",
-			static_cast<ResourceManager::soundPointer(ResourceManager::*)(const std::string&, const std::string&, int)>
+			static_cast<ResourceManager::soundPointer(ResourceManager::*) (const std::string&, const std::string&, int)>
 			(&ResourceManager::addSound))
 
 		.addFunction("findSound", &ResourceManager::findSound)
@@ -362,8 +365,27 @@ void Script::bindInterface(Game& game)
 	LuaBinding(luaState).beginClass<EntityManager>("EntityManager")
 		.addFunction("getGameCamera", &EntityManager::getGameCamera)
 		.addFunction("addObject", &EntityManager::addObject)
+
+		.addFunction("removeObjectByIndex",
+			static_cast<EntityManager::objectPointer(EntityManager::*) (std::size_t)>
+			(&EntityManager::removeObject))
+
+		.addFunction("removeObject",
+			static_cast<bool(EntityManager::*) (EntityManager::objectPointer)>
+			(&EntityManager::removeObject))
+
 		.addFunction("getObjects", &EntityManager::getObjects)
+
 		.addFunction("addLight", &EntityManager::addLight)
+
+		.addFunction("removeLightByIndex",
+			static_cast<EntityManager::lightPointer(EntityManager::*) (std::size_t)>
+			(&EntityManager::removeLight))
+
+		.addFunction("removeLight",
+			static_cast<bool(EntityManager::*) (EntityManager::lightPointer)>
+			(&EntityManager::removeLight))
+
 		.addFunction("getLights", &EntityManager::getLights)
 		.endClass();
 
@@ -465,7 +487,10 @@ void Script::run()
 		mLuaContext.doString(mMainFileContents.c_str()); // Run the file!
 	} catch(const std::exception& e)
 	{
-		std::string errorMessage = "Script '" + mName + "' failed!\nError: ";
-		Utils::CRASH(errorMessage + e.what());
+		std::string scriptErrorMessage = e.what();
+
+		clarifyError(scriptErrorMessage);
+		std::string errorMessage = "Script '" + mName + "' failed!\nError: " + scriptErrorMessage;
+		Utils::CRASH(errorMessage);
 	}
 }

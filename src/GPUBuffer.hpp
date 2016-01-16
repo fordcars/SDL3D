@@ -26,7 +26,7 @@
 
 #include <glad/glad.h> // glad.h is compatible with C++
 #include <vector>
-#include <cstdlib> // For std::size_t
+#include <cstddef> // For std::size_t
 
 template<typename bufferDataType>
 class GPUBuffer

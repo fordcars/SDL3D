@@ -22,7 +22,7 @@
 
 #include <fstream>
 #include <vector>
-#include <cstdlib> // For std::size_t
+#include <cstddef> // For std::size_t
 #include <fstream> // For object loading
 #include <regex>
 
