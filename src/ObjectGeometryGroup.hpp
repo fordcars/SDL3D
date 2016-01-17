@@ -32,11 +32,11 @@
 class ObjectGeometryGroup
 {
 public:
-	typedef std::shared_ptr<ObjectGeometry> objectGeometryPointer;
-	typedef std::map<std::string, objectGeometryPointer> objectGeometryMap;
-	typedef std::pair<std::string, objectGeometryPointer> objectGeometryMapPair;
+	using objectGeometryPointer  = std::shared_ptr<ObjectGeometry>;
+	using objectGeometryMap      = std::map<std::string, objectGeometryPointer>;
+	using objectGeometryMapPair  = std::pair<std::string, objectGeometryPointer>;
 
-	typedef std::vector<objectGeometryPointer> objectGeometryVector;
+	using objectGeometryVector = std::vector<objectGeometryPointer>;
 
 private:
 	std::string mName;

@@ -15,18 +15,13 @@
 -Get rid of key inits and resources and all in Game::initMainLoop() (FROM LUA!!!)
 -Render to texture, so we can have some awesome effects!
 -When a C++ error happens (that is caught), crash() it with the Lua line (when it is called from Lua)!
+-Give Lua access to input events?
 
 -Colision detection (in Entity step function?) - Either point or box (and add collision on and off):
 ---Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!
 
 -A Window class instead of functions in Game? It's fine for now, maybe an SDL window is enough.
 -Load all files at the same place?
-
--Update to VS 2015 to:
-->>Update arrays (uniforms and keys) to std::arrays(VS2012 doesn't supprt list initializations {} so I am keeping normal arrays for now)
-->>'using' instead of typedef!
-
--No need of particles, but billboards would be useful for trees, see tutorial 18. Call them sprites.
 
 -Settings class? Include max fps, field of view and resolution
 --->> Can the field of view be anything else than numbers power of ten?

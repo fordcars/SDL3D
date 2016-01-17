@@ -40,32 +40,32 @@ class ResourceManager
 {
 public:
 	// Since these values are returned
-	typedef std::shared_ptr<Shader> shaderPointer;
-	typedef std::shared_ptr<Texture> texturePointer;
-	typedef std::shared_ptr<ObjectGeometryGroup> objectGeometryGroup_pointer; // Underscore for clarity
-	typedef std::shared_ptr<Script> scriptPointer;
-	typedef std::shared_ptr<Sound> soundPointer;
+	using shaderPointer                 = std::shared_ptr<Shader>;
+	using texturePointer                = std::shared_ptr<Texture>;
+	using objectGeometryGroup_pointer   = std::shared_ptr<ObjectGeometryGroup>; // Underscore for clarity
+	using scriptPointer                 = std::shared_ptr<Script>;
+	using soundPointer                  = std::shared_ptr<Sound>;
 
 private:
 	// Each map will hold shared_ptrs to instances. When you remove this from the map, the instance will stay alive until all
 	// shared_ptrs pointing to it are gone.
-	typedef std::map<std::string, shaderPointer> shaderMap; // Map of pointers
-	typedef std::pair<std::string, shaderPointer> shaderMapPair; // These kinds of typedef are great inside the class definition like this
+	using shaderMap     = std::map<std::string, shaderPointer>; // Map of pointers
+	using shaderMapPair = std::pair<std::string, shaderPointer>; // These aliases are great inside the class definition like this
 
-	typedef std::map<std::string, texturePointer> textureMap;
-	typedef std::pair<std::string, texturePointer> textureMapPair;
+	using textureMap     = std::map<std::string, texturePointer>;
+	using textureMapPair = std::pair<std::string, texturePointer>;
 
-	typedef std::map<std::string, objectGeometryGroup_pointer> objectGeometryGroup_map;
-	typedef std::pair<std::string, objectGeometryGroup_pointer> objectGeometryGroup_mapPair;
+	using objectGeometryGroup_map     = std::map<std::string, objectGeometryGroup_pointer>;
+	using objectGeometryGroup_mapPair = std::pair<std::string, objectGeometryGroup_pointer>;
 
-	typedef std::map<std::string, scriptPointer> scriptMap;
-	typedef std::pair<std::string, scriptPointer> scriptMapPair;
+	using scriptMap     = std::map<std::string, scriptPointer>;
+	using scriptMapPair = std::pair<std::string, scriptPointer>;
 
-	typedef std::map<std::string, scriptPointer> scriptMap;
-	typedef std::pair<std::string, scriptPointer> scriptMapPair;
+	using scriptMap     = std::map<std::string, scriptPointer>;
+	using scriptMapPair = std::pair<std::string, scriptPointer>;
 
-	typedef std::map<std::string, soundPointer> soundMap;
-	typedef std::pair<std::string, soundPointer> soundMapPair;
+	using soundMap     = std::map<std::string, soundPointer>;
+	using soundMapPair = std::pair<std::string, soundPointer>;
 
 	shaderMap mShaderMap; // Map, faster access: shaders[shaderName] = shaderID etc
 	textureMap mTextureMap;

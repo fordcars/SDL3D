@@ -29,13 +29,13 @@
 class InputManager
 {
 private:
-	typedef std::map<int, bool> sdlKeyMap; // Using a non-const key seems to be more compatible with different implementations
-	typedef std::pair<int, bool> sdlKeyMapPair;
+	using sdlKeyMap = std::map<int, bool>; // Using a non-const key seems to be more compatible with different implementations
+	using sdlKeyMapPair = std::pair<int, bool>;
 
 	sdlKeyMap mKeys;
 
 public:
-	typedef std::vector<int> keyVector;
+	using keyVector = std::vector<int>;
 
 	InputManager();
 	~InputManager();

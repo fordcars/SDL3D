@@ -36,6 +36,20 @@ local function foo()
 		KeyCode.w, KeyCode.a, KeyCode.s, KeyCode.d, KeyCode.SPACE, KeyCode.LSHIFT, KeyCode.LCTRL, KeyCode.m})
 	
 	Utils.logprint("Hello, world!!!!")
+	
+	local geometry = resourceManager:findObjectGeometryGroup("suzanne"):getObjectGeometries()[1]
+	local shader = resourceManager:findShader("shaded")
+	local texture = resourceManager:findTexture("suzanne")
+	local monkey = ShadedObject(geometry, shader, texture)
+	entityManager:addObject(monkey)
+	
+	local velocity = Vec3(0.0, 0.001, 0.0)
+	local addingVelocity = Vec3(0.01, 0.0, 0.0)
+	velocity.y = 0.01
+	
+	velocity = Vec3.add(addingVelocity, velocity)
+	
+	monkey:setVelocity(velocity)
 end
 
 M.foo = foo

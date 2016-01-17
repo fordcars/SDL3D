@@ -87,6 +87,7 @@ set(HEADERS
 	src/EntityManager.hpp
 	src/Script.hpp
 	src/Sound.hpp
+	src/IncludeLuaIntf.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

@@ -20,7 +20,6 @@
 #ifndef DEFINITIONS_HPP_
 #define DEFINITIONS_HPP_
 
-#include <LuaIntf.h>
 #include <vector>
 #include <map>
 #include <memory>
@@ -40,8 +39,12 @@
 #define SHADER_PATH_PREFIX "shaders/"
 #define SCRIPT_PATH_PREFIX "scripts/"
 
+// Scripts
 #define MAIN_SCRIPT_NAME "main"
 #define MAIN_SCRIPT_FILE MAIN_SCRIPT_NAME ".lua" // Concatenates both literals
+
+#define MAIN_SCRIPT_FUNCTION_INIT "gameInit()"
+#define MAIN_SCRIPT_FUNCTION_STEP "gameStep()"
 
 // Texture types
 #define TEXTURE_BMP 0
@@ -50,13 +53,5 @@
 // Sound types
 #define SOUND_MUSIC 0
 #define SOUND_CHUNK 1 // Short sound effects would use this type
-
-// Scripting
-namespace LuaIntf
-{
-	LUA_USING_SHARED_PTR_TYPE(std::shared_ptr);
-	LUA_USING_LIST_TYPE(std::vector);
-	LUA_USING_MAP_TYPE(std::map);
-}
 
 #endif /* DEFINITIONS_HPP_ */

@@ -22,7 +22,7 @@
 #ifndef SCRIPT_MANAGER_HPP
 #define SCRIPT_MANAGER_HPP
 
-#include <LuaIntf.h>
+#include <IncludeLuaIntf.hpp>
 #include <string>
 
 // Forward declare Game since we don't want to include Game.hpp again from ResourceManager.hpp!
@@ -49,7 +49,8 @@ public:
 	bool setLuaRequirePath(const std::string& absolutePath);
 
 	void bindInterface(Game& game);
-	void run();
+	bool run();
+	bool runString(const std::string& scriptCode);
 };
 
 #endif /* SCRIPT_MANAGER_HPP */

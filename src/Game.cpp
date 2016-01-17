@@ -183,10 +183,13 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	
 	// Scripts
 	// Only one script for now
-	mResourceManager.addScript(MAIN_SCRIPT_NAME, MAIN_SCRIPT_FILE);
+	ResourceManager::scriptPointer mainScript = mResourceManager.addScript(MAIN_SCRIPT_NAME, MAIN_SCRIPT_FILE);
 
-	mResourceManager.findScript(MAIN_SCRIPT_NAME)->bindInterface(*this);
-	mResourceManager.findScript(MAIN_SCRIPT_NAME)->run();
+	mainScript->bindInterface(*this);
+	// Run the script to get all of the definitions and all
+	mainScript->run();
+	// Run the script's init function
+	mainScript->runString(MAIN_SCRIPT_FUNCTION_INIT);
 
 	// Object groups
 	//mResourceManager.addObjectGeometryGroup("suzanne.obj");
@@ -204,8 +207,8 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 
 	mEntityManager.getGameCamera().setDirection(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)); // 0 for orientation
 
-	std::shared_ptr<ShadedObject> monkey(new ShadedObject(mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
-	mEntityManager.addObject(monkey);
+	//std::shared_ptr<ShadedObject> monkey(new ShadedObject(mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
+	//mEntityManager.addObject(monkey);
 
 	/*// This is nuts
 	for(std::size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
@@ -309,6 +312,9 @@ void Game::step() // Movement and all
 {
 	float speed = 0.01f;
 	float rotateAngle = 0.01f;
+
+	// Run the script's step()
+	mResourceManager.findScript(MAIN_SCRIPT_NAME)->runString(MAIN_SCRIPT_FUNCTION_STEP);
 
 	mEntityManager.getGameCamera().setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
 

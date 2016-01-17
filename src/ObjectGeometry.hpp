@@ -34,16 +34,16 @@
 class ObjectGeometry
 {
 public:
-	typedef GPUBuffer<unsigned int> uintBuffer;
-	typedef GPUBuffer<glm::vec2> vec2Buffer;
-	typedef GPUBuffer<glm::vec3> vec3Buffer;
+	using uintBuffer = GPUBuffer<unsigned int>;
+	using vec2Buffer = GPUBuffer<glm::vec2>;
+	using vec3Buffer = GPUBuffer<glm::vec3>;
 
-	typedef std::vector<unsigned int> uintVector;
-	typedef std::vector<glm::vec2> vec2Vector;
-	typedef std::vector<glm::vec3> vec3Vector;
+	using uintVector = std::vector<unsigned int>;
+	using vec2Vector = std::vector<glm::vec2>;
+	using vec3Vector = std::vector<glm::vec3>;
 
 private:
-	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
+	using constShaderPointer = std::shared_ptr<const Shader>; // Const shader
 
 	std::string mName; // Don't change this stupidly
 

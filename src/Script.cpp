@@ -78,10 +78,12 @@ bool Script::clarifyError(const std::string& errorMessage)
 	if(errorMessage.find("on bad self") != std::string::npos)
 	{
 		clarifiedError = true;
-		clarifiedErrorMessage = "We predict you are attempting to call a module function using the ':'. Please use the '.' syntax instead!";
+		clarifiedErrorMessage = "We predict you are attempting to call a function that is not binded to an object using ':'. Please use the '.' syntax instead!";
 	}
 
-	Utils::WARN(clarifiedErrorMessage);
+	if(clarifiedError)
+		Utils::WARN(clarifiedErrorMessage);
+
 	return clarifiedError;
 }
 
@@ -145,12 +147,17 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 void Script::bindInterface(Game& game)
 {
 	// Notes:
-	// If you get an 'arg #-2 is nil' error, it is propably because the failing function is returning an object that is not binded!
+	// If you get an 'arg #-2 is nil' runtime error, it is propably because the failing function is returning an object that is not binded!
 	// You cannot give Lua different functions with the same name (overloaded Lua side). You have to give them different names (only on the Lua side).
 	// Use a static_Cast to get the right overload.
 	// You need to add a constructor to construct an object on the Lua side
 	// You need to specify args with LUA_ARGS when binding a constructor with LUA_SP container (shared_ptr)
-	// When you get a 'calling on bad self' error from a module function call, make sure that you are calling this module fonction with the '.' sintax! (Not ':')
+	// When you get a 'calling on bad self' runtime error from a module function call, make sure that you are calling this module fonction with the '.' sintax! (Not ':')
+	// When you get a 'base class undefined' compile-time error, it might be because you are binding a static function in a class using
+	// addFunction instead of addStaticFunction
+	// When you get a 'expect userdata, got nil' runtime error, it means you were supposed to pass a class, but passed nil
+	// Don't forget that Lua has 1-based tables/arrays!
+	// When you get a 'use of undefined type' compile-time error, it might be because you are not specifying a getter/setter for a property
 
 	LuaState luaState = mLuaContext.state();
 
@@ -242,7 +249,7 @@ void Script::bindInterface(Game& game)
 		.addFunction("getName", &ObjectGeometryGroup::getName)
 		.addFunction("addObjectGeometry", &ObjectGeometryGroup::addObjectGeometry)
 		.addFunction("findObjectGeometry", &ObjectGeometryGroup::findObjectGeometry)
-		.addFunction("getObjectGeometries", &ObjectGeometryGroup::findObjectGeometry)
+		.addFunction("getObjectGeometries", &ObjectGeometryGroup::getObjectGeometries)
 	.endClass();
 
 
@@ -387,7 +394,7 @@ void Script::bindInterface(Game& game)
 			(&EntityManager::removeLight))
 
 		.addFunction("getLights", &EntityManager::getLights)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<Entity>("Entity")
@@ -402,7 +409,7 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("setVelocity", &Entity::setVelocity)
 		.addFunction("getVelocity", &Entity::getVelocity)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<Camera, Entity>("Camera")
@@ -425,16 +432,15 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginExtendClass<TexturedObject, Object>("TexturedObject")
-		.addConstructor(LUA_SP(std::shared_ptr<TexturedObject>), LUA_ARGS(Object::constObjectGeometryPointer,
-			Object::constShaderPointer, TexturedObject::constTexturePointer))
-
+		.addConstructor(LUA_SP(std::shared_ptr<TexturedObject>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer,
+			TexturedObject::constTexturePointer))
 		.addFunction("setTexture", &TexturedObject::setTexture)
-	.endClass();
+		.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<ShadedObject, TexturedObject>("ShadedObject")
-		.addConstructor(LUA_SP(std::shared_ptr<ShadedObject>), LUA_ARGS(Object::constObjectGeometryPointer,
-			Object::constShaderPointer, ShadedObject::constTexturePointer))
+		.addConstructor(LUA_SP(std::shared_ptr<ShadedObject>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer,
+			TexturedObject::constTexturePointer))
 	.endClass();
 
 
@@ -472,6 +478,76 @@ void Script::bindInterface(Game& game)
 		})
 	.endModule();
 
+	// Basic glm bindings
+	LuaBinding(luaState).beginClass<glm::vec2>("Vec2")
+		.addConstructor(LUA_ARGS(float, float))
+		.addVariable("x", &glm::vec2::x)
+		.addVariable("y", &glm::vec2::y)
+
+		.addVariable("r", &glm::vec2::r)
+		.addVariable("g", &glm::vec2::g)
+
+		// Couldn't figure out how to use glm's built in basic arithmetics with Lua (if possible)
+		// Arithmetics
+		.addStaticFunction("add", [](const glm::vec2& left, const glm::vec2& right)
+		{
+			return glm::vec2(left.x + right.x, left.y + right.y); // Deduced return type
+		})
+
+		.addStaticFunction("sub", [](const glm::vec2& left, const glm::vec2& right)
+		{
+			return glm::vec2(left.x - right.x, left.y - right.y); // Deduced return type
+		})
+	.endClass();
+
+
+	LuaBinding(luaState).beginClass<glm::vec3>("Vec3")
+		.addConstructor(LUA_ARGS(float, float, float))
+
+		.addVariable("x", &glm::vec3::x)
+		.addVariable("y", &glm::vec3::y)
+		.addVariable("z", &glm::vec3::z)
+
+		.addVariable("r", &glm::vec3::r)
+		.addVariable("g", &glm::vec3::g)
+		.addVariable("b", &glm::vec3::b)
+
+		.addStaticFunction("add", [](const glm::vec3& left, const glm::vec3& right)
+		{
+			return glm::vec3(left.x + right.x, left.y + right.y, left.z + right.z);
+		})
+
+		.addStaticFunction("sub", [](const glm::vec3& left, const glm::vec3& right)
+		{
+			return glm::vec3(left.x - right.x, left.y - right.y, left.z - right.z);
+		})
+	.endClass();
+
+
+	LuaBinding(luaState).beginClass<glm::vec4>("Vec4")
+		.addConstructor(LUA_ARGS(float, float, float, float))
+
+		.addVariable("x", &glm::vec4::x)
+		.addVariable("y", &glm::vec4::y)
+		.addVariable("z", &glm::vec4::z)
+		.addVariable("w", &glm::vec4::w)
+
+		.addVariable("r", &glm::vec4::r)
+		.addVariable("g", &glm::vec4::g)
+		.addVariable("b", &glm::vec4::b)
+		.addVariable("a", &glm::vec4::a)
+
+		.addStaticFunction("add", [](const glm::vec4& left, const glm::vec4& right)
+		{
+			return glm::vec4(left.x + right.x, left.y + right.y, left.z + right.z, left.w + right.w);
+		})
+
+		.addStaticFunction("sub", [](const glm::vec4& left, const glm::vec4& right)
+		{
+			return glm::vec4(left.x - right.x, left.y - right.y, left.z - right.z, left.w - right.w);
+		})
+	.endClass();
+
 
 	// Entity must have at least one virtual function to be a base class
 	//LuaBinding(luaState).beginExtendClass<Object, Entity>("Object")
@@ -480,7 +556,7 @@ void Script::bindInterface(Game& game)
 
 // Running a script will probably not be too heavy since it will probably only be defining a bunch of callbacks.
 // You should definitely call this after binding the interface.
-void Script::run()
+bool Script::run()
 {
 	try
 	{
@@ -492,5 +568,30 @@ void Script::run()
 		clarifyError(scriptErrorMessage);
 		std::string errorMessage = "Script '" + mName + "' failed!\nError: " + scriptErrorMessage;
 		Utils::CRASH(errorMessage);
+
+		return false;
 	}
+
+	return true;
+}
+
+// Run a string of script code directly on this script
+bool Script::runString(const std::string& scriptCode)
+{
+	try
+	{
+		mLuaContext.doString(scriptCode.c_str()); // Run the file!
+	}
+	catch(const std::exception& e)
+	{
+		std::string scriptErrorMessage = e.what();
+
+		clarifyError(scriptErrorMessage);
+		std::string errorMessage = "Running string on script '" + mName + "' failed!\nError: " + scriptErrorMessage;
+		Utils::CRASH(errorMessage);
+
+		return false;
+	}
+
+	return true;
 }

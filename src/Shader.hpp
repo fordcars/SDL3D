@@ -27,8 +27,8 @@
 class Shader
 {
 private:
-	typedef std::map<std::string, GLuint> GLuintMap;
-	typedef std::pair<std::string, GLuint> GLuintMapPair;
+	using GLuintMap = std::map<std::string, GLuint>;
+	using GLuintMapPair = std::pair<std::string, GLuint>;
 
 	std::string mName; // Useful for error messages, don't change this stupidly
 

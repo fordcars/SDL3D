@@ -30,8 +30,8 @@
 class Object : public Entity
 {
 public:
-	typedef std::shared_ptr<const ObjectGeometry> constObjectGeometryPointer;
-	typedef std::shared_ptr<const Shader> constShaderPointer; // Const shader
+	using constObjectGeometryPointer = std::shared_ptr<const ObjectGeometry>;
+	using constShaderPointer = std::shared_ptr<const Shader>; // Const shader
 
 private:
 	constObjectGeometryPointer mObjectGeometry;

@@ -30,12 +30,12 @@
 
 class EntityManager
 {
-public: // Public typedefs
-	typedef std::shared_ptr<Object> objectPointer;
-	typedef std::shared_ptr<Light> lightPointer;
+public: // Public aliases
+	using objectPointer = std::shared_ptr<Object>;
+	using lightPointer = std::shared_ptr<Light>;
 
-	typedef std::vector<objectPointer> objectVector; // Vector containing shared pointers
-	typedef std::vector<lightPointer> lightVector;
+	using objectVector = std::vector<objectPointer>; // Vector containing shared pointers
+	using lightVector = std::vector<lightPointer>;
 
 private:
 	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.

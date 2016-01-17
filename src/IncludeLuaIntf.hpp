@@ -17,32 +17,22 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef TEXTURED_OBJECT_HPP_
-#define TEXTURED_OBJECT_HPP_
+// This will make sure all of the macros are defined when including LuaIntf
 
-#include <Object.hpp>
-#include <ObjectGeometry.hpp>
-#include <Texture.hpp>
-#include <Camera.hpp>
+#ifndef INCLUDE_LUA_INTF
+#define INCLUDE_LUA_INTF
 
-#include <memory> // For smart pointers
+#include <memory>
+#include <vector>
+#include <map>
 
-class TexturedObject : public Object // Inherit! 'public' is required here
+#include <LuaIntf.h>
+
+namespace LuaIntf
 {
-public:
-	using constTexturePointer = std::shared_ptr<const Texture>; // We can't modify the texture
+	LUA_USING_SHARED_PTR_TYPE(std::shared_ptr);
+	LUA_USING_LIST_TYPE(std::vector);
+	LUA_USING_MAP_TYPE(std::map);
+}
 
-private:
-	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
-
-public:
-	TexturedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
-	~TexturedObject() override;
-
-	void setTexture(constTexturePointer texturePointer);
-	constTexturePointer getTexture();
-
-	void render(const Camera& camera) override;
-};
-
-#endif /* TEXTURED_OBJECT_HPP_ */
+#endif /* INCLUDE_LUA_INTF */

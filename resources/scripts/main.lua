@@ -1,3 +1,10 @@
 local test = require("test")
 
-test.foo()
+function gameInit()
+	test.foo()
+	Utils.logprint("Hello, init!")
+end
+
+function gameStep()
+	Utils.logprint("Hello, step!")
+end
