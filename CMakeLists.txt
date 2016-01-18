@@ -132,12 +132,23 @@ find_library(TIMIDITY_LIBRARY
     NO_DEFAULT_PATH
 )
 
+# Lua
 set(LUA_DIR ${LIBRARY_DIR}/lua
     CACHE STRING "Path to Lua" FORCE)
 find_library(LUA_LIBRARY
     NAMES lua lua5.3.2
     PATHS ${LUA_DIR}/lib
     PATH_SUFFIXES local/lib VisualC/lua/Release
+    NO_DEFAULT_PATH
+)
+
+# Box2D
+set(BOX2D_DIR ${LIBRARY_DIR}/Box2D
+    CACHE STRING "Path to Box2D" FORCE)
+find_library(BOX2D_LIBRARY
+    NAMES Box2D
+    PATHS ${BOX2D_DIR}/lib
+    PATH_SUFFIXES local/lib VisualC/Box2D/Release
     NO_DEFAULT_PATH
 )
 
@@ -156,6 +167,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${SDL2_DIR}/include # Includes SDL2 extensions, too
 	${LUA_DIR}/include
+	${BOX2D_DIR}/include
 	${GLAD_DIR}/include
 	${TINYOBJLOADER_DIR}
 	${LUAINTF_DIR}

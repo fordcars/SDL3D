@@ -595,3 +595,10 @@ bool Script::runString(const std::string& scriptCode)
 
 	return true;
 }
+
+// Gets a reference from the script (for example, a variable or a function)
+LuaRef Script::getScriptReference(const std::string& referenceName)
+{
+	LuaState luaState = mLuaContext.state();
+	return LuaRef(luaState, referenceName.c_str());
+}

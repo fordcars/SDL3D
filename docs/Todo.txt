@@ -26,15 +26,8 @@
 -Settings class? Include max fps, field of view and resolution
 --->> Can the field of view be anything else than numbers power of ten?
 
--Level editor? (specifying textures, probably not shaders) TRY USING BLENDER! - multiple objects per .obj (use tiny loader)
-->>>> CHECK OUT TUTORIAL 15 lightmaps! It talks about that (obj, etc) = join all objects
---INFO: Lightmap = texture
---When joining objects, they will still be independant in the engine (only if I split all objects using tinyloader)
---1 uv map, and you can have 1 texture!!!
---THIS IS AWESOME!!! YOU COULD MAKE YOUR WHOLE LEVEL IN BLENDER, AND SAVE AS .obj and 1 texture with fancy static shadows! You can write a script to program roads or whatever. You can split the level into multiple texturs (for example, buildings and floor tiles etc)
 
-
--3d animations: Going with mesh keyframes fro now: blender! Export multiple .obj, I know. Then interpolate the meshes.
+-3d animations: Going with mesh keyframes fro now: blender! Export in one .obj. Then interpolate the meshes.
 ------------------------------------
 -Do something with v-sync like that the frame rate doesn't drop to 30?
 

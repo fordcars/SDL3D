@@ -23,6 +23,7 @@
 #define SCRIPT_MANAGER_HPP
 
 #include <IncludeLuaIntf.hpp>
+#include <LuaRef.h>
 #include <string>
 
 // Forward declare Game since we don't want to include Game.hpp again from ResourceManager.hpp!
@@ -51,6 +52,7 @@ public:
 	void bindInterface(Game& game);
 	bool run();
 	bool runString(const std::string& scriptCode);
+	LuaIntf::LuaRef getScriptReference(const std::string& referenceName);
 };
 
 #endif /* SCRIPT_MANAGER_HPP */

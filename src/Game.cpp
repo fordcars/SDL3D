@@ -23,6 +23,7 @@
 #include <SimpleTimer.hpp> // For game loop
 #include <Definitions.hpp>
 
+#include <LuaRef.h> // For getting references from scripts
 #include <SDL_mixer.h>
 
 #include <string> // No .h for c++
@@ -189,7 +190,8 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	// Run the script to get all of the definitions and all
 	mainScript->run();
 	// Run the script's init function
-	mainScript->runString(MAIN_SCRIPT_FUNCTION_INIT);
+	LuaIntf::LuaRef initFunction = mainScript->getScriptReference(MAIN_SCRIPT_FUNCTION_INIT);
+	initFunction();
 
 	// Object groups
 	//mResourceManager.addObjectGeometryGroup("suzanne.obj");
@@ -314,7 +316,8 @@ void Game::step() // Movement and all
 	float rotateAngle = 0.01f;
 
 	// Run the script's step()
-	mResourceManager.findScript(MAIN_SCRIPT_NAME)->runString(MAIN_SCRIPT_FUNCTION_STEP);
+	ResourceManager::scriptPointer mainScript = mResourceManager.findScript(MAIN_SCRIPT_NAME);
+	mainScript->getScriptReference(MAIN_SCRIPT_FUNCTION_STEP)();
 
 	mEntityManager.getGameCamera().setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
 

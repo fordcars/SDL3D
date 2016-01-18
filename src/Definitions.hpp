@@ -43,8 +43,8 @@
 #define MAIN_SCRIPT_NAME "main"
 #define MAIN_SCRIPT_FILE MAIN_SCRIPT_NAME ".lua" // Concatenates both literals
 
-#define MAIN_SCRIPT_FUNCTION_INIT "gameInit()"
-#define MAIN_SCRIPT_FUNCTION_STEP "gameStep()"
+#define MAIN_SCRIPT_FUNCTION_INIT "gameInit"
+#define MAIN_SCRIPT_FUNCTION_STEP "gameStep"
 
 // Texture types
 #define TEXTURE_BMP 0
