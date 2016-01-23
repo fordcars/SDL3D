@@ -58,6 +58,7 @@ set(SOURCES
 	src/EntityManager.cpp
 	src/Script.cpp
 	src/Sound.cpp
+	src/PhysicsBody.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -88,6 +89,7 @@ set(HEADERS
 	src/Script.hpp
 	src/Sound.hpp
 	src/IncludeLuaIntf.hpp
+	src/PhysicsBody.hpp
 )
 
 # Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.

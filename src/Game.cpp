@@ -31,7 +31,7 @@
 #include <math.h>
 #include <memory> // For smart pointers
 
-#include <glm/glm.hpp> // For matrices and all
+#include <glm/glm.hpp>
 #include <glad/glad.h> // For compability checks
 
 // With the help of:
@@ -39,6 +39,7 @@
 // http://glew.sourceforge.net/basic.html
 
 Game::Game()
+	: mEntityManager(glm::vec2(0.0f)) // Get a default value
 {
 	mName = DEFAULT_GAME_NAME; // Copy string
 

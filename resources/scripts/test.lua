@@ -42,14 +42,6 @@ local function foo()
 	local texture = resourceManager:findTexture("suzanne")
 	local monkey = ShadedObject(geometry, shader, texture)
 	entityManager:addObject(monkey)
-	
-	local velocity = Vec3(0.0, 0.001, 0.0)
-	local addingVelocity = Vec3(0.01, 0.0, 0.0)
-	velocity.y = 0.01
-	
-	velocity = Vec3.add(addingVelocity, velocity)
-	
-	monkey:setVelocity(velocity)
 end
 
 M.foo = foo

@@ -25,7 +25,8 @@
 #include <algorithm> // For finding in vector
 #include <string>
 
-EntityManager::EntityManager()
+EntityManager::EntityManager(glm::vec2 gravity)
+	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
 {
 	// Do nothing
 }

@@ -68,8 +68,8 @@ namespace Utils
 		// Using range-based for loop for fun
 		// Using auto to support const and non-const iterators
 		// (though it has to be const since it is passed as a const reference, so using auto for fun)
-		for(const auto& it : map)
-			resultVector.push_back(it.second);
+		for(const auto& value : map)
+			resultVector.push_back(value.second);
 	}
 
 	template<typename T> // Type is used to represent a single datatype. This line is part of the function definition

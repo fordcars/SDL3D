@@ -1,5 +1,5 @@
--Do glm::vec2/3 in lua API
--Put bindings in all of the classes instead of in Script!
+-Give lua access to gravity and projection?
+-Support objects rotation (method for recalcultating an object's Box2D shape)
 
 -Write a template container and keep those instances instead of a bunch of maps in ResourceManager. Add the ability to duplicate resources in this container!
 

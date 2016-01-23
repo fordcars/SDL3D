@@ -54,4 +54,9 @@
 #define SOUND_MUSIC 0
 #define SOUND_CHUNK 1 // Short sound effects would use this type
 
+// Physics body types
+#define PHYSICS_BODY_IGNORED 0 // Ignored by the physics engine
+#define PHYSICS_BODY_STATIC 1 // Does not move
+#define PHYSICS_BODY_DYNAMIC 2 // Moves
+
 #endif /* DEFINITIONS_HPP_ */

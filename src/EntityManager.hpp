@@ -24,6 +24,9 @@
 #include <Light.hpp>
 #include <Camera.hpp>
 
+#include <Box2D.h>
+#include <glm/glm.hpp>
+
 #include <memory>
 #include <vector>
 #include <cstddef> // For std::size_t
@@ -43,8 +46,10 @@ private:
 	objectVector mObjects;
 	lightVector mLights;
 
+	b2World mPhysicsWorld;
+
 public:
-	EntityManager();
+	EntityManager(glm::vec2 gravity);
 	~EntityManager();
 
 	Camera& getGameCamera();
