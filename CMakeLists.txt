@@ -147,9 +147,15 @@ find_library(LUA_LIBRARY
 # Box2D
 set(BOX2D_DIR ${LIBRARY_DIR}/Box2D
     CACHE STRING "Path to Box2D" FORCE)
-find_library(BOX2D_LIBRARY
+find_library(BOX2D_LIBRARY_DEBUG
     NAMES Box2D
-    PATHS ${BOX2D_DIR}/lib
+    PATHS ${BOX2D_DIR}/lib/debug
+    PATH_SUFFIXES local/lib VisualC/Box2D/Release
+    NO_DEFAULT_PATH
+)
+find_library(BOX2D_LIBRARY_RELEASE
+    NAMES Box2D
+    PATHS ${BOX2D_DIR}/lib/release
     PATH_SUFFIXES local/lib VisualC/Box2D/Release
     NO_DEFAULT_PATH
 )
@@ -191,6 +197,8 @@ add_executable(
 # Lastly we have to link the OpenGL libraries, SDL2 and the cocoa
 # framework to our application.  The latter is only happening on
 # OS X obviously.
+
+# For all build configurations
 target_link_libraries(
     SDL3D
     ${OPENGL_LIBRARIES}
@@ -202,6 +210,19 @@ target_link_libraries(
 	${LUA_LIBRARY}
     ${EXTRA_LIBRARIES}
 )
+
+# For debug only
+target_link_libraries(
+    SDL3D debug
+	${BOX2D_LIBRARY_DEBUG}
+)
+
+# For release and others
+target_link_libraries(
+    SDL3D optimized
+	${BOX2D_LIBRARY_RELEASE}
+)
+
 
 # If this is Windows, copy the DLL next to the program
 if(WIN32)

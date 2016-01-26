@@ -48,7 +48,7 @@ void InputManager::registerKey(int sdlKey) // Not const just in-case
 void InputManager::registerKeys(const keyVector& keys)
 {
 	for(const auto& key : keys) // Key is the actual value, not an iterator
-		registerKey(keyIt);
+		registerKey(key);
 }
 
 bool InputManager::isKeyPressed(const int sdlKey)

@@ -1,5 +1,6 @@
+-Calculate Box2D shape in ObjectGeometry and have a recalculate method
+-Make circle shape too!
 -Give lua access to gravity and projection?
--Support objects rotation (method for recalcultating an object's Box2D shape)
 
 -Write a template container and keep those instances instead of a bunch of maps in ResourceManager. Add the ability to duplicate resources in this container!
 

@@ -17,28 +17,59 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef PHYSICS_BODY
-#define PHYSICS_BODY
+#ifndef PHYSICS_BODY_HPP
+#define PHYSICS_BODY_HPP
 
 #include <Box2D.h>
 
 #include <ObjectGeometry.hpp>
 
+#include <memory>
 #include <vector>
 #include <string>
 
 class PhysicsBody
 {
 private:
-	b2Body* mBody;
+	using constObjectGeometryPointer = std::shared_ptr<const ObjectGeometry>;
+	using b2ShapeUniquePointer = std::unique_ptr<b2Shape>; // Smart pointers mean ownership!!
+	using b2Vec2Vector = std::vector<b2Vec2>;
 
-	static b2Body* createStaticBodyFromObjectGeometry(const ObjectGeometry& objectGeometry);
-	static b2Body* createDynamicBodyFromObjectGeometry(const ObjectGeometry& objectGeometry);
-	static std::vector<b2Vec2> get2DBoundingBoxFromObjectGeometry(const ObjectGeometry& objectGeometry, bool topdown);
+	b2Body* mBody;
+	b2ShapeUniquePointer mShape; // mShape will be able to hold different shape types
+
+	constObjectGeometryPointer mObjectGeometry;
+	bool mCircularShape;
+	float mRadius; // Holds the radius if it is a circular shape
+	int mType;
+
+	// Static functions
+	static b2ShapeUniquePointer createShapeFromObjectGeometry(const ObjectGeometry& objectGeometry, bool generateCircular);
+	static b2ShapeUniquePointer createShapeFromRadius(float radius);
+	static b2Vec2Vector get2DCoordsObjectGeometry(const ObjectGeometry& objectGeometry, bool topdown);
+
+	static b2Vec2Vector monotoneChainConvexHull(b2Vec2Vector points2D);
+	static b2Vec2 getCentroid(const b2Vec2Vector& points2D);
+	static float getCircleRadius(b2Vec2Vector points2D, b2Vec2 centroid);
+
+	static float cross(const b2Vec2& O, const b2Vec2& A, const b2Vec2& B);
+
+	static glm::vec2 PhysicsBody::b2Vec2ToGlm(const b2Vec2& vec);
+	static b2Vec2 PhysicsBody::glmToB2Vec2(const glm::vec2& vec);
 
 public:
-	PhysicsBody(const ObjectGeometry& objectGeometry, int type);
+	PhysicsBody(constObjectGeometryPointer objectGeometry, bool circularShape, int type);
+	PhysicsBody(const PhysicsBody& other);
 	~PhysicsBody();
+
+	void calculateShape();
+	bool calculateShape(bool circularShape);
+	bool calculateShape(bool circularShape, float radius);
+
+	bool isCircularShape();
+	float getRadius();
+
+	bool addToWorld(b2World& world, glm::vec2 position, float density);
 };
 
-#endif /* PHYSICS_BODY */
+#endif /* PHYSICS_BODY_HPP */
