@@ -54,9 +54,15 @@
 #define SOUND_MUSIC 0
 #define SOUND_CHUNK 1 // Short sound effects would use this type
 
-// Physics body types
-#define PHYSICS_BODY_IGNORED 0 // Ignored by the physics engine
-#define PHYSICS_BODY_STATIC 1 // Does not move
-#define PHYSICS_BODY_DYNAMIC 2 // Moves
+// Physics body
+#define PHYSICS_BODY_PIXELS_PER_METER 100
+
+#define PHYSICS_BODY_IGNORED 0    // Ignored by the physics engine
+#define PHYSICS_BODY_STATIC 1     // Does not move, collides
+#define PHYSICS_BODY_KINEMATIC 2  // Moves but does not collide or respond to forces
+#define PHYSICS_BODY_DYNAMIC 3    // Moves and collides like in real life
+
+// Constants
+#define CONST_PI 3.14159f
 
 #endif /* DEFINITIONS_HPP_ */

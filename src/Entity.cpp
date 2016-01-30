@@ -17,92 +17,20 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// Use this class to expand
+
 #include <Entity.hpp>
 
 Entity::Entity()
-	: mPosition(0.0f, 0.0f, 0.0f), mScaling(1.0f, 1.0f, 1.0f), mRotation(0.0f, 0.0f, 0.0f), mVelocity(0.0f, 0.0f, 0.0f)
 {
 	// Do nothing
 }
 
 Entity::Entity(glm::vec3 position, glm::vec3 scaling, glm::vec3 rotation, glm::vec3 velocity)
 {
-	mPosition = position;
-	mScaling = scaling;
-	mRotation = rotation;
 }
 
 Entity::~Entity()
 {
 	// Do nothing
-}
-
-void Entity::setPosition(glm::vec3 position)
-{
-	mPosition = position;
-}
-
-glm::vec3 Entity::getPosition() const
-{
-	return mPosition;
-}
-
-void Entity::setScaling(glm::vec3 scaling)
-{
-	mScaling = scaling;
-}
-
-glm::vec3 Entity::getScaling() const
-{
-	return mScaling;
-}
-
-void Entity::setRotation(glm::vec3 rotation)
-{
-	mRotation = rotation;
-}
-
-glm::vec3 Entity::getRotation() const
-{
-	return mRotation;
-}
-
-void Entity::setVelocity(glm::vec3 velocity)
-{
-	mVelocity = velocity;
-}
-
-glm::vec3 Entity::getVelocity() const
-{
-	return mVelocity;
-}
-
-glm::mat4 Entity::getModelMatrix()
-{
-	// Scaling * rotation * translation
-
-	glm::mat4 translationM = glm::translate(glm::mat4(1.0f), mPosition);
-
-	// Big chunk since we have to do x, y and z rotation manually
-	glm::mat4 rotationXM = glm::rotate(translationM,
-		glm::radians(mRotation.x), // Glm takes radians
-		glm::vec3(1.0f, 0.0f, 0.0f));
-
-	glm::mat4 rotationXYM = glm::rotate(rotationXM,
-		glm::radians(mRotation.y),
-		glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glm::mat4 rotationXYZM = glm::rotate(rotationXYM,
-		glm::radians(mRotation.z),
-		glm::vec3(0.0f, 0.0f, 1.0f));
-
-	glm::mat4 modelM = glm::scale(rotationXYZM, mScaling);
-
-	return modelM;
-}
-
-void Entity::step()
-{
-	if(mVelocity != glm::vec3(0.0f, 0.0f, 0.0f)) // Since it will often be like this, optimize!
-		mPosition += mVelocity;
 }
