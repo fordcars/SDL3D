@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef LIGHT_HPP_
-#define LIGHT_HPP_
+#ifndef LIGHT_HPP
+#define LIGHT_HPP
 
 #include <Entity.hpp>
 
@@ -51,4 +51,4 @@ public:
 	bool isOn();
 };
 
-#endif /* LIGHT_HPP_ */
+#endif /* LIGHT_HPP */

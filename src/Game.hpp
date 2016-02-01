@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef GAME_HPP_
-#define GAME_HPP_
+#ifndef GAME_HPP
+#define GAME_HPP
 
 #include <glad/glad.h>
 #include <SDL.h>
@@ -72,6 +72,7 @@ private:
 	float calculateAspectRatio();
 
 	void step();
+	void clearGraphics();
 	void render();
 	void doMainLoop();
 
@@ -96,4 +97,4 @@ public:
 	EntityManager& getEntityManager();
 };
 
-#endif /* GAME_HPP_ */
+#endif /* GAME_HPP */

@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef TEXTURE_HPP_
-#define TEXTURE_HPP_
+#ifndef TEXTURE_HPP
+#define TEXTURE_HPP
 
 // For DDS files
 #define FOURCC_DXT1 0x31545844
@@ -54,4 +54,4 @@ public:
 	GLuint getType() const;
 };
 
-#endif /* TEXTURE_HPP_ */
+#endif /* TEXTURE_HPP */

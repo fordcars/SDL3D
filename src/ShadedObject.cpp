@@ -34,8 +34,9 @@
 // - sampler2D textureSampler
 
 ShadedObject::ShadedObject(constObjectGeometryPointer objectGeometry,
-						   constShaderPointer shaderPointer, constTexturePointer texturePointer)
-	: TexturedObject(objectGeometry, shaderPointer, texturePointer)
+						   constShaderPointer shaderPointer, constTexturePointer texturePointer,
+						   bool physicsCircularShape, int physicsType)
+	: TexturedObject(objectGeometry, shaderPointer, texturePointer, physicsCircularShape, physicsType)
 {
 	// Do nothing
 }
@@ -52,7 +53,7 @@ void ShadedObject::render(const Camera& camera)
 	const ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry()->getUVBuffer();
 	const ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry()->getNormalBuffer();
 
-	glm::mat4 modelMatrix = getModelMatrix();
+	glm::mat4 modelMatrix = getPhysicsBody().generateModelMatrix();
 	glm::mat4 viewMatrix = camera.getViewMatrix();
 	glm::mat4 projectionMatrix = camera.getProjectionMatrix();
 

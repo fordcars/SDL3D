@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef TEXTURED_OBJECT_HPP_
-#define TEXTURED_OBJECT_HPP_
+#ifndef TEXTURED_OBJECT_HPP
+#define TEXTURED_OBJECT_HPP
 
 #include <Object.hpp>
 #include <ObjectGeometry.hpp>
@@ -36,7 +36,8 @@ private:
 	constTexturePointer mTexturePointer; // Non-const so we can change which texture we are using
 
 public:
-	TexturedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
+	TexturedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer,
+		bool physicsCircularShape, int physicsType);
 	~TexturedObject() override;
 
 	void setTexture(constTexturePointer texturePointer);
@@ -45,4 +46,4 @@ public:
 	void render(const Camera& camera) override;
 };
 
-#endif /* TEXTURED_OBJECT_HPP_ */
+#endif /* TEXTURED_OBJECT_HPP */

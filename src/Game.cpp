@@ -39,7 +39,7 @@
 // http://glew.sourceforge.net/basic.html
 
 Game::Game()
-	: mEntityManager(glm::vec2(0.0f)) // Get a default value
+	: mEntityManager(glm::vec2(0.0f),  1000 / DEFAULT_GAME_MAX_FRAMES_PER_SECOND) // Set gravity in a very shitty way
 {
 	mName = DEFAULT_GAME_NAME; // Copy string
 
@@ -48,6 +48,7 @@ Game::Game()
 
 	// Limits the frames per second
 	mMinTimePerFrame = static_cast<int>(1000 / DEFAULT_GAME_MAX_FRAMES_PER_SECOND); // Truncation
+	mEntityManager.setPhysicsTimePerStep(mMinTimePerFrame);
 
 	mLastFrameTime = 0;
 
@@ -191,8 +192,7 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	// Run the script to get all of the definitions and all
 	mainScript->run();
 	// Run the script's init function
-	LuaIntf::LuaRef initFunction = mainScript->getScriptReference(MAIN_SCRIPT_FUNCTION_INIT);
-	initFunction();
+	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_INIT);
 
 	// Object groups
 	//mResourceManager.addObjectGeometryGroup("suzanne.obj");
@@ -206,9 +206,6 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 
 	// static_cast<>() is safer than a C-style cast
 	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
-	mEntityManager.getGameCamera().setPosition(glm::vec3(10.0f, 3.0f, 3.0f));
-
-	mEntityManager.getGameCamera().setDirection(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f)); // 0 for orientation
 
 	//std::shared_ptr<ShadedObject> monkey(new ShadedObject(mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
 	//mEntityManager.addObject(monkey);
@@ -318,9 +315,9 @@ void Game::step() // Movement and all
 
 	// Run the script's step()
 	ResourceManager::scriptPointer mainScript = mResourceManager.findScript(MAIN_SCRIPT_NAME);
-	mainScript->getScriptReference(MAIN_SCRIPT_FUNCTION_STEP)();
+	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_STEP);
 
-	mEntityManager.getGameCamera().setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
+	/*mEntityManager.getGameCamera().setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	if(mInputManager.isKeyPressed(SDLK_LSHIFT))
 	{
@@ -351,14 +348,14 @@ void Game::step() // Movement and all
 		mEntityManager.getGameCamera().setVelocity(mEntityManager.getGameCamera().getVelocity() +  glm::rotateY(glm::vec3(mEntityManager.getGameCamera().getDirection()) * speed, -1.5708f)  );
 		//timeX -= speed;
 		//mEntityManager.getObjects()[1]->setRotation(mEntityManager.getObjects()[1]->getRotation()-glm::vec3(0.0f, 2.5f, 0.0f));
-	}
+	}*/
 
 	if(mInputManager.isKeyPressed(SDLK_SPACE))
 	{
-		mEntityManager.getGameCamera().setPosition(mEntityManager.getGameCamera().getPosition() += glm::vec3(0.0f, speed, 0.0f));
+		mEntityManager.getGameCamera().getPhysicsBody().setPosition(mEntityManager.getGameCamera().getPhysicsBody().getPosition() += glm::vec3(0.0f, speed, 0.0f));
 	} else if(mInputManager.isKeyPressed(SDLK_LCTRL))
 	{
-		mEntityManager.getGameCamera().setPosition(mEntityManager.getGameCamera().getPosition() += glm::vec3(0.0f, -speed, 0.0f));
+		mEntityManager.getGameCamera().getPhysicsBody().setPosition(mEntityManager.getGameCamera().getPhysicsBody().getPosition() += glm::vec3(0.0f, -speed, 0.0f));
 	}
 	
 	// Camera controls, needs work haha
@@ -421,11 +418,14 @@ void Game::step() // Movement and all
 	mEntityManager.step();
 }
 
-void Game::render()
+void Game::clearGraphics()
 {
 	glClearColor(0.1f, 0.1f, 1.0f, 1.0f); // Set clear color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
+}
 
+void Game::render()
+{
 	mEntityManager.render();
 	SDL_GL_SwapWindow(mMainWindow);
 }
@@ -439,6 +439,7 @@ void Game::doMainLoop()
 	int numberOfStepsToDo = (currentTime - mLastFrameTime)/mStepLength;
 
 	doEvents();
+	clearGraphics(); // Call before step if we want to do stuff in there
 
 	if(mLastFrameTime != 0) // Make sure everything is good before moving stuff!
 	{

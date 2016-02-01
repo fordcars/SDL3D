@@ -19,9 +19,10 @@
 
 #version 330 core
 
-varying vec3 fScreenPos;
+in vec3 fScreenPos;
+out vec3 color;
 
 void main()
 {
-	gl_FragColor = vec4(fScreenPos, 1);
+	color = vec3(1.0f, 0.0f, 0.0f);
 }

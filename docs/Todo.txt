@@ -1,4 +1,8 @@
--Calculate Box2D shape in ObjectGeometry
+-Hardcode camera physics body
+-Use poly2tri to make shape
+-Apply drag to all objects (a force opposite of velocity)
+
+-Ability to create camera with/without physics?
 -Give lua access to gravity and projection?
 
 -Write a template container and keep those instances instead of a bunch of maps in ResourceManager. Add the ability to duplicate resources in this container!
@@ -16,9 +20,6 @@
 -Render to texture, so we can have some awesome effects!
 -When a C++ error happens (that is caught), crash() it with the Lua line (when it is called from Lua)!
 -Give Lua access to input events?
-
--Colision detection (in Entity step function?) - Either point or box (and add collision on and off):
----Generate hitboxes: for now, only AABB (axis-aligned) square 2d (topdown) hitboxes!! REMEMBER THAT SCALING AFFECTS THIS AND MAY REQUIRE RECREATING THE HITBOX!
 
 -A Window class instead of functions in Game? It's fine for now, maybe an SDL window is enough.
 -Load all files at the same place?

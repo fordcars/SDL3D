@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef SIMPLETIMER_HPP_
-#define SIMPLETIMER_HPP_
+#ifndef SIMPLETIMER_HPP
+#define SIMPLETIMER_HPP
 
 class SimpleTimer
 {
@@ -34,4 +34,4 @@ public:
 	int getTicks();
 };
 
-#endif /* SIMPLETIMER_HPP_ */
+#endif /* SIMPLETIMER_HPP */

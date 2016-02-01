@@ -29,8 +29,9 @@
 // - sampler2D textureSampler
 
 TexturedObject::TexturedObject(constObjectGeometryPointer objectGeometry,
-							   constShaderPointer shaderPointer, constTexturePointer texturePointer)
-	: Object(objectGeometry, shaderPointer) // Calls Object constructor with those arguments
+							   constShaderPointer shaderPointer, constTexturePointer texturePointer,
+							   bool physicsCircularShape, int physicsType)
+	: Object(objectGeometry, shaderPointer, physicsCircularShape, physicsType) // Calls Object constructor with those arguments
 {
 	mTexturePointer = texturePointer;
 }
@@ -56,7 +57,9 @@ void TexturedObject::render(const Camera& camera)
 	const ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry()->getPositionBuffer();
 	const ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry()->getUVBuffer();
 
-	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
+	glm::mat4 modelMatrix = getPhysicsBody().generateModelMatrix();
+
+	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * modelMatrix;
 	
 	glUseProgram(getShader()->getID());
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);

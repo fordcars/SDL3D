@@ -25,10 +25,15 @@
 #include <algorithm> // For finding in vector
 #include <string>
 
-EntityManager::EntityManager(glm::vec2 gravity)
+EntityManager::EntityManager(glm::vec2 gravity, int physicsTimePerStep)
 	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
 {
-	// Do nothing
+	// Defaults
+	mPhysicsTimePerStep = physicsTimePerStep;
+	mPhysicsVelocityIterations = 6;
+	mPhysicsPositionIterations = 2;
+
+	mGameCamera.getPhysicsBody().addToWorld(&mPhysicsWorld); // Add it to the world
 }
 
 EntityManager::~EntityManager()
@@ -36,14 +41,36 @@ EntityManager::~EntityManager()
 	// Do nothing
 }
 
+// Allows us to do slow motion!
+void EntityManager::setPhysicsTimePerStep(int time)
+{
+	mPhysicsTimePerStep = time;
+}
+
+int EntityManager::getPhysicsTimePerStep()
+{
+	return mPhysicsTimePerStep;
+}
+
 Camera& EntityManager::getGameCamera()
 {
 	return mGameCamera;
 }
 
-void EntityManager::addObject(objectPointer object) // Give it a shared pointer
+bool EntityManager::addObject(objectPointer object) // Give it a shared pointer
 {
-	mObjects.push_back(object);
+	if(std::find(mObjects.begin(), mObjects.end(), object) == mObjects.end()) // Does not already exist
+	{
+		mObjects.push_back(object);
+		// If we remove this object, it will remain in the physics world until it gets destroyed!
+		object->getPhysicsBody().addToWorld(&mPhysicsWorld);
+		return true;
+	} else
+	{
+		std::string objectGeometryName = object->getObjectGeometry()->getName();
+		Utils::CRASH("This object (constructed from '" + objectGeometryName + "') was already added in entity manager! Cannot add again!");
+		return false;
+	}
 }
 
 // Removes an object from the manager. Does not delete them if they are still referenced somewhere, logically (shared pointers).
@@ -57,6 +84,7 @@ EntityManager::objectPointer EntityManager::removeObject(std::size_t index)
 		objectVector::iterator iterator = mObjects.begin() + index; // We need to do this for std
 		mObjects.erase(iterator);
 
+		removedItem->getPhysicsBody().removeFromWorld();
 		return removedItem;
 	} else
 	{
@@ -73,10 +101,10 @@ bool EntityManager::removeObject(objectPointer object)
 
 	if(found != mObjects.end()) // If it is found
 	{
+		object->getPhysicsBody().removeFromWorld();
 		mObjects.erase(found); // Remove it
 		return true;
-	}
-	else
+	} else
 	{
 		Utils::CRASH("Cannot remove object pointer; it is not in the manager!");
 		return false;
@@ -89,10 +117,19 @@ EntityManager::objectVector& EntityManager::getObjects()
 }
 
 
-
-void EntityManager::addLight(lightPointer light) // Give it an actual object
+bool EntityManager::addLight(lightPointer light) // Give it an actual object
 {
-	mLights.push_back(light);
+	if(std::find(mLights.begin(), mLights.end(), light) == mLights.end()) // Does not already exist
+	{
+		mLights.push_back(light);
+		light->getPhysicsBody().addToWorld(&mPhysicsWorld);
+
+		return true;
+	} else
+	{
+		Utils::CRASH("This light was already added in entity manager! Cannot add again!");
+		return false;
+	}
 }
 
 EntityManager::lightPointer EntityManager::removeLight(std::size_t index)
@@ -104,6 +141,7 @@ EntityManager::lightPointer EntityManager::removeLight(std::size_t index)
 		lightVector::iterator iterator = mLights.begin() + index;
 		mLights.erase(iterator);
 
+		removedItem->getPhysicsBody().removeFromWorld();
 		return removedItem;
 	}
 	else
@@ -120,6 +158,7 @@ bool EntityManager::removeLight(lightPointer light)
 
 	if(found != mLights.end()) // If it is found
 	{
+		light->getPhysicsBody().removeFromWorld();
 		mLights.erase(found); // Remove it
 		return true;
 	} else
@@ -129,7 +168,6 @@ bool EntityManager::removeLight(lightPointer light)
 	}
 }
 
-
 EntityManager::lightVector& EntityManager::getLights()
 {
 	return mLights;
@@ -137,17 +175,9 @@ EntityManager::lightVector& EntityManager::getLights()
 
 void EntityManager::step() // Steps all entities
 {
-	mGameCamera.step();
-
-	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
-	{
-		(*it)->step(); // it is a pointer (iterator) pointing to a smart pointer
-	}
-
-	for(lightVector::iterator it = mLights.begin(); it != mLights.end(); ++it)
-	{
-		(*it)->step();
-	}
+	// Box2D wants seconds, not miliseconds
+	float timeInSeconds = static_cast<float>(mPhysicsTimePerStep) / 1000.0f;
+	mPhysicsWorld.Step(timeInSeconds, mPhysicsVelocityIterations, mPhysicsPositionIterations);
 }
 
 void EntityManager::render() // Renders all entities that can be rendered

@@ -4,3 +4,4 @@
 - Lua 5.1+
 - Glad generated OpenGL loader
 - TinyObjLoader
+- Poly2Tri

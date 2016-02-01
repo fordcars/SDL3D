@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef ENTITY_MANAGER_HPP_
-#define ENTITY_MANAGER_HPP_
+#ifndef ENTITY_MANAGER_HPP
+#define ENTITY_MANAGER_HPP
 
 #include <Object.hpp>
 #include <Light.hpp>
@@ -47,19 +47,25 @@ private:
 	lightVector mLights;
 
 	b2World mPhysicsWorld;
+	int mPhysicsTimePerStep; // In miliseconds
+	int mPhysicsVelocityIterations;
+	int mPhysicsPositionIterations;
 
 public:
-	EntityManager(glm::vec2 gravity);
+	EntityManager(glm::vec2 gravity, int physicsTimePerStep);
 	~EntityManager();
+
+	void setPhysicsTimePerStep(int time);
+	int getPhysicsTimePerStep();
 
 	Camera& getGameCamera();
 
-	void addObject(objectPointer object);
+	bool addObject(objectPointer object);
 	objectPointer removeObject(std::size_t index);
 	bool removeObject(objectPointer object);
 	objectVector& getObjects();
 
-	void addLight(lightPointer light);
+	bool addLight(lightPointer light);
 	lightPointer removeLight(std::size_t index);
 	bool removeLight(lightPointer light);
 	lightVector& getLights();
@@ -68,4 +74,4 @@ public:
 	void render();
 };
 
-#endif /* ENTITY_MANAGER_HPP_ */
+#endif /* ENTITY_MANAGER_HPP */

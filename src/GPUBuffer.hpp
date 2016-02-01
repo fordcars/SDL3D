@@ -21,8 +21,8 @@
 // I am pretty sure constantly rebinding a buffer isn't too bad
 // Useful for using as an interface for other classes (retun this instead of writing an interface)
 
-#ifndef GPU_BUFFER_HPP_
-#define GPU_BUFFER_HPP_
+#ifndef GPU_BUFFER_HPP
+#define GPU_BUFFER_HPP
 
 #include <glad/glad.h> // glad.h is compatible with C++
 #include <vector>
@@ -159,4 +159,4 @@ public:
 	}
 };
 
-#endif /* GPU_BUFFER_HPP_ */
+#endif /* GPU_BUFFER_HPP */

@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef SDL3D_HPP_
-#define SDL3D_HPP_
+#ifndef SDL3D_HPP
+#define SDL3D_HPP
 
 /* Include windows.h properly on Windows */
 #if defined(WIN32) || defined(_WINDOWS)
@@ -27,4 +27,4 @@
 #  include <windows.h>
 #endif
 
-#endif /* SDL3D_HPP_ */
+#endif /* SDL3D_HPP */

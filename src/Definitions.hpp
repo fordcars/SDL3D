@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef DEFINITIONS_HPP_
-#define DEFINITIONS_HPP_
+#ifndef DEFINITIONS_HPP
+#define DEFINITIONS_HPP
 
 #include <vector>
 #include <map>
@@ -55,7 +55,7 @@
 #define SOUND_CHUNK 1 // Short sound effects would use this type
 
 // Physics body
-#define PHYSICS_BODY_PIXELS_PER_METER 100
+#define PHYSICS_BODY_PIXELS_PER_METER 10
 
 #define PHYSICS_BODY_IGNORED 0    // Ignored by the physics engine
 #define PHYSICS_BODY_STATIC 1     // Does not move, collides
@@ -65,4 +65,4 @@
 // Constants
 #define CONST_PI 3.14159f
 
-#endif /* DEFINITIONS_HPP_ */
+#endif /* DEFINITIONS_HPP */

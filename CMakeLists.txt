@@ -36,6 +36,7 @@ set(ARCHITECTURE x86)
 set(GLAD_DIR ${LIBRARY_DIR}/glad)
 set(TINYOBJLOADER_DIR ${LIBRARY_DIR}/tinyobjloader)
 set(LUAINTF_DIR ${LIBRARY_DIR}/LuaIntf/LuaIntf)
+set(POLY2TRI_DIR ${LIBRARY_DIR}/poly2tri/poly2tri)
 
 # A list of header and source files
 set(SOURCES
@@ -64,6 +65,10 @@ set(SOURCES
 	${GLAD_DIR}/src/glad.c
 	${TINYOBJLOADER_DIR}/tiny_obj_loader.cc
 )
+
+# Static lib directory sources (if you are too lazy to type all source files manually, this is less safe though)
+AUX_SOURCE_DIRECTORY(${POLY2TRI_DIR}/sweep SOURCES) # Get all source files in this directory
+AUX_SOURCE_DIRECTORY(${POLY2TRI_DIR}/common SOURCES)
 
  # Shows up in VisualStudio
 set(HEADERS
@@ -180,6 +185,7 @@ include_directories(
 	${TINYOBJLOADER_DIR}
 	${LUAINTF_DIR}
 	${LIBRARY_DIR} # All other libraries
+	${POLY2TRI_DIR}
 )
 
 # Now we define what makes our executable.  First thing is the name,

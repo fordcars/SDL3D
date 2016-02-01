@@ -50,6 +50,7 @@ Shader::~Shader()
 
 // PRIVATE
 
+// Static
 GLuint Shader::compileShader(const std::string& shaderPath, const std::string& shaderCode, GLenum type) // fileName for debugging
 {
 	GLuint shader = glCreateShader(type);
@@ -94,6 +95,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 	return shader;
 }
 
+// Static
 GLuint Shader::linkShaderProgram(const std::string& shaderProgramName, GLuint vertexShader, GLuint fragmentShader)
 {
 	GLint programOk;

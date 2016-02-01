@@ -1,0 +1,1 @@
+We need a Box2D folder here to make sure Box2D.h includes correctly.

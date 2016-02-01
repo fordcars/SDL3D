@@ -20,20 +20,26 @@
 // This class is the parent class of all entities in the game (objects, lights, camera, etc)
 // This is ALWAYS in worldspace!
 
-#ifndef ENTITY_HPP_
-#define ENTITY_HPP_
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
 
 #include <PhysicsBody.hpp>
+#include <ObjectGeometry.hpp>
+#include <glm/glm.hpp>
 
 class Entity
 {
 private:
+	using constObjectGeometryPointer = std::shared_ptr<const ObjectGeometry>;
 	PhysicsBody mPhysicsBody;
 
 public:
 	Entity();
-	Entity(glm::vec3 position, glm::vec3 scaling, glm::vec3 rotation, glm::vec3 velocity);
+	Entity(constObjectGeometryPointer objectGeometry, bool physicsCircularShape, int physicsType);
 	virtual ~Entity();
+	
+	PhysicsBody& getPhysicsBody();
+	const PhysicsBody& getPhysicsBody() const;
 };
 
-#endif /* ENTITY_HPP_ */
+#endif /* ENTITY_HPP */

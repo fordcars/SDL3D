@@ -135,6 +135,7 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 #include <Object.hpp>
 #include <TexturedObject.hpp>
 #include <ShadedObject.hpp>
+#include <PhysicsBody.hpp>
 
 #include <Utils.hpp>
 
@@ -398,18 +399,54 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginClass<Entity>("Entity")
-		.addFunction("setPosition", &Entity::setPosition)
-		.addFunction("getPosition", &Entity::getPosition)
-
-		.addFunction("setScaling", &Entity::setScaling)
-		.addFunction("getScaling", &Entity::getScaling)
-
-		.addFunction("setRotation", &Entity::setRotation)
-		.addFunction("getRotation", &Entity::getRotation)
-
-		.addFunction("setVelocity", &Entity::setVelocity)
-		.addFunction("getVelocity", &Entity::getVelocity)
+		.addFunction("getPhysicsBody",
+			static_cast<PhysicsBody& (Entity::*)()> (&Entity::getPhysicsBody))
 	.endClass();
+
+
+	LuaBinding(luaState).beginClass<PhysicsBody>("PhysicsBody")
+		.addFunction("calculateShapes",
+			static_cast<bool (PhysicsBody::*)()> (&PhysicsBody::calculateShapes))
+		.addFunction("calculateShapesUsingObjectGeometry",
+			static_cast<bool (PhysicsBody::*)(bool, glm::vec3)> (&PhysicsBody::calculateShapes))
+		.addFunction("calculateShapesFromRadius",
+			static_cast<bool (PhysicsBody::*)(float)> (&PhysicsBody::calculateShapes))
+
+		.addFunction("setDensity", &PhysicsBody::setDensity)
+		.addFunction("getDensity", &PhysicsBody::getDensity)
+
+		.addFunction("setFriction", &PhysicsBody::setFriction)
+		.addFunction("getFriction", &PhysicsBody::getFriction)
+
+		.addFunction("setRestitution", &PhysicsBody::setRestitution)
+		.addFunction("getRestitution", &PhysicsBody::getRestitution)
+
+		.addFunction("getPixelsPerMeter", &PhysicsBody::getPixelsPerMeter)
+
+		.addFunction("isCircularShape", &PhysicsBody::isCircularShape)
+		.addFunction("getRadius", &PhysicsBody::getRadius)
+		.addFunction("getType", &PhysicsBody::getType)
+
+		.addFunction("setPosition", &PhysicsBody::setPosition)
+		.addFunction("getPosition", &PhysicsBody::getPosition)
+
+		.addFunction("setRotation", &PhysicsBody::setRotation)
+		.addFunction("getRotation", &PhysicsBody::getRotation)
+		.addFunction("getRotationInRadians", &PhysicsBody::getRotationInRadians)
+
+		.addFunction("setVelocity", &PhysicsBody::setVelocity)
+		.addFunction("getVelocity", &PhysicsBody::getVelocity)
+
+		.addFunction("renderDebugShape", &PhysicsBody::renderDebugShape)
+	.endClass();
+
+
+	LuaBinding(luaState).beginModule("PhysicsBodyType")
+		.addConstant("Ignored", PHYSICS_BODY_IGNORED)
+		.addConstant("Static", PHYSICS_BODY_STATIC)
+		.addConstant("Kinematic", PHYSICS_BODY_KINEMATIC)
+		.addConstant("Dynamic", PHYSICS_BODY_DYNAMIC)
+	.endModule();
 
 
 	LuaBinding(luaState).beginExtendClass<Camera, Entity>("Camera")
@@ -422,7 +459,8 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginExtendClass<Object, Entity>("Object")
-		.addConstructor(LUA_SP(std::shared_ptr<Object>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer))
+		.addConstructor(LUA_SP(std::shared_ptr<Object>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer,
+			bool, int))
 
 		.addFunction("setObjectGeometry", &Object::setObjectGeometry)
 		.addFunction("getObjectGeometry", &Object::getObjectGeometry)
@@ -433,14 +471,14 @@ void Script::bindInterface(Game& game)
 
 	LuaBinding(luaState).beginExtendClass<TexturedObject, Object>("TexturedObject")
 		.addConstructor(LUA_SP(std::shared_ptr<TexturedObject>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer,
-			TexturedObject::constTexturePointer))
+			TexturedObject::constTexturePointer, bool, int))
 		.addFunction("setTexture", &TexturedObject::setTexture)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<ShadedObject, TexturedObject>("ShadedObject")
 		.addConstructor(LUA_SP(std::shared_ptr<ShadedObject>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer,
-			TexturedObject::constTexturePointer))
+			TexturedObject::constTexturePointer, bool, int))
 	.endClass();
 
 
@@ -462,7 +500,7 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginModule("Utils")
-		.addFunction("logprint", [](const std::string& msg) // Use a lamda to make sure we don't need line numbers
+		.addFunction("logprint", [](const std::string& msg) // Use a lamda to not need to specify line numbers (those are defaulted arguments in the definition)
 		{
 			Utils::directly_logprint(msg); // Use directly, we don't want C++ line numbers and files!
 		})
@@ -597,8 +635,25 @@ bool Script::runString(const std::string& scriptCode)
 }
 
 // Gets a reference from the script (for example, a variable or a function)
-LuaRef Script::getScriptReference(const std::string& referenceName)
+LuaRef Script::getReference(const std::string& referenceName)
 {
 	LuaState luaState = mLuaContext.state();
 	return LuaRef(luaState, referenceName.c_str());
+}
+
+// Checks for errors, too
+void Script::runFunction(const std::string& functionName)
+{
+	try
+	{
+		getReference(functionName)();
+	}
+	catch(const std::exception& e)
+	{
+		std::string scriptErrorMessage = e.what();
+
+		clarifyError(scriptErrorMessage);
+		std::string errorMessage = "Running function in script '" + mName + "' from C++ failed!\nError: " + scriptErrorMessage;
+		Utils::CRASH(errorMessage);
+	}
 }

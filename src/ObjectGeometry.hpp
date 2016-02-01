@@ -19,8 +19,8 @@
 
 // This class holds the vertex data. Use this class as a member for other 3D objects.
 
-#ifndef OBJECT_GEOMETRY_HPP_
-#define OBJECT_GEOMETRY_HPP_
+#ifndef OBJECT_GEOMETRY_HPP
+#define OBJECT_GEOMETRY_HPP
 
 #include <memory> // For smart pointers
 
@@ -73,4 +73,4 @@ public:
 	const vec3Buffer& getNormalBuffer() const;
 };
 
-#endif /* OBJECT_GEOMETRY_HPP_ */
+#endif /* OBJECT_GEOMETRY_HPP */

@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef OBJECT_GEOMETRY_GROUP_HPP_
-#define OBJECT_GEOMETRY_GROUP_HPP_
+#ifndef OBJECT_GEOMETRY_GROUP_HPP
+#define OBJECT_GEOMETRY_GROUP_HPP
 
 #include <memory> // For smart pointers
 
@@ -62,4 +62,4 @@ public:
 	objectGeometryVector getObjectGeometries();
 };
 
-#endif /* OBJECT_GEOMETRY_GROUP_HPP_ */
+#endif /* OBJECT_GEOMETRY_GROUP_HPP */

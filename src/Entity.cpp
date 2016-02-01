@@ -26,11 +26,23 @@ Entity::Entity()
 	// Do nothing
 }
 
-Entity::Entity(glm::vec3 position, glm::vec3 scaling, glm::vec3 rotation, glm::vec3 velocity)
+Entity::Entity(constObjectGeometryPointer objectGeometry, bool physicsCircularShape, int physicsType)
+	: mPhysicsBody(objectGeometry, physicsCircularShape, physicsType)
 {
+	// Do nothing
 }
 
 Entity::~Entity()
 {
 	// Do nothing
+}
+
+PhysicsBody& Entity::getPhysicsBody()
+{
+	return mPhysicsBody;
+}
+
+const PhysicsBody& Entity::getPhysicsBody() const
+{
+	return mPhysicsBody;
 }

@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef SHADED_OBJECT_HPP_
-#define SHADED_OBJECT_HPP_
+#ifndef SHADED_OBJECT_HPP
+#define SHADED_OBJECT_HPP
 
 #include <TexturedObject.hpp>
 #include <ObjectGeometry.hpp>
@@ -30,10 +30,11 @@
 class ShadedObject : public TexturedObject // Inherit! 'public' makes the TexturedObject interface public.
 {
 public:
-	ShadedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer);
+	ShadedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer,
+		bool physicsCircularShape, int physicsType);
 	~ShadedObject() override;
 
 	void render(const Camera& camera) override;
 };
 
-#endif /* SHADED_OBJECT_HPP_ */
+#endif /* SHADED_OBJECT_HPP */

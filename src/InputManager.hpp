@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef INPUT_MANAGER_HPP_
-#define INPUT_MANAGER_HPP_
+#ifndef INPUT_MANAGER_HPP
+#define INPUT_MANAGER_HPP
 
 #include <SDL.h>
 
@@ -46,4 +46,4 @@ public:
 	void updateKeyByEvent(SDL_Event event);
 };
 
-#endif /* INPUT_MANAGER_HPP_ */
+#endif /* INPUT_MANAGER_HPP */

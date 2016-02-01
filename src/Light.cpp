@@ -29,7 +29,7 @@ Light::Light()
 
 Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
 {
-	setPosition(position);
+	getPhysicsBody().setPosition(position);
 
 	mDiffuseColor = diffuseColor;
 	mSpecularColor = specularColor;

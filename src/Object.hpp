@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef OBJECT_HPP_
-#define OBJECT_HPP_
+#ifndef OBJECT_HPP
+#define OBJECT_HPP
 
 #include <Entity.hpp>
 #include <ObjectGeometry.hpp>
@@ -38,7 +38,8 @@ private:
 	constShaderPointer mShaderPointer; // The shader used to render this object, pointer.
 
 public:
-	Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer);
+	Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer,
+		bool physicsCircularShape, int physicsType);
 	virtual ~Object() override; // virtual here is just for looks
 
 	void setObjectGeometry(constObjectGeometryPointer objectGeometry);
@@ -50,4 +51,4 @@ public:
 	virtual void render(const Camera& camera); // Override this if you need to!
 };
 
-#endif /* OBJECT_HPP_ */
+#endif /* OBJECT_HPP */

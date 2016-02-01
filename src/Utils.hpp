@@ -19,8 +19,8 @@
 
 // -1 for undefined lines, 0 for undefined files
 
-#ifndef UTILS_HPP_
-#define UTILS_HPP_
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
 #include <string>
 #include <vector>
@@ -108,4 +108,4 @@ namespace Utils
 	}
 }
 
-#endif /* UTILS_HPP_ */
+#endif /* UTILS_HPP */

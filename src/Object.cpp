@@ -29,8 +29,9 @@
 #include <Object.hpp>
 
 // Objects copy objectGeometry instead of pointing to them, allow you to modify them
-Object::Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer)
-	: mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
+Object::Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer,
+	bool physicsCircularShape, int physicsType)
+	: Entity(objectGeometry, physicsCircularShape, physicsType), mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
 {
 	mShaderPointer = shaderPointer;
 }
@@ -66,7 +67,8 @@ void Object::render(const Camera& camera)
 	const ObjectGeometry::uintBuffer& indexBuffer = mObjectGeometry->getIndexBuffer();
 	const ObjectGeometry::vec3Buffer& positionBuffer = mObjectGeometry->getPositionBuffer();
 
-	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * getModelMatrix();
+	glm::mat4 modelMatrix = getPhysicsBody().generateModelMatrix();
+	glm::mat4 MVP = camera.getProjectionMatrix() * camera.getViewMatrix() * modelMatrix;
 
 	glUseProgram(mShaderPointer->getID());
 	glUniformMatrix4fv(mShaderPointer->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);

@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef SHADER_HPP_
-#define SHADER_HPP_
+#ifndef SHADER_HPP
+#define SHADER_HPP
 
 #include <map>
 #include <glad/glad.h>
@@ -54,4 +54,4 @@ public:
 	GLuint findUniform(const std::string& uniformName) const;
 };
 
-#endif /* SHADER_HPP_ */
+#endif /* SHADER_HPP */

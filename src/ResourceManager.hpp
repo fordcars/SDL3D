@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef RESOURCE_MANAGER_HPP_
-#define RESOURCE_MANAGER_HPP_
+#ifndef RESOURCE_MANAGER_HPP
+#define RESOURCE_MANAGER_HPP
 
 #include <Shader.hpp>
 #include <Texture.hpp>
@@ -114,4 +114,4 @@ public:
 	void clearSounds();
 };
 
-#endif /* RESOURCE_MANAGER_HPP_ */
+#endif /* RESOURCE_MANAGER_HPP */

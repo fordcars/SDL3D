@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef CAMERA_HPP_
-#define CAMERA_HPP_
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
 
 #include <Entity.hpp>
 
@@ -31,7 +31,7 @@ private:
 	glm::mat4 mViewMatrix;
 	glm::mat4 mProjectionMatrix; // Gives perspective
 
-	glm::vec4 mDirection; // Point or vector
+	glm::vec4 mDirection; // Position (in meters) or vector
 	glm::vec3 mUpVector; // glm::vec3(0, -1, 0) will the camera be upside down, in contrast to glm::vec3(0, 1, 0);
 						// This up vector represents the direction of the up side of the camera.
 
@@ -56,4 +56,4 @@ public:
 	glm::mat4 getProjectionMatrix() const;
 };
 
-#endif /* CAMERA_HPP_ */
+#endif /* CAMERA_HPP */

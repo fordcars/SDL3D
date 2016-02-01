@@ -52,7 +52,8 @@ public:
 	void bindInterface(Game& game);
 	bool run();
 	bool runString(const std::string& scriptCode);
-	LuaIntf::LuaRef getScriptReference(const std::string& referenceName);
+	LuaIntf::LuaRef getReference(const std::string& referenceName);
+	void runFunction(const std::string& functionName);
 };
 
 #endif /* SCRIPT_MANAGER_HPP */
