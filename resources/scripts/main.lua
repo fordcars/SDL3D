@@ -6,7 +6,6 @@ function gameInit()
 end
 
 function gameStep()
-Utils.logprint("Hello, STEPPP from lua!")
 	local game = getGame()
 	local resourceManager = game:getResourceManager()
 	local inputManager = game:getInputManager()
@@ -18,7 +17,7 @@ Utils.logprint("Hello, STEPPP from lua!")
 	local objects = entityManager:getObjects()
 	for i,v in ipairs(objects) do
 		local physicsBody = v:getPhysicsBody()
-		physicsBody:renderDebugShape(shader, camera, 0.0)
+		--physicsBody:renderDebugShape(shader, camera, 0.0)
 	end
 	
 	--[[Utils.logprint("")
@@ -30,4 +29,9 @@ Utils.logprint("Hello, STEPPP from lua!")
 	Utils.logprint("x: " .. physicsBody:getVelocity().x)
 	Utils.logprint("y: " .. physicsBody:getVelocity().y)
 	Utils.logprint("z: " .. physicsBody:getVelocity().z)]]--
+	
+	test.building:getPhysicsBody():setVelocity(Vec3(-3.0, 0.0, 0.0))
+	
+	local buildingPosition = test.building:getPhysicsBody():getPosition()
+	test.building:getPhysicsBody():setPosition(Vec3(buildingPosition.x, 0, 0))
 end

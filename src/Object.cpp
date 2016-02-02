@@ -43,6 +43,7 @@ Object::~Object()
 void Object::setObjectGeometry(constObjectGeometryPointer objectGeometry)
 {
 	mObjectGeometry = objectGeometry;
+	getPhysicsBody().setObjectGeometry(objectGeometry);
 }
 
 Object::constObjectGeometryPointer Object::getObjectGeometry() const

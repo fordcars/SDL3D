@@ -1,6 +1,5 @@
 -Hardcode camera physics body
--Use poly2tri to make shape
--Apply drag to all objects (a force opposite of velocity)
+-Stays alive for a few seconds (like 10) after quitting?
 
 -Ability to create camera with/without physics?
 -Give lua access to gravity and projection?

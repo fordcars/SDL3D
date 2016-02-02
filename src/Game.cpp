@@ -168,22 +168,8 @@ void Game::setupGraphics() // VAO and OpenGL options
 
 void Game::initMainLoop() // Initialize a few things before the main loop
 {
-	//int keys[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_w, SDLK_a, SDLK_s, SDLK_d, SDLK_SPACE, SDLK_LSHIFT, SDLK_LCTRL};
-	//mInputManager.registerKeys(keys, 11);
-
 	mResourceManager.setBasePath(getBasePath());
 
-	// Shaders
-	//mResourceManager.addShader("basic.v.glsl", "basic.f.glsl");
-	//mResourceManager.addShader("textured.v.glsl", "textured.f.glsl");
-	//mResourceManager.addShader("shaded.v.glsl", "shaded.f.glsl");
-
-	// Textures
-	//mResourceManager.addTexture("test.bmp", TEXTURE_BMP);
-	//mResourceManager.addTexture("suzanne.dds", TEXTURE_DDS);
-	//mResourceManager.addTexture("building.dds", TEXTURE_DDS);
-	//mResourceManager.addTexture("minecraft.dds", TEXTURE_DDS);
-	
 	// Scripts
 	// Only one script for now
 	ResourceManager::scriptPointer mainScript = mResourceManager.addScript(MAIN_SCRIPT_NAME, MAIN_SCRIPT_FILE);
@@ -194,29 +180,7 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	// Run the script's init function
 	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_INIT);
 
-	// Object groups
-	//mResourceManager.addObjectGeometryGroup("suzanne.obj");
-	//mResourceManager.addObjectGeometryGroup("building.obj");
-	//mResourceManager.addObjectGeometryGroup("minecraft.obj");
-
-	//mResourceManager.addSound("music", "texasradiofish_-_Funk_n_Jazz.ogg", SOUND_MUSIC);
-	//mResourceManager.findSound("music")->play(-1);
-
-	//mResourceManager.addSound("soundEffect.ogg", SOUND_CHUNK);
-
-	// static_cast<>() is safer than a C-style cast
 	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
-
-	//std::shared_ptr<ShadedObject> monkey(new ShadedObject(mResourceManager.findObjectGeometryGroup("suzanne")->getObjectGeometries()[0], mResourceManager.findShader("shaded"), mResourceManager.findTexture("suzanne")));
-	//mEntityManager.addObject(monkey);
-
-	/*// This is nuts
-	for(std::size_t i=0; i<mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries().size(); i++)
-	{
-		EntityManager::objectPointer funTest(new ShadedObject(mResourceManager.findObjectGeometryGroup("minecraft")->getObjectGeometries()[i], mResourceManager.findShader("shaded"), mResourceManager.findTexture("minecraft")));
-		funTest->setScaling(glm::vec3(1.0f, 1.0f, 1.0f));
-		mEntityManager.addObject(funTest);
-	}*/
 
 	EntityManager::lightPointer light(new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60));
 	mEntityManager.addLight(light);
@@ -229,10 +193,9 @@ void Game::cleanUp() // Cleans up everything. Call before quitting
 	for(int i = 0; i < 1000; i++) // I don't like infinite loops
 	{
 		if(Mix_Init(0))
-		{
 			Mix_Quit();
+		else
 			break;
-		}
 	}
 
 	Mix_CloseAudio();

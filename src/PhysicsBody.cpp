@@ -91,9 +91,15 @@ PhysicsBody::PhysicsBody(const PhysicsBody& other)
 
 	mPosition = glm::vec3(0.0f); // Don't copy the position, that would be weird
 	mRotation = glm::vec3(0.0f);
+	mVelocity = glm::vec3(0.0f);
+
+	mIsBullet = other.mIsBullet;
+	mIsFixtedRotation = other.mIsFixtedRotation;
+
 	mDensity = other.mDensity;
 	mFriction = other.mFriction;
 	mRestitution = other.mRestitution;
+	mWorldFriction = other.mWorldFriction;
 
 	mScaling = other.mScaling;
 	mCircularShape = other.mCircularShape;
@@ -126,9 +132,14 @@ void PhysicsBody::init()
 
 	mPosition = glm::vec3(0.0f);
 	mRotation = glm::vec3(0.0f);
+	mVelocity = glm::vec3(0.0f);
+	mIsBullet = false;
+	mIsFixtedRotation = false;
+
 	mDensity = 1.0f;
 	mFriction = 1.0f;
 	mRestitution = 0.1f;
+	mWorldFriction = 0.5f;
 
 	mScaling = glm::vec3(1.0f);
 	mCircularShape = true;
@@ -398,18 +409,6 @@ std::vector<p2t::Point*> PhysicsBody::pointerizeP2t(const std::vector<p2t::Point
 }
 
 // Static
-float PhysicsBody::cross(const p2t::Point& O, const p2t::Point& A, const p2t::Point& B)
-{
-	return static_cast<float>((A.x - O.x)*(B.y - O.y) - (A.y - O.y)*(B.x - O.x));
-}
-
-// Static
-float PhysicsBody::distanceSquared(const p2t::Point& A, const p2t::Point& B)
-{
-	return static_cast<float>((B.x - A.x)*(B.x - A.x) + (B.y - A.y)*(B.y - A.y));
-}
-
-// Static
 // A generic function for generating circle vertices
 // Angle in degrees
 PhysicsBody::vec2Vector PhysicsBody::getCircleVertices(glm::vec2 origin, float radius, int angleIncrementation)
@@ -444,6 +443,12 @@ PhysicsBody::fixtureDefVector PhysicsBody::generateFixtureDefsAndSetBodyDef(b2Bo
 		Utils::CRASH("No shapes calculated for this physics body! Cannot generate fixture definitions!");
 		return fixtureDefVector(0);
 	}
+
+	bodyDef.position = b2Vec2(mPosition.x, mPosition.z);
+	bodyDef.angle = mRotation.y;
+	bodyDef.linearVelocity = b2Vec2(mVelocity.x, mVelocity.z);
+	bodyDef.bullet = mIsBullet;
+	bodyDef.fixedRotation = mIsFixtedRotation;
 
 	for(auto &shape : mShapes)
 	{
@@ -527,6 +532,12 @@ bool PhysicsBody::updateWorldBodyFixtures()
 }
 
 // Public
+// Useful when the object's geometry changed
+void PhysicsBody::setObjectGeometry(constObjectGeometryPointer objectGeometry)
+{
+	mObjectGeometry = objectGeometry;
+}
+
 // Will (re)calculate the shape, circular or not
 bool PhysicsBody::calculateShapes()
 {
@@ -623,6 +634,17 @@ void PhysicsBody::setRestitution(float restitution)
 float PhysicsBody::getRestitution() const
 {
 	return mRestitution;
+}
+
+// Friction is a proportion of the mass
+void PhysicsBody::setWorldFriction(float friction)
+{
+	mWorldFriction = friction;
+}
+
+float PhysicsBody::getWorldFriction() const
+{
+	return mWorldFriction;
 }
 
 int PhysicsBody::getPixelsPerMeter() const
@@ -735,6 +757,32 @@ glm::vec3 PhysicsBody::getVelocity() const
 	return mVelocity;
 }
 
+void PhysicsBody::setBullet(bool isBullet)
+{
+	mIsBullet = isBullet;
+
+	if(mWorldBody)
+		mWorldBody->SetBullet(isBullet);
+}
+
+bool PhysicsBody::isBullet() const
+{
+	return mIsBullet;
+}
+
+void PhysicsBody::setFixtedRotation(bool fixted)
+{
+	mIsFixtedRotation = fixted;
+
+	if(mWorldBody)
+		mWorldBody->SetFixedRotation(fixted);
+}
+
+bool PhysicsBody::isFixtedRotation() const
+{
+	return mIsFixtedRotation;
+}
+
 // False on error
 // The world needs to stay alive while this body exists
 bool PhysicsBody::addToWorld(b2World* world)
@@ -749,10 +797,6 @@ bool PhysicsBody::addToWorld(b2World* world)
 		if(!mWorld) // Not already added!
 		{
 			mWorld = world;
-
-			bodyDef.position = b2Vec2(mPosition.x, mPosition.z);
-			bodyDef.angle = mRotation.y;
-			bodyDef.linearVelocity = b2Vec2(mVelocity.x, mVelocity.z);
 			fixtureDefVector fixtureDefs = generateFixtureDefsAndSetBodyDef(bodyDef);
 
 			mWorldBody = world->CreateBody(&bodyDef); // Call this after generating fixture defs!
@@ -813,6 +857,57 @@ glm::mat4 PhysicsBody::generateModelMatrix(bool includeScaling)
 		modelM = rotationXYZM;
 
 	return modelM;
+}
+
+void PhysicsBody::step()
+{
+	mPosition.y += mVelocity.y; // Add the missing velocity
+
+	if(mWorldBody)
+	{
+		if(mWorldFriction != 0.0f)
+		{
+			float frictionIntensity = mWorldFriction * mWorldBody->GetMass();
+
+			b2Vec2 linearVelocity = mWorldBody->GetLinearVelocity();
+			float angularVelocity = mWorldBody->GetAngularVelocity();
+
+			// Movement
+			if(linearVelocity.x != 0.0f && linearVelocity.y != 0.0f)
+			{
+				// Multiply by velocity to avoid making objects continually go backwards
+
+				// Opposite of movement
+				b2Vec2 friction = b2Vec2(
+					-linearVelocity.x * frictionIntensity,
+					-linearVelocity.y * frictionIntensity);
+
+				mWorldBody->ApplyForceToCenter(friction, true);
+			}
+
+			// Rotation
+			if(!mIsFixtedRotation && angularVelocity != 0.0f)
+			{
+				float velocity = 0.0f;
+
+				if(angularVelocity > 0.0f)
+				{
+					// Divide by 2 (guessed value), makes rotation deacceleration look better with movement deacceleration
+					velocity = angularVelocity - frictionIntensity/2;
+					if(velocity < 0.0f)
+						velocity = 0.0f;
+				} else
+				{
+					velocity = angularVelocity + frictionIntensity/2;
+					if(velocity > 0.0f)
+						velocity = 0.0f;
+				}
+
+
+				mWorldBody->SetAngularVelocity(velocity); // Since SetTorque wasn't working for me
+			}
+		}
+	}	
 }
 
 // A quick an easy renderer for debugging

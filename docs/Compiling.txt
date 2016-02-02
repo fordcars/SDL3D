@@ -8,6 +8,8 @@ cmake ..
 
 - On Linux and Mac, link with -ldl (libdl).
 
+- Compiling as Debug can greatly affect peformance.
+
 VisualStudio:
 - On some VisualStudio versions (example: 2013-2015), compiling in 32-bit, GLM causes an alignment error. To repair this, comment out "#define GLM_HAS_ANONYMOUS_UNION (GLM_LANG & GLM_LANG_CXXMS_FLAG)" at line 675 of glm/detail/setup.hpp.
 

@@ -70,11 +70,14 @@ private:
 	glm::vec3 mPosition;
 	glm::vec3 mRotation;  // In degrees
 	glm::vec3 mVelocity;
+	bool mIsBullet;
+	bool mIsFixtedRotation;
 
 	// Can change dynamically
 	float mDensity;
 	float mFriction;
 	float mRestitution;
+	float mWorldFriction; // This is multiplied by the mass. Use this for topdown physics, for example.
 
 	glm::vec3 mScaling; // Can only change when calculating (since Box2D doesn't support chaning scaling dynamically)
 	bool mCircularShape; // Can only change when calculating
@@ -96,8 +99,15 @@ private:
 
 	static std::vector<p2t::Point*> pointerizeP2t(const std::vector<p2t::Point>& points);
 
-	static float cross(const p2t::Point& O, const p2t::Point& A, const p2t::Point& B);
-	static float distanceSquared(const p2t::Point& A, const p2t::Point& B);
+	static inline float cross(const p2t::Point& O, const p2t::Point& A, const p2t::Point& B)
+	{
+		return static_cast<float>((A.x - O.x)*(B.y - O.y) - (A.y - O.y)*(B.x - O.x));
+	}
+
+	static inline float distanceSquared(const p2t::Point& A, const p2t::Point& B)
+	{
+		return static_cast<float>((B.x - A.x)*(B.x - A.x) + (B.y - A.y)*(B.y - A.y));
+	}
 
 	static vec2Vector getCircleVertices(glm::vec2 origin, float radius, int angleIncrementation);
 
@@ -111,6 +121,15 @@ private:
 	static inline float radiansToDegrees(float radians) {return radians * (180.0f / CONST_PI);}
 	static inline float degreesToRadians(float degrees) { return degrees * (CONST_PI / 180.0f); }
 
+	static inline float getVectorNorm(const b2Vec2& vector)
+	{
+		return sqrt((vector.x * vector.x) + (vector.y * vector.y));
+	}
+	static inline float getSquaredVectorNorm(const b2Vec2& vector)
+	{
+		return (vector.x * vector.x) + (vector.y * vector.y);
+	}
+
 	fixtureDefVector generateFixtureDefsAndSetBodyDef(b2BodyDef& bodyDef);
 	bool updateWorldBodyFixtures();
 
@@ -120,6 +139,8 @@ public:
 	PhysicsBody(constObjectGeometryPointer objectGeometry, bool circularShape, int type);
 	PhysicsBody(const PhysicsBody& other);
 	~PhysicsBody();
+
+	void PhysicsBody::setObjectGeometry(constObjectGeometryPointer objectGeometry);
 
 	bool calculateShapes();
 	bool calculateShapes(bool circularShape, glm::vec3 scaling);
@@ -131,6 +152,8 @@ public:
 	float getFriction() const;
 	void setRestitution(float restitution);
 	float getRestitution() const;
+	void setWorldFriction(float friction);
+	float getWorldFriction() const;
 
 	int getPixelsPerMeter() const;
 
@@ -148,9 +171,16 @@ public:
 	void setVelocity(glm::vec3 velocity);
 	glm::vec3 getVelocity() const;
 
+	void setBullet(bool isBullet);
+	bool isBullet() const;
+	void setFixtedRotation(bool fixted);
+	bool isFixtedRotation() const;
+
 	bool addToWorld(b2World* world);
 	void removeFromWorld();
 	glm::mat4 generateModelMatrix(bool includeScaling = true);
+
+	void step();
 
 	void renderDebugShape(constShaderPointer shader, const Camera* camera, float other3DCoord);
 };

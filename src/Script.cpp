@@ -421,6 +421,9 @@ void Script::bindInterface(Game& game)
 		.addFunction("setRestitution", &PhysicsBody::setRestitution)
 		.addFunction("getRestitution", &PhysicsBody::getRestitution)
 
+		.addFunction("setWorldFriction", &PhysicsBody::setWorldFriction)
+		.addFunction("getWorldFriction", &PhysicsBody::getWorldFriction)
+
 		.addFunction("getPixelsPerMeter", &PhysicsBody::getPixelsPerMeter)
 
 		.addFunction("isCircularShape", &PhysicsBody::isCircularShape)
@@ -436,6 +439,11 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("setVelocity", &PhysicsBody::setVelocity)
 		.addFunction("getVelocity", &PhysicsBody::getVelocity)
+
+		.addFunction("setBullet", &PhysicsBody::setBullet)
+		.addFunction("isBullet", &PhysicsBody::isBullet)
+		.addFunction("setFixtedRotation", &PhysicsBody::setFixtedRotation)
+		.addFunction("isFixtedRotation", &PhysicsBody::isFixtedRotation)
 
 		.addFunction("renderDebugShape", &PhysicsBody::renderDebugShape)
 	.endClass();
@@ -519,7 +527,7 @@ void Script::bindInterface(Game& game)
 	// Basic glm bindings
 	LuaBinding(luaState).beginClass<glm::vec2>("Vec2")
 		.addConstructor(LUA_ARGS(float, float))
-		.addVariable("x", &glm::vec2::x)
+		.addVariable("x", &glm::vec2::x) // Accessible in Lua using the '.' syntax
 		.addVariable("y", &glm::vec2::y)
 
 		.addVariable("r", &glm::vec2::r)

@@ -1,5 +1,7 @@
 local M = {}
 
+M.building = nil
+
 local function foo()
 	local game = getGame()
 	game:setName("Testing 123!")
@@ -43,23 +45,38 @@ local function foo()
 	local geometry = resourceManager:findObjectGeometryGroup("suzanne"):getObjectGeometries()[1]
 	local shader = resourceManager:findShader("shaded")
 	local texture = resourceManager:findTexture("suzanne")
-	local monkey = ShadedObject(geometry, shader, texture, true, PhysicsBodyType.Dynamic)
+	local monkey = ShadedObject(geometry, shader, texture, false, PhysicsBodyType.Dynamic)
 	local monkey2 = ShadedObject(geometry, shader, texture, false, PhysicsBodyType.Dynamic)
-	local building = ShadedObject(resourceManager:findObjectGeometryGroup("building"):getObjectGeometries()[1], shader, resourceManager:findTexture("building"), false, PhysicsBodyType.Static)
+	M.building = ShadedObject(resourceManager:findObjectGeometryGroup("building"):getObjectGeometries()[1], shader, resourceManager:findTexture("building"), false, PhysicsBodyType.Dynamic)
 	
-	local velocity = Vec3(0.8, 1.0, 0.0)
-	--monkey:getPhysicsBody():setVelocity(velocity)
-	entityManager:addObject(monkey)
+	local velocity = Vec3(0.8, 0.0, 0.0)
+	monkey:getPhysicsBody():setVelocity(velocity)
+	--entityManager:addObject(monkey)
 	monkey:getPhysicsBody():setRestitution(0.5)
 	
 	monkey2:getPhysicsBody():setPosition(Vec3(1, 0.0, 0.0))
 	monkey2:getPhysicsBody():setRestitution(0.9)
+	monkey2:getPhysicsBody():setVelocity(Vec3(0, 0.0, 0.0))
 	--entityManager:addObject(monkey2)
 	
-	building:getPhysicsBody():setPosition(Vec3(3, 0.0, 0.0))
-	building:getPhysicsBody():setRestitution(0.5)
-	entityManager:addObject(building)
-	building:getPhysicsBody():calculateShapesUsingObjectGeometry(false, Vec3(3, 3, 3))
+	local light = Light(Vec3(4, 4, 4), Vec3(1, 1, 1), Vec3(1, 1, 1), 60)
+	entityManager:addLight(light)
+	
+	local maxCoord = 0
+	for i=0, 20, 1 do
+		local coord = i + 0.5
+		local newMonkey = ShadedObject(geometry, shader, texture, false, PhysicsBodyType.Dynamic)
+		newMonkey:getPhysicsBody():setPosition(Vec3(coord, 0.0, 0.0))
+		entityManager:addObject(newMonkey)
+		
+		maxCoord = coord
+	end
+	
+	M.building:getPhysicsBody():setPosition(Vec3(maxCoord + 5, 0.0, 0.0))
+	M.building:getPhysicsBody():setRestitution(0.5)
+	entityManager:addObject(M.building)
+	M.building:getPhysicsBody():calculateShapesUsingObjectGeometry(false, Vec3(3, 3, 3))
+	M.building:getPhysicsBody():setFixtedRotation(true)
 end
 
 M.foo = foo
