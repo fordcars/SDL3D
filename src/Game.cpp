@@ -17,6 +17,12 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// UNITS:
+// Frame related stuff: miliseconds
+// Other times: seconds
+// Coords: meters
+// Angles: degrees
+
 #include <Game.hpp>
 
 #include <Utils.hpp>
@@ -39,7 +45,7 @@
 // http://glew.sourceforge.net/basic.html
 
 Game::Game()
-	: mEntityManager(glm::vec2(0.0f),  1000 / DEFAULT_GAME_MAX_FRAMES_PER_SECOND) // Set gravity in a very shitty way
+	: mEntityManager(glm::vec2(0.0f),  1 / static_cast<float>(DEFAULT_GAME_MAX_FRAMES_PER_SECOND)) // Set gravity in a very shitty way
 {
 	mName = DEFAULT_GAME_NAME; // Copy string
 
@@ -47,8 +53,8 @@ Game::Game()
 	mHeight = DEFAULT_GAME_WINDOW_HEIGHT;
 
 	// Limits the frames per second
+	// Time in miliseconds
 	mMinTimePerFrame = static_cast<int>(1000 / DEFAULT_GAME_MAX_FRAMES_PER_SECOND); // Truncation
-	mEntityManager.setPhysicsTimePerStep(mMinTimePerFrame);
 
 	mLastFrameTime = 0;
 
@@ -263,115 +269,13 @@ float Game::calculateAspectRatio()
 	return (  static_cast<float>(mWidth) / static_cast<float>(mHeight)  );
 }
 
-bool qpressedlastframe = false; //DEBUUGGGGG
-void Game::step() // Movement and all
+void Game::step(float divider) // Movement and all
 {
-	float speed = 0.01f;
-	float rotateAngle = 0.01f;
-
 	// Run the script's step()
 	ResourceManager::scriptPointer mainScript = mResourceManager.findScript(MAIN_SCRIPT_NAME);
 	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_STEP);
 
-	/*mEntityManager.getGameCamera().setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
-
-	if(mInputManager.isKeyPressed(SDLK_LSHIFT))
-	{
-		speed *= 5;
-	}
-
-	if(mInputManager.isKeyPressed(SDLK_UP))
-	{
-		mEntityManager.getGameCamera().setVelocity(glm::vec3(mEntityManager.getGameCamera().getDirection()) * speed);
-		//radius -= speed;
-		//mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()+glm::vec3(0.0005f, 0.0f, 0.0f));
-		//mEntityManager.getObjects()[1]->setScaling(mEntityManager.getObjects()[1]->getScaling() + glm::vec3(0.01f, 0.01f, 0.01f));
-	} else if(mInputManager.isKeyPressed(SDLK_DOWN))
-	{
-		mEntityManager.getGameCamera().setVelocity(glm::vec3(mEntityManager.getGameCamera().getDirection()) * -speed);
-		//radius += speed;
-		//mEntityManager.getObjects()[0]->setVelocity(mEntityManager.getObjects()[0]->getVelocity()-glm::vec3(0.0005f, 0.0f, 0.0f));
-		//mEntityManager.getObjects()[1]->setScaling(mEntityManager.getObjects()[1]->getScaling() - glm::vec3(0.01f, 0.01f, 0.01f));
-	}
-	
-	if(mInputManager.isKeyPressed(SDLK_LEFT))
-	{
-		mEntityManager.getGameCamera().setVelocity(mEntityManager.getGameCamera().getVelocity() +  glm::rotateY(glm::vec3(mEntityManager.getGameCamera().getDirection()) * speed, 1.5708f)  );
-		//timeX += speed;
-		//mEntityManager.getObjects()[1]->setRotation(mEntityManager.getObjects()[1]->getRotation()+glm::vec3(0.0f, 2.5f, 0.0f));
-	} else if(mInputManager.isKeyPressed(SDLK_RIGHT))
-	{
-		mEntityManager.getGameCamera().setVelocity(mEntityManager.getGameCamera().getVelocity() +  glm::rotateY(glm::vec3(mEntityManager.getGameCamera().getDirection()) * speed, -1.5708f)  );
-		//timeX -= speed;
-		//mEntityManager.getObjects()[1]->setRotation(mEntityManager.getObjects()[1]->getRotation()-glm::vec3(0.0f, 2.5f, 0.0f));
-	}*/
-
-	if(mInputManager.isKeyPressed(SDLK_SPACE))
-	{
-		mEntityManager.getGameCamera().getPhysicsBody().setPosition(mEntityManager.getGameCamera().getPhysicsBody().getPosition() += glm::vec3(0.0f, speed, 0.0f));
-	} else if(mInputManager.isKeyPressed(SDLK_LCTRL))
-	{
-		mEntityManager.getGameCamera().getPhysicsBody().setPosition(mEntityManager.getGameCamera().getPhysicsBody().getPosition() += glm::vec3(0.0f, -speed, 0.0f));
-	}
-	
-	// Camera controls, needs work haha
-	if(mInputManager.isKeyPressed(SDLK_w))
-	{
-		glm::vec4 direction(mEntityManager.getGameCamera().getDirection());
-
-		// Get a 2D version and calculate the angle between them (think top-down, the other vector being a vector that goes forward)
-		glm::vec2 forward2D(0.0f, 1.0f);
-		glm::vec2 direction2D(direction.x, direction.z);
-
-		// Get top down angle
-		float angle = glm::orientedAngle(forward2D, glm::normalize(direction2D));
-
-		// Rotate the 3D direction at that angle, so now it is facing forward
-		glm::vec4 forwardDirection(glm::rotateY(direction, angle));
-		forwardDirection = glm::rotateX(forwardDirection, -rotateAngle); // Make it rotate up
-
-		mEntityManager.getGameCamera().setDirection(glm::rotateY(forwardDirection, -angle)); // Rotate it back
-	} else if(mInputManager.isKeyPressed(SDLK_s))
-	{
-		glm::vec4 direction(mEntityManager.getGameCamera().getDirection());
-
-		glm::vec2 forward2D(0.0f, 1.0f);
-		glm::vec2 direction2D(direction.x, direction.z);
-
-		float angle = glm::orientedAngle(forward2D, glm::normalize(direction2D));
-
-		glm::vec4 forwardDirection(glm::rotateY(direction, angle));
-		forwardDirection = glm::rotateX(forwardDirection, rotateAngle);
-
-		mEntityManager.getGameCamera().setDirection(glm::rotateY(forwardDirection, -angle));
-	}
-
-	if(mInputManager.isKeyPressed(SDLK_a))
-	{
-		mEntityManager.getGameCamera().setDirection(glm::rotateY(mEntityManager.getGameCamera().getDirection(), rotateAngle));
-	} else if(mInputManager.isKeyPressed(SDLK_d))
-	{
-		mEntityManager.getGameCamera().setDirection(glm::rotateY(mEntityManager.getGameCamera().getDirection(), -rotateAngle));
-	}
-
-	if(mInputManager.isKeyPressed(SDLK_m))
-	{
-		if(!qpressedlastframe)
-		{
-			qpressedlastframe = true;
-			mResourceManager.findSound("soundEffect")->play();
-
-			if(mResourceManager.findSound("music")->isPaused())
-				mResourceManager.findSound("music")->resume();
-			else
-				mResourceManager.findSound("music")->pause();
-		}
-	} else
-	{
-		qpressedlastframe = false;
-	}
-
-	mEntityManager.step();
+	mEntityManager.step(divider);
 }
 
 void Game::resetGraphics()
@@ -409,7 +313,7 @@ void Game::doMainLoop()
 	if(mLastFrameTime != 0) // Make sure everything is good before moving stuff!
 	{
 		for(int i = 0; i < numberOfStepsToDo; i++)
-			step();
+			step(static_cast<float>(numberOfStepsToDo));
 	}
 
 	render();

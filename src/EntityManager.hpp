@@ -47,16 +47,16 @@ private:
 	lightVector mLights;
 
 	b2World mPhysicsWorld;
-	int mPhysicsTimePerStep; // In miliseconds
+	float mPhysicsTimePerStep; // In seconds
 	int mPhysicsVelocityIterations;
 	int mPhysicsPositionIterations;
 
 public:
-	EntityManager(glm::vec2 gravity, int physicsTimePerStep);
+	EntityManager(glm::vec2 gravity, float physicsTimePerStep);
 	~EntityManager();
 
-	void setPhysicsTimePerStep(int time);
-	int getPhysicsTimePerStep();
+	void setPhysicsTimePerStep(float time);
+	float getPhysicsTimePerStep();
 
 	Camera& getGameCamera();
 
@@ -70,7 +70,7 @@ public:
 	bool removeLight(lightPointer light);
 	lightVector& getLights();
 
-	void step();
+	void step(float divider);
 	void render();
 };
 

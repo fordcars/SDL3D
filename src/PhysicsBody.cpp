@@ -140,7 +140,7 @@ void PhysicsBody::init()
 	mDensity = 1.0f;
 	mFriction = 1.0f;
 	mRestitution = 0.1f;
-	mWorldFriction = 0.5f;
+	mWorldFriction = 1.0f;
 
 	mScaling = glm::vec3(1.0f);
 	mIsCircular = true;
@@ -981,7 +981,7 @@ void PhysicsBody::step(float timeStep)
 			float angularVelocity = mWorldBody->GetAngularVelocity();
 
 			// Movement
-			if(linearVelocity.x != 0.0f && linearVelocity.y != 0.0f)
+			if(linearVelocity.x != 0.0f || linearVelocity.y != 0.0f)
 			{
 				// Multiply by velocity to avoid making objects continually go backwards
 

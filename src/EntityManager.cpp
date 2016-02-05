@@ -25,7 +25,7 @@
 #include <algorithm> // For finding in vector
 #include <string>
 
-EntityManager::EntityManager(glm::vec2 gravity, int physicsTimePerStep)
+EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
 {
 	// Defaults
@@ -42,12 +42,13 @@ EntityManager::~EntityManager()
 }
 
 // Allows us to do slow motion!
-void EntityManager::setPhysicsTimePerStep(int time)
+// In seconds
+void EntityManager::setPhysicsTimePerStep(float time)
 {
 	mPhysicsTimePerStep = time;
 }
 
-int EntityManager::getPhysicsTimePerStep()
+float EntityManager::getPhysicsTimePerStep()
 {
 	return mPhysicsTimePerStep;
 }
@@ -173,20 +174,21 @@ EntityManager::lightVector& EntityManager::getLights()
 	return mLights;
 }
 
-void EntityManager::step() // Steps all entities
+// Steps all entities
+// Divider will divide the step time, useful for calling this function multiple times per frame
+void EntityManager::step(float divider)
 {
-	// Box2D wants seconds, not miliseconds
-	float timeInSeconds = static_cast<float>(mPhysicsTimePerStep) / 1000.0f;
+	float time = mPhysicsTimePerStep / divider;
 
 	for(auto &object : mObjects)
-		object->getPhysicsBody().step(timeInSeconds);
+		object->getPhysicsBody().step(time);
 
 	for(auto &light : mLights)
-		light->getPhysicsBody().step(timeInSeconds);
+		light->getPhysicsBody().step(time);
 
-	mGameCamera.getPhysicsBody().step(timeInSeconds);
+	mGameCamera.getPhysicsBody().step(time);
 
-	mPhysicsWorld.Step(timeInSeconds, mPhysicsVelocityIterations, mPhysicsPositionIterations);
+	mPhysicsWorld.Step(time, mPhysicsVelocityIterations, mPhysicsPositionIterations);
 }
 
 void EntityManager::render() // Renders all entities that can be rendered

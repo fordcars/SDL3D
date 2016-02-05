@@ -60,7 +60,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 
 	if(length>INT_MAX)
 	{
-		Utils::CRASH("Overflow! Shader too long! How is this possible?!");
+		Utils::CRASH("Overflow! Shader at '" + shaderPath  + "' too long! How is this possible?!");
 		return 0;
 	}
 
@@ -82,7 +82,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 
 	if(!shaderOk)
 	{
-		std::string error = "Failed to compile shader '" + shaderPath + "'.";
+		std::string error = "Failed to compile shader at '" + shaderPath + "'.";
 		
 		std::string shaderLog = getGLShaderDebugLog(shader, glGetShaderiv, glGetShaderInfoLog); // Give it the right functions
 		glDeleteProgram(shader);

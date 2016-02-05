@@ -40,7 +40,7 @@ private:
 
 	int mWidth;
 	int mHeight;
-	int mMinTimePerFrame;
+	int mMinTimePerFrame; // In miliseconds
 	
 	int mLastFrameTime; // Time at last frame
 	int mStepLength;
@@ -71,7 +71,7 @@ private:
 
 	float calculateAspectRatio();
 
-	void step();
+	void step(float divider);
 	void resetGraphics();
 	void render();
 	void doMainLoop();
