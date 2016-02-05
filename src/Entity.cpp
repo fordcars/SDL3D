@@ -26,6 +26,12 @@ Entity::Entity()
 	// Do nothing
 }
 
+Entity::Entity(float radius, int type)
+	: mPhysicsBody(radius, type)
+{
+	// Do nothing
+}
+
 Entity::Entity(constObjectGeometryPointer objectGeometry, bool physicsCircularShape, int physicsType)
 	: mPhysicsBody(objectGeometry, physicsCircularShape, physicsType)
 {

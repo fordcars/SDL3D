@@ -424,9 +424,7 @@ void Script::bindInterface(Game& game)
 		.addFunction("setWorldFriction", &PhysicsBody::setWorldFriction)
 		.addFunction("getWorldFriction", &PhysicsBody::getWorldFriction)
 
-		.addFunction("getPixelsPerMeter", &PhysicsBody::getPixelsPerMeter)
-
-		.addFunction("isCircularShape", &PhysicsBody::isCircularShape)
+		.addFunction("isCircular", &PhysicsBody::isCircular)
 		.addFunction("getRadius", &PhysicsBody::getRadius)
 		.addFunction("getType", &PhysicsBody::getType)
 
@@ -434,6 +432,7 @@ void Script::bindInterface(Game& game)
 		.addFunction("getPosition", &PhysicsBody::getPosition)
 
 		.addFunction("setRotation", &PhysicsBody::setRotation)
+		.addFunction("setRotationInRadians", &PhysicsBody::setRotationInRadians)
 		.addFunction("getRotation", &PhysicsBody::getRotation)
 		.addFunction("getRotationInRadians", &PhysicsBody::getRotationInRadians)
 
@@ -445,7 +444,13 @@ void Script::bindInterface(Game& game)
 		.addFunction("setFixtedRotation", &PhysicsBody::setFixtedRotation)
 		.addFunction("isFixtedRotation", &PhysicsBody::isFixtedRotation)
 
-		.addFunction("renderDebugShape", &PhysicsBody::renderDebugShape)
+		.addFunction("getShapesLocal2DCenter", &PhysicsBody::getShapesLocal2DCenter)
+		.addFunction("getShapesLocal3DCenter", &PhysicsBody::getShapesLocal3DCenter)
+
+		.addFunction("renderDebugShapeWithCoord",
+			static_cast<void (PhysicsBody::*)(Object::constShaderPointer, const Camera*, float)> (&PhysicsBody::renderDebugShape))
+		.addFunction("renderDebugShape",
+			static_cast<void (PhysicsBody::*)(Object::constShaderPointer, const Camera*)> (&PhysicsBody::renderDebugShape))
 	.endClass();
 
 
@@ -523,26 +528,48 @@ void Script::bindInterface(Game& game)
 			Utils::directly_crash(msg);
 		})
 	.endModule();
-
+	
 	// Basic glm bindings
 	LuaBinding(luaState).beginClass<glm::vec2>("Vec2")
 		.addConstructor(LUA_ARGS(float, float))
+
 		.addVariable("x", &glm::vec2::x) // Accessible in Lua using the '.' syntax
 		.addVariable("y", &glm::vec2::y)
 
 		.addVariable("r", &glm::vec2::r)
 		.addVariable("g", &glm::vec2::g)
+		
+		// Can't have multiple constructors in Lua (no function overloading)
+		.addStaticFunction("fromVec3", [](const glm::vec3& vector) // This name works well with Lua
+		{
+			return glm::vec2(vector);
+		})
+
+		.addStaticFunction("fromVec4", [](const glm::vec4& vector)
+		{
+			return glm::vec2(vector);
+		})
 
 		// Couldn't figure out how to use glm's built in basic arithmetics with Lua (if possible)
 		// Arithmetics
 		.addStaticFunction("add", [](const glm::vec2& left, const glm::vec2& right)
 		{
-			return glm::vec2(left.x + right.x, left.y + right.y); // Deduced return type
+			return (left + right);
 		})
 
 		.addStaticFunction("sub", [](const glm::vec2& left, const glm::vec2& right)
 		{
-			return glm::vec2(left.x - right.x, left.y - right.y); // Deduced return type
+			return (left - right);
+		})
+
+		.addStaticFunction("scalarMul", [](const glm::vec2& vector, float scalar)
+		{
+			return (vector * scalar);
+		})
+
+		.addStaticFunction("scalarDiv", [](const glm::vec2& vector, float scalar)
+		{
+			return (vector / scalar);
 		})
 	.endClass();
 
@@ -558,14 +585,29 @@ void Script::bindInterface(Game& game)
 		.addVariable("g", &glm::vec3::g)
 		.addVariable("b", &glm::vec3::b)
 
+		.addStaticFunction("fromVec4", [](const glm::vec4& vector)
+		{
+			return glm::vec3(vector);
+		})
+
 		.addStaticFunction("add", [](const glm::vec3& left, const glm::vec3& right)
 		{
-			return glm::vec3(left.x + right.x, left.y + right.y, left.z + right.z);
+			return (left + right);
 		})
 
 		.addStaticFunction("sub", [](const glm::vec3& left, const glm::vec3& right)
 		{
-			return glm::vec3(left.x - right.x, left.y - right.y, left.z - right.z);
+			return (left - right);
+		})
+
+		.addStaticFunction("scalarMul", [](const glm::vec3& vector, float scalar)
+		{
+			return (vector * scalar);
+		})
+
+		.addStaticFunction("scalarDiv", [](const glm::vec3& vector, float scalar)
+		{
+			return (vector / scalar);
 		})
 	.endClass();
 
@@ -585,19 +627,24 @@ void Script::bindInterface(Game& game)
 
 		.addStaticFunction("add", [](const glm::vec4& left, const glm::vec4& right)
 		{
-			return glm::vec4(left.x + right.x, left.y + right.y, left.z + right.z, left.w + right.w);
+			return (left + right);
 		})
 
 		.addStaticFunction("sub", [](const glm::vec4& left, const glm::vec4& right)
 		{
-			return glm::vec4(left.x - right.x, left.y - right.y, left.z - right.z, left.w - right.w);
+			return (left - right);
+		})
+
+		.addStaticFunction("scalarMul", [](const glm::vec4& vector, float scalar)
+		{
+			return (vector * scalar);
+		})
+
+		.addStaticFunction("scalarDiv", [](const glm::vec4& vector, float scalar)
+		{
+			return (vector / scalar);
 		})
 	.endClass();
-
-
-	// Entity must have at least one virtual function to be a base class
-	//LuaBinding(luaState).beginExtendClass<Object, Entity>("Object")
-	//.endClass();
 }
 
 // Running a script will probably not be too heavy since it will probably only be defining a bunch of callbacks.

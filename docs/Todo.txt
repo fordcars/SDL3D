@@ -1,5 +1,7 @@
--Hardcode camera physics body
+-Move controls from Lua to C++
+
 -Stays alive for a few seconds (like 10) after quitting?
+-In PhysicsBody, render debug shapes using local 3D coords? If so, have a function (static) that does this when calculating shapes and store the value.
 
 -Ability to create camera with/without physics?
 -Give lua access to gravity and projection?
@@ -15,7 +17,6 @@
 
 -Don't make uniforms obligatory
 -Work on CMake lists to make adding libraries easier and other things.
--Get rid of key inits and resources and all in Game::initMainLoop() (FROM LUA!!!)
 -Render to texture, so we can have some awesome effects!
 -When a C++ error happens (that is caught), crash() it with the Lua line (when it is called from Lua)!
 -Give Lua access to input events?

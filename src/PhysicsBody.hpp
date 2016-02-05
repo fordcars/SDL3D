@@ -68,7 +68,7 @@ private:
 	// You need to use a getter to get the real value
 	// These members will be used to add to a world, etc.
 	glm::vec3 mPosition;
-	glm::vec3 mRotation;  // In degrees
+	glm::vec3 mRotation;  // In degrees, will need to recalculate if you want the shape to refelct the rotation
 	glm::vec3 mVelocity;
 	bool mIsBullet;
 	bool mIsFixtedRotation;
@@ -80,21 +80,20 @@ private:
 	float mWorldFriction; // This is multiplied by the mass. Use this for topdown physics, for example.
 
 	glm::vec3 mScaling; // Can only change when calculating (since Box2D doesn't support chaning scaling dynamically)
-	bool mCircularShape; // Can only change when calculating
+	bool mIsCircular; // Can only change when calculating
 	float mRadius; // Can only change when calculating, holds the radius if it is a circular shape
 
 	int mType; // Can't change
-	int mPixelsPerMeter; // Can't change
 
 	// Static functions
 	static shapeVector createShapesFromObjectGeometry(const ObjectGeometry& objectGeometry,
-		bool generateCircular, int pixelsPerMeter, glm::vec3 scaling);
-	static shapeUniquePointer createShapeFromRadius(float radius);
-	static B2Vec2Vector get2DCoordsObjectGeometry(const ObjectGeometry& objectGeometry,
-		int pixelsPerMeter, glm::vec3 scaling);
+		bool generateCircular, float pixelsPerMeter, glm::vec3 rotation, glm::vec3 scaling);
+	static shapeUniquePointer createShapesFromRadius(float radius);
+	static B2Vec2Vector get2DObjectGeometryCoords(const ObjectGeometry& objectGeometry,
+		float pixelsPerMeter, glm::vec3 rotation, glm::vec3 scaling);
 
 	static std::vector<p2t::Point> monotoneChainConvexHull(B2Vec2Vector points2D);
-	static b2Vec2 getCentroid(const B2Vec2Vector& points2D);
+	static b2Vec2 get2DCentroid(const B2Vec2Vector& points2D);
 	static float getCircleRadiusFromPoints(B2Vec2Vector points2D, b2Vec2 centroid);
 
 	static std::vector<p2t::Point*> pointerizeP2t(const std::vector<p2t::Point>& points);
@@ -110,6 +109,7 @@ private:
 	}
 
 	static vec2Vector getCircleVertices(glm::vec2 origin, float radius, int angleIncrementation);
+	static glm::mat4 generateModelMatrix(glm::vec3 pixelTranslation, glm::vec3 rotation, glm::vec3 scaling);
 
 	// Inline functions have to be defined in the header?
 	static inline glm::vec2 B2Vec2ToGlm(const b2Vec2& vec) {return glm::vec2(vec.x, vec.y);}
@@ -143,7 +143,7 @@ public:
 	void PhysicsBody::setObjectGeometry(constObjectGeometryPointer objectGeometry);
 
 	bool calculateShapes();
-	bool calculateShapes(bool circularShape, glm::vec3 scaling);
+	bool calculateShapes(bool isCircularShape, glm::vec3 scaling);
 	bool calculateShapes(float radius);
 
 	void setDensity(float density);
@@ -155,9 +155,7 @@ public:
 	void setWorldFriction(float friction);
 	float getWorldFriction() const;
 
-	int getPixelsPerMeter() const;
-
-	bool isCircularShape() const;
+	bool isCircular() const;
 	float getRadius() const;
 	int getType() const;
 
@@ -165,6 +163,7 @@ public:
 	glm::vec3 getPosition() const;
 
 	void setRotation(glm::vec3 angle);
+	void setRotationInRadians(glm::vec3 angle);
 	glm::vec3 getRotation() const;
 	glm::vec3 getRotationInRadians() const;
 
@@ -176,13 +175,18 @@ public:
 	void setFixtedRotation(bool fixted);
 	bool isFixtedRotation() const;
 
+	glm::vec2 getShapesLocal2DCenter() const;
+	glm::vec3 getShapesLocal3DCenter() const;
+
 	bool addToWorld(b2World* world);
 	void removeFromWorld();
-	glm::mat4 generateModelMatrix(bool includeScaling = true);
 
-	void step();
+	glm::mat4 generateModelMatrix();
+
+	void step(float timeStep);
 
 	void renderDebugShape(constShaderPointer shader, const Camera* camera, float other3DCoord);
+	void renderDebugShape(constShaderPointer shader, const Camera* camera);
 };
 
 #endif /* PHYSICS_BODY_HPP */

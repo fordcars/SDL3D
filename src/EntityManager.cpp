@@ -175,16 +175,17 @@ EntityManager::lightVector& EntityManager::getLights()
 
 void EntityManager::step() // Steps all entities
 {
-	for(auto &object : mObjects)
-		object->getPhysicsBody().step();
-
-	for(auto &light : mLights)
-		light->getPhysicsBody().step();
-
-	mGameCamera.getPhysicsBody().step();
-
 	// Box2D wants seconds, not miliseconds
 	float timeInSeconds = static_cast<float>(mPhysicsTimePerStep) / 1000.0f;
+
+	for(auto &object : mObjects)
+		object->getPhysicsBody().step(timeInSeconds);
+
+	for(auto &light : mLights)
+		light->getPhysicsBody().step(timeInSeconds);
+
+	mGameCamera.getPhysicsBody().step(timeInSeconds);
+
 	mPhysicsWorld.Step(timeInSeconds, mPhysicsVelocityIterations, mPhysicsPositionIterations);
 }
 

@@ -20,10 +20,12 @@
 #include <Camera.hpp>
 
 #include <PhysicsBody.hpp>
+#include <Definitions.hpp>
 
 #include <math.h>
 
 Camera::Camera() // Constructor
+	: Entity(0.1f, PHYSICS_BODY_DYNAMIC) // Radius and physics type
 {
 	// Default values
 	mViewMatrix = glm::mat4(1.0f); // Identity matrix
@@ -35,9 +37,9 @@ Camera::Camera() // Constructor
 	mFieldOfViewX = 90.0f;
 	mAspectRatio = 4 / 3;
 
-	const PhysicsBody& physicsBody = getPhysicsBody();
-	mNearClippingPlane = static_cast<float>(physicsBody.getPixelsPerMeter()) * 0.05f; // Relative to pixels per meter
-	mFarClippingPlane = static_cast<float>(physicsBody.getPixelsPerMeter()) * 100.0f; // 100 meters max
+	PhysicsBody& physicsBody = getPhysicsBody();
+	mNearClippingPlane = PHYSICS_PIXELS_PER_METER * 0.05f; // Relative to pixels per meter
+	mFarClippingPlane = PHYSICS_PIXELS_PER_METER * 100.0f; // 100 meters max
 }
 
 Camera::~Camera()
@@ -81,17 +83,15 @@ glm::mat4 Camera::getViewMatrix() const
 {
 	const PhysicsBody& physicsBody = getPhysicsBody();
 
-	glm::vec3 position = physicsBody.getPosition() * static_cast<float>(physicsBody.getPixelsPerMeter());
+	glm::vec3 position = physicsBody.getPosition() * PHYSICS_PIXELS_PER_METER;
 	glm::vec3 vec3Direction;
 
 	if(mDirection.w==1) // Is a position
 	{
-		int pixelsPerMeter = getPhysicsBody().getPixelsPerMeter();
-
 		vec3Direction = glm::vec3(
-			mDirection.x * pixelsPerMeter,
-			mDirection.y * pixelsPerMeter,
-			mDirection.z * pixelsPerMeter);
+			mDirection.x * PHYSICS_PIXELS_PER_METER,
+			mDirection.y * PHYSICS_PIXELS_PER_METER,
+			mDirection.z * PHYSICS_PIXELS_PER_METER);
 	} else if(mDirection.w==0)
 	{
 		vec3Direction = glm::vec3(mDirection) + position; // Is a vector
@@ -111,4 +111,4 @@ glm::mat4 Camera::getProjectionMatrix() const
 	glm::mat4 projectionMatrix = glm::perspective(radFOVY, mAspectRatio, mNearClippingPlane, mFarClippingPlane);
 
 	return projectionMatrix;
-}// TODOD NEAR CLIIIPPING WTF + BOX2D WORLD SIZE
+}

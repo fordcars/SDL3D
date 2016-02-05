@@ -72,7 +72,7 @@ private:
 	float calculateAspectRatio();
 
 	void step();
-	void clearGraphics();
+	void resetGraphics();
 	void render();
 	void doMainLoop();
 

@@ -157,13 +157,6 @@ void Game::setupGraphics() // VAO and OpenGL options
 	GLuint vertexArrayID; // VAO - vertex aray object
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
-
-	glEnable(GL_DEPTH_TEST);// Enable depth test (check if z is closer to the screen than last fragement's z)
-	glDepthFunc(GL_LESS); // Accept the fragment closer to the camera
-
-	// Cull triangles which normal is not towards the camera
-	// If there are holes in the model because of this, click the "invert normals" button in your 3D modeler.
-	glEnable(GL_CULL_FACE);
 }
 
 void Game::initMainLoop() // Initialize a few things before the main loop
@@ -381,10 +374,19 @@ void Game::step() // Movement and all
 	mEntityManager.step();
 }
 
-void Game::clearGraphics()
+void Game::resetGraphics()
 {
 	glClearColor(0.1f, 0.1f, 1.0f, 1.0f); // Set clear color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
+
+	// It looks like it's better to call these each frame
+	glEnable(GL_DEPTH_TEST);// Enable depth test (check if z is closer to the screen than last fragement's z)
+	glDepthFunc(GL_LESS); // Accept the fragment closer to the camera
+
+	// Cull triangles which normal is not towards the camera
+	// If there are holes in the model because of this, click the "invert normals" button in your 3D modeler.
+	glEnable(GL_CULL_FACE);
+	glPolygonMode(GRAPHICS_RASTERIZE_FACE, GRAPHICS_RASTERIZE_MODE);
 }
 
 void Game::render()
@@ -402,7 +404,7 @@ void Game::doMainLoop()
 	int numberOfStepsToDo = (currentTime - mLastFrameTime)/mStepLength;
 
 	doEvents();
-	clearGraphics(); // Call before step if we want to do stuff in there
+	resetGraphics(); // Call before step if we want to do stuff in there
 
 	if(mLastFrameTime != 0) // Make sure everything is good before moving stuff!
 	{
@@ -428,6 +430,8 @@ void Game::doMainLoop()
 // Returns false if it failed
 bool Game::init()
 {	
+	Utils::LOGPRINT(std::string() + "Starting " + ENGINE_NAME + " v" + ENGINE_VERSION + "!");
+
 	// SDL_INIT_AUDIO for SDL_mixer
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO) < 0)
 	{

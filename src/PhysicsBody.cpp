@@ -27,6 +27,11 @@
 // This means that Box2D's coords are only x and y (which is top down)
 // So, Box2D's x is x in the 3D world, and Box2D's y is z in the 3D world
 
+// Keep in mind that Box2D rotations are the opposite of ours!! (* -1)
+// (for Box2D, clockwise rotation = angle increases)
+
+// Note: Box2D adds a skin around bodies to prevent tunnelling, so there might be a small visible gap between bodeis
+
 #include <PhysicsBody.hpp>
 
 #include <Utils.hpp>
@@ -38,6 +43,7 @@
 
 #include <cstddef> // For std::size_t
 #include <algorithm>
+#include <cfloat> // For angle checking
 
 #include <math.h> // For trig stuff
 
@@ -64,11 +70,8 @@ PhysicsBody::PhysicsBody(constObjectGeometryPointer objectGeometry, bool circula
 	init();
 
 	mObjectGeometry = objectGeometry;
-	mCircularShape = circularShape;
+	mIsCircular = circularShape;
 	mType = type;
-
-	// Number of pixels in the 3D object that would equal to a meter. Box2D lieks meters, not pixels!
-	mPixelsPerMeter = PHYSICS_BODY_PIXELS_PER_METER;
 
 	if(type != PHYSICS_BODY_IGNORED &&
 		type != PHYSICS_BODY_STATIC &&
@@ -102,15 +105,13 @@ PhysicsBody::PhysicsBody(const PhysicsBody& other)
 	mWorldFriction = other.mWorldFriction;
 
 	mScaling = other.mScaling;
-	mCircularShape = other.mCircularShape;
+	mIsCircular = other.mIsCircular;
 	mRadius = other.mRadius;
 	mType = other.mType;
 
-	mPixelsPerMeter = PHYSICS_BODY_PIXELS_PER_METER;
-
 	b2BlockAllocator block;
 
-	if(mCircularShape)
+	if(mIsCircular)
 		block.Allocate(sizeof(b2CircleShape));
 	else
 		block.Allocate(sizeof(b2ChainShape));
@@ -142,32 +143,30 @@ void PhysicsBody::init()
 	mWorldFriction = 0.5f;
 
 	mScaling = glm::vec3(1.0f);
-	mCircularShape = true;
+	mIsCircular = true;
 	mRadius = 0.0f;
 	mType = PHYSICS_BODY_IGNORED;
-
-	// Number of pixels in the 3D object that would equal to a meter. Box2D likes meters, not pixels!
-	mPixelsPerMeter = PHYSICS_BODY_PIXELS_PER_METER;
 }
 
 // Static
 // Gives ownership
 // Circular shapes have 1 shape
+// Rotation and scaling are important here
 PhysicsBody::shapeVector PhysicsBody::createShapesFromObjectGeometry(const ObjectGeometry& objectGeometry,
-	bool generateCircular, int pixelsPerMeter, glm::vec3 scaling)
+	bool generateCircular, float pixelsPerMeter, glm::vec3 rotation, glm::vec3 scaling)
 {
 	// b2Vec2 is a float32 point/vector
-	std::vector<b2Vec2> positions2D = get2DCoordsObjectGeometry(objectGeometry, pixelsPerMeter, scaling);
+	std::vector<b2Vec2> positions2D = get2DObjectGeometryCoords(objectGeometry, pixelsPerMeter, rotation, scaling);
 
 	if(generateCircular)
 	{
 		shapeVector shapes;
 
-		b2Vec2 centroid = getCentroid(positions2D);
+		b2Vec2 centroid = get2DCentroid(positions2D);
 		float radius = getCircleRadiusFromPoints(positions2D, centroid);
 		
 		b2CircleShape* circleShape = new b2CircleShape();
-		circleShape->m_p = centroid;
+		circleShape->m_p = centroid; // The local position (compared to the whole geometry)
 		circleShape->m_radius = radius;
 
 		// Moves the unique ptr!
@@ -218,7 +217,7 @@ PhysicsBody::shapeVector PhysicsBody::createShapesFromObjectGeometry(const Objec
 }
 
 // Radius in meters
-PhysicsBody::shapeUniquePointer PhysicsBody::createShapeFromRadius(float radius)
+PhysicsBody::shapeUniquePointer PhysicsBody::createShapesFromRadius(float radius)
 {
 	b2CircleShape* circleShape = new b2CircleShape();
 	circleShape->m_p = b2Vec2(0.0f, 0.0f);
@@ -232,12 +231,14 @@ PhysicsBody::shapeUniquePointer PhysicsBody::createShapeFromRadius(float radius)
 // Copies the data into a new vector
 // Returns a b2Vec2Vector to assure compability with Box2D
 // Returning coords are in meters!
-PhysicsBody::B2Vec2Vector PhysicsBody::get2DCoordsObjectGeometry(const ObjectGeometry& objectGeometry,
-	int pixelsPerMeter, glm::vec3 scaling)
+PhysicsBody::B2Vec2Vector PhysicsBody::get2DObjectGeometryCoords(const ObjectGeometry& objectGeometry,
+	float pixelsPerMeter, glm::vec3 rotation, glm::vec3 scaling)
 {
 	ObjectGeometry::uintVector indices = objectGeometry.getIndexBuffer().readData();
 	ObjectGeometry::vec3Vector positions3D = objectGeometry.getPositionBuffer().readData();
 
+	// generate a matrix so we can easily have rotation and scaling
+	glm::mat4 matrix = generateModelMatrix(glm::vec3(0.0f), rotation, scaling / pixelsPerMeter);
 	B2Vec2Vector positions2D(indices.size()); // Same number of elements
 
 	// Convert polygons to 2D
@@ -246,8 +247,9 @@ PhysicsBody::B2Vec2Vector PhysicsBody::get2DCoordsObjectGeometry(const ObjectGeo
 		unsigned int vertexIndex = indices[i]; // The index in the positions vector of this vertex
 		glm::vec3 vertexPosition3D = positions3D[vertexIndex];
 
-		positions2D[i] = b2Vec2((vertexPosition3D.x * scaling.x) / pixelsPerMeter,
-			(vertexPosition3D.z * scaling.z) / pixelsPerMeter);
+		glm::vec4 transformedPoint = matrix * glm::vec4(vertexPosition3D, 1.0f); // 1 for point
+
+		positions2D[i] = b2Vec2(transformedPoint.x, transformedPoint.z);
 	}
 
 	return positions2D;
@@ -291,7 +293,7 @@ std::vector<p2t::Point> PhysicsBody::monotoneChainConvexHull(B2Vec2Vector points
 	
 	hull.resize(hullIndex);
 
-	// Remove similar points (Box2D loves this)
+	// Remove similar points (Box2D loves this, poly2tri requires this)
 	for(std::size_t i = 0, length = hull.size(); i<100000; i++) // i++ since we will never remove the current element
 	{
 		if(i < length)
@@ -334,7 +336,7 @@ std::vector<p2t::Point> PhysicsBody::monotoneChainConvexHull(B2Vec2Vector points
 
 // Static
 // From http://stackoverflow.com/questions/2792443/finding-the-centroid-of-a-polygon
-b2Vec2 PhysicsBody::getCentroid(const B2Vec2Vector& points2D)
+b2Vec2 PhysicsBody::get2DCentroid(const B2Vec2Vector& points2D)
 {
 	std::size_t pointCount = points2D.size();
 
@@ -431,6 +433,38 @@ PhysicsBody::vec2Vector PhysicsBody::getCircleVertices(glm::vec2 origin, float r
 	}
 
 	return vertices;
+}
+
+// Static
+// Translation in meters and rotation in degrees as always
+glm::mat4 PhysicsBody::generateModelMatrix(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scaling)
+{
+	glm::mat4 modelM;
+
+	// Scaling * rotation * translation
+	glm::vec3 rotationInRadians = glm::vec3(
+		degreesToRadians(rotation.x),
+		degreesToRadians(rotation.y),
+		degreesToRadians(rotation.z));
+
+	glm::mat4 translationM = glm::translate(glm::mat4(1.0f), translation * PHYSICS_PIXELS_PER_METER);
+
+	// Big chunk since we have to do x, y and z rotation manually
+	glm::mat4 rotationXM = glm::rotate(translationM,
+		rotationInRadians.x, // Glm takes radians
+		glm::vec3(1.0f, 0.0f, 0.0f));
+
+	glm::mat4 rotationXYM = glm::rotate(rotationXM,
+		rotationInRadians.y,
+		glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glm::mat4 rotationXYZM = glm::rotate(rotationXYM,
+		rotationInRadians.z,
+		glm::vec3(0.0f, 0.0f, 1.0f));
+
+	modelM = glm::scale(rotationXYZM, scaling);
+
+	return modelM;
 }
 
 // bodyDef IS modified!
@@ -533,6 +567,8 @@ bool PhysicsBody::updateWorldBodyFixtures()
 
 // Public
 // Useful when the object's geometry changed
+// Does not recalculate shape for speed (since you wouldn't want, for example, to
+// recalculate for each animation frame or whatever).
 void PhysicsBody::setObjectGeometry(constObjectGeometryPointer objectGeometry)
 {
 	mObjectGeometry = objectGeometry;
@@ -541,22 +577,23 @@ void PhysicsBody::setObjectGeometry(constObjectGeometryPointer objectGeometry)
 // Will (re)calculate the shape, circular or not
 bool PhysicsBody::calculateShapes()
 {
-	if(mCircularShape && !mObjectGeometry) // If it is a simple circle, no object geometry
+	if(mIsCircular && !mObjectGeometry) // If it is a simple circle, no object geometry
 		return calculateShapes(mRadius);
 	else
-		return calculateShapes(mCircularShape, mScaling);
+		return calculateShapes(mIsCircular, mScaling);
 }
 
 // To have a non circular shape, you need to have an object geometry!
-bool PhysicsBody::calculateShapes(bool circularShape, glm::vec3 scaling)
+bool PhysicsBody::calculateShapes(bool isCircularShape, glm::vec3 scaling)
 {
 	if(mObjectGeometry)
 	{
-		mCircularShape = circularShape;
-		mShapes = createShapesFromObjectGeometry(*mObjectGeometry, circularShape, mPixelsPerMeter, scaling);
+		mIsCircular = isCircularShape;
+		mShapes = createShapesFromObjectGeometry(*mObjectGeometry, isCircularShape, PHYSICS_PIXELS_PER_METER,
+			mRotation, scaling);
 		mScaling = scaling;
 
-		if(circularShape)
+		if(isCircularShape)
 			mRadius = mShapes[0]->m_radius; // A circular shape is 1 shape
 
 		if(mWorldBody)
@@ -577,7 +614,7 @@ bool PhysicsBody::calculateShapes(float radius)
 	// Make sure we don't do something weird, make sure our new shape is the only one
 	// (so don't use push_back and friends)
 	mShapes.resize(1);
-	mShapes[0] = createShapeFromRadius(radius);
+	mShapes[0] = createShapesFromRadius(radius);
 	mRadius = radius;
 
 	if(mWorldBody)
@@ -647,14 +684,9 @@ float PhysicsBody::getWorldFriction() const
 	return mWorldFriction;
 }
 
-int PhysicsBody::getPixelsPerMeter() const
+bool PhysicsBody::isCircular() const
 {
-	return mPixelsPerMeter;
-}
-
-bool PhysicsBody::isCircularShape() const
-{
-	return mCircularShape;
+	return mIsCircular;
 }
 
 float PhysicsBody::getRadius() const
@@ -699,7 +731,17 @@ void PhysicsBody::setRotation(glm::vec3 angle)
 	if(mWorldBody)
 	{
 		// The Box2D angle is equivalent to our y rotation
-		mWorldBody->SetTransform(mWorldBody->GetPosition(), degreesToRadians(angle.y));
+		mWorldBody->SetTransform(mWorldBody->GetPosition(), -degreesToRadians(angle.y)); // Box2D angle is reversed!
+	}
+}
+
+void PhysicsBody::setRotationInRadians(glm::vec3 angle)
+{
+	mRotation = angle;
+
+	if(mWorldBody)
+	{
+		mWorldBody->SetTransform(mWorldBody->GetPosition(), -angle.y); // Box2D angle is reversed!
 	}
 }
 
@@ -708,7 +750,8 @@ glm::vec3 PhysicsBody::getRotation() const
 {
 	if(mWorldBody)
 	{
-		float yRotation = radiansToDegrees(mWorldBody->GetAngle()); // The Box2D angle is equivalent to our y rotation
+		// The Box2D angle is equivalent to our y rotation
+		float yRotation = radiansToDegrees(-mWorldBody->GetAngle()); // Box2D angles are inversed!
 		return glm::vec3(mRotation.x, yRotation, mRotation.z);
 	}
 
@@ -719,7 +762,7 @@ glm::vec3 PhysicsBody::getRotationInRadians() const
 {
 	if(mWorldBody)
 	{
-		float yRotation = mWorldBody->GetAngle();
+		float yRotation = -mWorldBody->GetAngle();
 
 		return glm::vec3(
 			degreesToRadians(mRotation.x),
@@ -783,6 +826,91 @@ bool PhysicsBody::isFixtedRotation() const
 	return mIsFixtedRotation;
 }
 
+// Gets the local 2D center of the shapes (relative to their location in the geometry)
+// Not heavy
+glm::vec2 PhysicsBody::getShapesLocal2DCenter() const
+{
+	if(!mShapes.empty())
+	{
+		b2Vec2 localCenter;
+
+		if(mIsCircular)
+		{
+			b2CircleShape* circle = static_cast<b2CircleShape*>(mShapes[0].get());
+			localCenter = circle->m_p;
+		}
+		else
+		{
+			std::vector<b2Vec2> centroids;
+
+			for(std::size_t i = 0; i < mShapes.size(); i++)
+			{
+				b2Shape* shape = mShapes[i].get();
+				// We can static cast here, since we know 100% it is a polygon shape.
+				b2PolygonShape* polygon = static_cast<b2PolygonShape*>(shape);
+
+				centroids.push_back(polygon->m_centroid); // The local position (compared to the whole geometry)
+			}
+
+			// Find average center
+			for(auto &centroid : centroids)
+			{
+				localCenter.x += centroid.x;
+				localCenter.y += centroid.y;
+			}
+
+			localCenter.x /= centroids.size();
+			localCenter.y /= centroids.size();
+		}
+
+		return B2Vec2ToGlm(localCenter);
+	}
+	else
+	{
+		Utils::CRASH("Cannot get local 3D center of physics body that has no shapes! Please calculate them before calling.");
+		return glm::vec2();
+	}
+}
+
+// Very heavy! Involves reading from the GPU etc
+glm::vec3 PhysicsBody::getShapesLocal3DCenter() const
+{
+	if(!mShapes.empty())
+	{
+		glm::vec2 localCenter = getShapesLocal2DCenter();
+
+		// Find other coord center if object geometry is defined
+		float otherCoord = 0.0f;
+
+		if(mObjectGeometry)
+		{
+			ObjectGeometry::uintVector indices = mObjectGeometry->getIndexBuffer().readData();
+			ObjectGeometry::vec3Vector positions3D = mObjectGeometry->getPositionBuffer().readData();
+
+			std::size_t indexCount = indices.size();
+													  // Convert polygons to 2D
+			for(std::size_t i = 0; i < indexCount; i++)
+			{
+				unsigned int vertexIndex = indices[i]; // The index in the positions vector of this vertex
+				glm::vec3 vertexPosition3D = positions3D[vertexIndex];
+
+				otherCoord = vertexPosition3D.y;
+			}
+			otherCoord /= indexCount; // Find the average
+		} else
+		{
+			// Ignore if it is not defined, it is most probably a simple circular shape with a radius
+			otherCoord = 0.0f;
+		}
+
+		return glm::vec3(localCenter.x, otherCoord, localCenter.y);
+	} else
+	{
+		Utils::CRASH("Cannot get local 3D center of physics body that has no shapes! Please calculate them before calling.");
+		return glm::vec3();
+	}
+}
+
 // False on error
 // The world needs to stay alive while this body exists
 bool PhysicsBody::addToWorld(b2World* world)
@@ -827,41 +955,21 @@ void PhysicsBody::removeFromWorld()
 	mWorld = nullptr;
 }
 
-// Not including scaling can be useful
-// For example, rendering coords that have already been scaled (like the physics shape)
-glm::mat4 PhysicsBody::generateModelMatrix(bool includeScaling)
+// Generates model matrix based on this body's position, rotation and scaling
+glm::mat4 PhysicsBody::generateModelMatrix()
 {
-	// Scaling * rotation * translation
-	glm::vec3 calculatedRotation = getRotationInRadians();
-
-	glm::mat4 translationM = glm::translate(glm::mat4(1.0f), getPosition() * static_cast<float>(mPixelsPerMeter));
-
-	// Big chunk since we have to do x, y and z rotation manually
-	glm::mat4 rotationXM = glm::rotate(translationM,
-		calculatedRotation.x, // Glm takes radians
-		glm::vec3(1.0f, 0.0f, 0.0f));
-
-	glm::mat4 rotationXYM = glm::rotate(rotationXM,
-		calculatedRotation.y,
-		glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glm::mat4 rotationXYZM = glm::rotate(rotationXYM,
-		calculatedRotation.z,
-		glm::vec3(0.0f, 0.0f, 1.0f));
-
-	glm::mat4 modelM;
-	
-	if(includeScaling)
-		modelM = glm::scale(rotationXYZM, mScaling);
-	else
-		modelM = rotationXYZM;
+	glm::mat4 modelM = generateModelMatrix(
+		getPosition(),
+		getRotation(),
+		mScaling);
 
 	return modelM;
 }
 
-void PhysicsBody::step()
+// timeStep in seconds, like Box2D (speed is in meters/seconds normally)
+void PhysicsBody::step(float timeStep)
 {
-	mPosition.y += mVelocity.y; // Add the missing velocity
+	mPosition.y += mVelocity.y * timeStep; // Add the missing velocity
 
 	if(mWorldBody)
 	{
@@ -898,7 +1006,7 @@ void PhysicsBody::step()
 						velocity = 0.0f;
 				} else
 				{
-					velocity = angularVelocity + frictionIntensity/2;
+					velocity = angularVelocity + frictionIntensity / 2;
 					if(velocity > 0.0f)
 						velocity = 0.0f;
 				}
@@ -907,49 +1015,67 @@ void PhysicsBody::step()
 				mWorldBody->SetAngularVelocity(velocity); // Since SetTorque wasn't working for me
 			}
 		}
-	}	
+
+		float angleRadians = mWorldBody->GetAngle();
+		// Angle expected to go over the limit soon, we have to do this check ourselves
+		if(angleRadians > FLT_MAX - 100)
+		{
+			// Normalize angle
+			// http://stackoverflow.com/questions/24234609/standard-way-to-normalize-an-angle-to-%CF%80-radians-in-java
+			float normalizedAngle =
+				angleRadians - CONST_TWO_PI * floor((angleRadians + CONST_PI) / CONST_TWO_PI);
+
+			mWorldBody->SetTransform(mWorldBody->GetPosition(), angleRadians);
+		}
+	}
 }
 
 // A quick an easy renderer for debugging
 // Slow!
-// Other 3D coord is the non-physics coord that the physics body will be drawn at
+// Other 3D coord is the non-physics coord that the physics body will be dawn at
+// Other 3D coord is useful if we want to draw all debug shapes on the same plane
 // Takes a shader pointer to be consistent
+// The shader is the same for basic objects
 void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* camera, float other3DCoord)
 {
+	glm::vec3 color(0.0f, 1.0f, 0.0f);
+
 	if(mShapes.empty())
 	{
 		Utils::CRASH("Cannot debug render this physics body, it does not have shapes! Please calculate them before calling.");
 		return;
 	}
-
+	
 	// Lets do something very smart, create a buffer, fill it, and then delete it each time we render
 	GPUBuffer<glm::vec3> positionBuffer;
-	vec3Vector positions3D;
+	vec3Vector localPositions3D; // Object space coords, before model matrix!
+	int drawMode = 0;
 
-	if(mCircularShape)
+	if(mIsCircular)
 	{
 		// One shape per circular shape
 		b2CircleShape* circle = static_cast<b2CircleShape*>(mShapes[0].get());
 
 		// Translation is done in the model matrix
-		vec2Vector vertices2D = getCircleVertices(glm::vec2(0.0f), circle->m_radius, 10);
+		// Put the circle on the object geometry shape (relative to the object geometry)
+		vec2Vector vertices2D = getCircleVertices(getShapesLocal2DCenter(), circle->m_radius, 10);
 
 		for(auto &vertex2D : vertices2D)
 		{
-			positions3D.push_back(glm::vec3(
-				vertex2D.x * mPixelsPerMeter,
-				other3DCoord * mPixelsPerMeter,
-				vertex2D.y * mPixelsPerMeter));
+			localPositions3D.push_back(glm::vec3(
+				vertex2D.x * PHYSICS_PIXELS_PER_METER,
+				0.0f,
+				vertex2D.y * PHYSICS_PIXELS_PER_METER));
 		}
 
 		// Add line to see circle angle better
 
 		// Front is the first element
 		// We need to add this otherwise we see a hole in the circle
-		positions3D.push_back(positions3D.front());
-		positions3D.push_back(glm::vec3(0.0f)); // Add the center of the circle
+		localPositions3D.push_back(localPositions3D.front());
+		localPositions3D.push_back(glm::vec3(0.0f)); // Add the center of the circle
 
-		positionBuffer.setMutableData(positions3D, GL_STATIC_DRAW);
+		drawMode = GL_LINE_STRIP;
 	} else
 	{
 		for(std::size_t i = 0; i < mShapes.size(); i++)
@@ -963,21 +1089,31 @@ void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* came
 			{
 				// Add each point to the buffer
 				b2Vec2 point2D = polygon->GetVertex(pointIndex);
-				positions3D.push_back(glm::vec3(
-					point2D.x * mPixelsPerMeter,
-					other3DCoord * mPixelsPerMeter,
-					point2D.y * mPixelsPerMeter));
+				localPositions3D.push_back(glm::vec3(
+					point2D.x * PHYSICS_PIXELS_PER_METER,
+					0.0f,
+					point2D.y * PHYSICS_PIXELS_PER_METER));
 			}
 		}
-		
-		positionBuffer.setMutableData(positions3D, GL_STATIC_DRAW);
+
+		drawMode = GL_TRIANGLES;
+		// Draw lines only, but they are still rasterized as triangles
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Must reset this after rendering!
 	}
 
-	glm::mat4 modelMatrix = generateModelMatrix(false);
+	positionBuffer.setMutableData(localPositions3D, GL_STATIC_DRAW);
+
+	glm::vec3 position = getPosition();
+	glm::mat4 modelMatrix = generateModelMatrix(
+		glm::vec3(position.x, other3DCoord, position.z),
+		glm::vec3(0.0f, getRotation().y, 0.0f), // Ignore any rotation apart Box2D's rotation
+		glm::vec3(1.0f)); // No scaling here! The scaling is built-in the vertices
+
 	glm::mat4 MVP = camera->getProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
 
 	glUseProgram(shader->getID());
 	glUniformMatrix4fv(shader->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
+	glUniform3f(shader->findUniform("color"), color.r, color.g, color.b);
 
 	glEnableVertexAttribArray(0); // Number to give to OpenGL VertexAttribPointer
 	positionBuffer.bind(GL_ARRAY_BUFFER);
@@ -992,12 +1128,24 @@ void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* came
 		(void*)0			// Array buffer offset
 		);
 
+	glDisable(GL_CULL_FACE); // Must re-enable after!
+
 	// Draw!
 	glDrawArrays(
-		GL_LINE_STRIP, // Mode
+		drawMode, // Mode
 		0, // First
-		positions3D.size() // Count
+		localPositions3D.size() // Count
 		);
 
 	glDisableVertexAttribArray(0);
+	glPolygonMode(GRAPHICS_RASTERIZE_FACE, GRAPHICS_RASTERIZE_MODE); // Reset
+	glEnable(GL_CULL_FACE);
+}
+
+// Will use the body's position
+// Of course, this means the debug shape will appear at the same place as the object geometry height
+// (which is not necessarily the actual object's height)
+void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* camera)
+{
+	renderDebugShape(shader, camera, mPosition.y);
 }

@@ -17,8 +17,7 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-// This class is the parent class of all entities in the game (objects, lights, camera, etc)
-// This is ALWAYS in worldspace!
+// This class is the base class of all entities in the game (objects, lights, camera, etc)
 
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
@@ -35,6 +34,7 @@ private:
 
 public:
 	Entity();
+	Entity(float radius, int type);
 	Entity(constObjectGeometryPointer objectGeometry, bool physicsCircularShape, int physicsType);
 	virtual ~Entity();
 	

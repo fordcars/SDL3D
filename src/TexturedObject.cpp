@@ -92,7 +92,7 @@ void TexturedObject::render(const Camera& camera)
 	// Texture
 	glActiveTexture(GL_TEXTURE0); // Set the active texture unit, you can have more than 1 texture at once
 	glBindTexture(GL_TEXTURE_2D, mTexturePointer->getID());
-	
+
 	// Draw!
 	// Use the index buffer, more efficient!
 	glDrawElements(

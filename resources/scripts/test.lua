@@ -1,6 +1,7 @@
 local M = {}
 
 M.building = nil
+M.lastMonkey = nil
 
 local function foo()
 	local game = getGame()
@@ -40,7 +41,7 @@ local function foo()
 	
 	Utils.logprint("Hello, world from lua!!!!")
 	
-	camera:setDirection(Vec4(3, 0.0, 0.0, 1.0))
+	camera:setDirection(Vec4(3, 0.0, 0.0, 0.0))
 	
 	local geometry = resourceManager:findObjectGeometryGroup("suzanne"):getObjectGeometries()[1]
 	local shader = resourceManager:findShader("shaded")
@@ -63,13 +64,19 @@ local function foo()
 	entityManager:addLight(light)
 	
 	local maxCoord = 0
+	local firstMonkey = nil
 	for i=0, 20, 1 do
 		local coord = i + 0.5
 		local newMonkey = ShadedObject(geometry, shader, texture, false, PhysicsBodyType.Dynamic)
 		newMonkey:getPhysicsBody():setPosition(Vec3(coord, 0.0, 0.0))
+		newMonkey:getPhysicsBody():setVelocity(Vec3(0, 0.0, 0.0))
 		entityManager:addObject(newMonkey)
 		
 		maxCoord = coord
+		
+		if(firstMonkey == nil) then
+			firstMonkey = newMonkey
+		end
 	end
 	
 	M.building:getPhysicsBody():setPosition(Vec3(maxCoord + 5, 0.0, 0.0))
@@ -77,6 +84,9 @@ local function foo()
 	entityManager:addObject(M.building)
 	M.building:getPhysicsBody():calculateShapesUsingObjectGeometry(false, Vec3(3, 3, 3))
 	M.building:getPhysicsBody():setFixtedRotation(true)
+	M.building:getPhysicsBody():setVelocity(Vec3(0, 0, 1))
+	
+	M.firstMonkey = firstMonkey
 end
 
 M.foo = foo

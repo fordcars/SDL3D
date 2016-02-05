@@ -24,6 +24,15 @@
 #include <map>
 #include <memory>
 
+#include <glad/glad.h>
+
+#define ENGINE_NAME "SDL3D"
+#define ENGINE_VERSION "0.1"
+
+// Graphics
+#define GRAPHICS_RASTERIZE_FACE GL_FRONT_AND_BACK
+#define GRAPHICS_RASTERIZE_MODE GL_FILL
+
 // Defines how many chunk sounds can exist. A super high number exceeding memory could segfault!
 #define MAX_SOUND_CHANNELS 50
 
@@ -54,8 +63,8 @@
 #define SOUND_MUSIC 0
 #define SOUND_CHUNK 1 // Short sound effects would use this type
 
-// Physics body
-#define PHYSICS_BODY_PIXELS_PER_METER 10
+// Physics
+#define PHYSICS_PIXELS_PER_METER 10.0f // Float
 
 #define PHYSICS_BODY_IGNORED 0    // Ignored by the physics engine
 #define PHYSICS_BODY_STATIC 1     // Does not move, collides
@@ -64,5 +73,6 @@
 
 // Constants
 #define CONST_PI 3.14159f
+#define CONST_TWO_PI 2 * CONST_PI
 
 #endif /* DEFINITIONS_HPP */

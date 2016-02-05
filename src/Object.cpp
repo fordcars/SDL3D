@@ -25,6 +25,7 @@
 
 // Uniforms:
 // - mat4 MVP
+// - vec3 color
 
 #include <Object.hpp>
 
@@ -65,6 +66,8 @@ Object::constShaderPointer Object::getShader() const
 // Virtual
 void Object::render(const Camera& camera)
 {
+	glm::vec3 color(0.5f, 0.5f, 0.5f);
+
 	const ObjectGeometry::uintBuffer& indexBuffer = mObjectGeometry->getIndexBuffer();
 	const ObjectGeometry::vec3Buffer& positionBuffer = mObjectGeometry->getPositionBuffer();
 
@@ -73,6 +76,7 @@ void Object::render(const Camera& camera)
 
 	glUseProgram(mShaderPointer->getID());
 	glUniformMatrix4fv(mShaderPointer->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
+	glUniform3f(mShaderPointer->findUniform("color"), color.r, color.g, color.b);
 
 	glEnableVertexAttribArray(0); // Number to give to OpenGL VertexAttribPointer
 	positionBuffer.bind(GL_ARRAY_BUFFER);
