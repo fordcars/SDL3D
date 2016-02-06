@@ -44,7 +44,7 @@ private:
 
 	int mGeneratedNames; // For generating unique logical geometry names if needed
 
-	void loadOBJFile(const std::string& OBJfilePath);
+	bool loadOBJFile(const std::string& OBJfilePath);
 
 public:
 	ObjectGeometryGroup(const std::string& name);

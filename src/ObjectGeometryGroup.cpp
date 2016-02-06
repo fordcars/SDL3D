@@ -53,7 +53,7 @@ std::string ObjectGeometryGroup::getName()
 }
 
 // Loads an .obj file. The objects found will be added to this group.
-void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
+bool ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 {
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -67,7 +67,7 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 	if(!file)
 	{
 		Utils::CRASH("Object file '" + OBJfilePath + "' could not be opened!");
-		return;
+		return false;
 	}
 
 	// Now load the object
@@ -79,7 +79,7 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 	{
 		Utils::LOGPRINT(".obj file '" + OBJfilePath + "' failed to load!");
 		Utils::CRASH("Tinyobjloader message: " + tinyobjError); // The error 'could' be an empty string, just sayin'
-		return;
+		return false;
 	} else if(!tinyobjError.empty()) // Success, but there is a warning
 	{
 		Utils::WARN("Tinyobjloader message: " + tinyobjError); // The file should still load
@@ -116,6 +116,16 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 		ObjectGeometry::vec2Vector UVcoords(numberOfVertices);
 		ObjectGeometry::vec3Vector normals(numberOfVertices);
 
+		// Final safety check!
+		if(currentShape.mesh.positions.size()/3 != currentShape.mesh.normals.size()/3 ||
+			currentShape.mesh.positions.size()/3 != currentShape.mesh.texcoords.size()/2 ||
+			currentShape.mesh.texcoords.size()/2 != currentShape.mesh.normals.size()/3)
+		{
+			Utils::CRASH("OBJ data for geometry '" + currentShape.name + "' in file '" + OBJfilePath +
+				"' for group '" + mName + "' is not coherent! Did you include normals/texcoords?");
+			return false;
+		}
+
 		// Copy the data since I couldn't find a way to avoid it
 		// Very annoying to iterate through all vertices, but seems to be the safest
 		for(std::size_t j=0; j<numberOfVertices; j++)
@@ -138,6 +148,8 @@ void ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 			currentShape.mesh.indices, positions, UVcoords, normals));
 		addObjectGeometry(objectGeometryPointer);
 	}
+
+	return true; // Success!
 }
 
 // Checks if the name is available. If not, it will generate one.
