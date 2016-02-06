@@ -571,6 +571,21 @@ void Script::bindInterface(Game& game)
 		{
 			return (vector / scalar);
 		})
+
+		.addStaticFunction("length", [](const glm::vec2& vector)
+		{
+			return glm::length(vector);
+		})
+
+		.addStaticFunction("normalize", [](const glm::vec2& vector)
+		{
+			return glm::normalize(vector);
+		})
+
+		.addStaticFunction("dot", [](const glm::vec2& vector1, const glm::vec2& vector2)
+		{
+			return glm::dot(vector1, vector2);
+		})
 	.endClass();
 
 
@@ -609,6 +624,21 @@ void Script::bindInterface(Game& game)
 		{
 			return (vector / scalar);
 		})
+
+		.addStaticFunction("length", [](const glm::vec3& vector)
+		{
+			return glm::length(vector);
+		})
+
+		.addStaticFunction("normalize", [](const glm::vec3& vector)
+		{
+			return glm::normalize(vector);
+		})
+
+		.addStaticFunction("dot", [](const glm::vec3& vector1, const glm::vec3& vector2)
+		{
+			return glm::dot(vector1, vector2);
+		})
 	.endClass();
 
 
@@ -643,6 +673,21 @@ void Script::bindInterface(Game& game)
 		.addStaticFunction("scalarDiv", [](const glm::vec4& vector, float scalar)
 		{
 			return (vector / scalar);
+		})
+
+		.addStaticFunction("length", [](const glm::vec4& vector)
+		{
+			return glm::length(vector);
+		})
+
+		.addStaticFunction("normalize", [](const glm::vec4& vector)
+		{
+			return glm::normalize(vector);
+		})
+
+		.addStaticFunction("dot", [](const glm::vec4& vector1, const glm::vec4& vector2)
+		{
+			return glm::dot(vector1, vector2);
 		})
 	.endClass();
 }

@@ -54,6 +54,7 @@ local function foo()
 		local newMonkey = ShadedObject(geometry, shader, texture, false, PhysicsBodyType.Dynamic)
 		newMonkey:getPhysicsBody():setPosition(Vec3(coord, 0.0, 0.0))
 		newMonkey:getPhysicsBody():setVelocity(Vec3(0, 0.0, 0.0))
+		newMonkey:getPhysicsBody():setWorldFriction(2)
 		entityManager:addObject(newMonkey)
 		
 		maxCoord = coord

@@ -1,10 +1,10 @@
--Move controls from Lua to C++
+-In PhysicsBody when generating model matrix, make the Box2D angle the actual angle instead of relative to the current rotation of the other axes?
 
 -Stays alive for a few seconds (like 10) after quitting?
--In PhysicsBody, render debug shapes using local 3D coords? If so, have a function (static) that does this when calculating shapes and store the value.
+-In PhysicsBody, render debug shapes at the center of the objects themselves instead of relative to object geometry?
 
 -Ability to create camera with/without physics?
--Give lua access to gravity and projection?
+-Give lua access to gravity and have projection instead of hardcoded coords for 2D physics?
 
 -Write a template container and keep those instances instead of a bunch of maps in ResourceManager. Add the ability to duplicate resources in this container!
 
@@ -28,11 +28,11 @@
 --->> Can the field of view be anything else than numbers power of ten?
 
 
--3d animations: Going with mesh keyframes fro now: blender! Export in one .obj. Then interpolate the meshes.
+-3d animations: Going with mesh keyframes fro now: blender! Export in one .obj per animation. Then interpolate the meshes.
 ------------------------------------
 -Do something with v-sync like that the frame rate doesn't drop to 30?
 
--Support events in input and have handleInput() in Game
+-Support events for input
 
 ------------------------------------
 

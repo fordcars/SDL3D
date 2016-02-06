@@ -35,8 +35,14 @@ function gameStep()
 	test.firstMonkey:getPhysicsBody():setRotation(Vec3(rotation.x + 0.1, rotation.y, rotation.z))
 end
 
+-- http://www.scs.ryerson.ca/~danziger/mth141/Handouts/Slides/projections.pdf
+function projectVec2OnVec2(vector, projectionVector)
+	local projected = Vec2.scalarMul(projectionVector, (  Vec2.dot(vector, projectionVector) / Vec2.length(projectionVector)  ))
+	return projected
+end
+
 function doControls()
-	local speed = 0.05
+	local speed = 0.4
 	local angleIncrementation = 0.02
 	
 	local camera = entityManager:getGameCamera()
@@ -46,36 +52,48 @@ function doControls()
 
 	-- Movement
 	if(inputManager:isKeyPressed(KeyCode.LSHIFT)) then
-		speed = speed * 50
+		speed = speed * 10
 	end
 	
 	if(inputManager:isKeyPressed(KeyCode.UP)) then
 		local cameraDirection = camera:getDirection()
 		
-		local velocity = Vec3.scalarMul(Vec3(cameraDirection.x, 0, cameraDirection.z), speed)
+		 -- Normalize to guarantee that it is the same everywhere
+		local velocity = Vec3.scalarMul(Vec3.normalize(Vec3(cameraDirection.x, 0, cameraDirection.z)), speed)
 		cameraPhysicsBody:setVelocity(velocity)
 	elseif(inputManager:isKeyPressed(KeyCode.DOWN)) then
 		local cameraDirection = camera:getDirection()
 	
-		local velocity = Vec3.scalarMul(Vec3(-cameraDirection.x, 0, -cameraDirection.z), speed)
+		local velocity = Vec3.scalarMul(Vec3.normalize(Vec3(-cameraDirection.x, 0, -cameraDirection.z)), speed)
 		cameraPhysicsBody:setVelocity(velocity)
 	end
 	
-	if(inputManager:isKeyPressed(KeyCode.LEFT)) then
-		local cameraDirection = camera:getDirection()
-		local angle = 1.5708 -- 90 degrees in radians
+	if(inputManager:isKeyPressed(KeyCode.LEFT) or inputManager:isKeyPressed(KeyCode.RIGHT)) then
+		local sidewaysVelocityAngle = 1.5708
 		
-		local otherX = cameraDirection.x * math.cos(-angle) - cameraDirection.z * math.sin(-angle)
-		local otherY = cameraDirection.x * math.sin(-angle) + cameraDirection.z * math.cos(-angle)
+		if(inputManager:isKeyPressed(KeyCode.LEFT)) then
+			sidewaysVelocityAngle = -sidewaysVelocityAngle
+		end
+		
+		local normalizedCameraDirection = Vec4.normalize(camera:getDirection())
+		local cameraVelocity = cameraPhysicsBody:getVelocity()
+		
+		local otherX = (normalizedCameraDirection.x * math.cos(sidewaysVelocityAngle) - normalizedCameraDirection.z * math.sin(sidewaysVelocityAngle)) * speed
+		local otherZ = (normalizedCameraDirection.x * math.sin(sidewaysVelocityAngle) + normalizedCameraDirection.z * math.cos(sidewaysVelocityAngle)) * speed
+		
+		-- Get the velocity projection on the camera direction (this lets us keep vertical speed)
+		local cameraVelocity2D = Vec2(cameraVelocity.x, cameraVelocity.z)
+		local cameraDirection2D = Vec2(normalizedCameraDirection.x, normalizedCameraDirection.z)
+		local projected = projectVec2OnVec2(cameraVelocity2D, cameraDirection2D)
 		
 		local currentVelocity = cameraPhysicsBody:getVelocity()
 		
-		--cameraPhysicsBody:setVelocity(currentVelocity.x +
-	elseif(inputManager:isKeyPressed(KeyCode.RIGHT)) then
-		local cameraDirection = camera:getDirection()
-	
-		local velocity = Vec3.scalarMul(Vec3(-cameraDirection.x, 0, -cameraDirection.z), speed)
-		cameraPhysicsBody:setVelocity(velocity)
+		-- Make sure we don't indefinitely add velocity, so normalize to our speed (only keep direction)
+		local newVelocity = Vec3(otherX + projected.x,
+								currentVelocity.y,
+								otherZ + projected.y)
+		
+		cameraPhysicsBody:setVelocity(newVelocity)
 	end
 	
 	-- View controls
@@ -124,9 +142,9 @@ function doControls()
 	
 	-- Up/down controls
 	if(inputManager:isKeyPressed(KeyCode.SPACE)) then
-		cameraPhysicsBody:setPosition( Vec3.add(cameraPhysicsBody:getPosition(), Vec3(0, speed/3, 0)) )
+		cameraPhysicsBody:setPosition( Vec3.add(cameraPhysicsBody:getPosition(), Vec3(0, speed/30, 0)) )
 	elseif(inputManager:isKeyPressed(KeyCode.LCTRL)) then
-		cameraPhysicsBody:setPosition( Vec3.add(cameraPhysicsBody:getPosition(), Vec3(0, -speed/3, 0)) )
+		cameraPhysicsBody:setPosition( Vec3.add(cameraPhysicsBody:getPosition(), Vec3(0, -speed/30, 0)) )
 	end
 	
 	-- Music controls

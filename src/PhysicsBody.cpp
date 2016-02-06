@@ -776,8 +776,7 @@ glm::vec3 PhysicsBody::getRotationInRadians() const
 		degreesToRadians(mRotation.z));
 }
 
-// Takes a vec3 to be coherent with the rest
-// The non-physics coord is useless
+// The non-physics coord still moves the body on the axis
 void PhysicsBody::setVelocity(glm::vec3 velocity)
 {
 	mVelocity = velocity;
@@ -796,7 +795,7 @@ glm::vec3 PhysicsBody::getVelocity() const
 		b2Vec2 velocity2D = mWorldBody->GetLinearVelocity();
 		return glm::vec3(velocity2D.x, mVelocity.y, velocity2D.y);
 	}
-
+	
 	return mVelocity;
 }
 
