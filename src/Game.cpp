@@ -290,6 +290,7 @@ void Game::resetGraphics()
 	// Cull triangles which normal is not towards the camera
 	// If there are holes in the model because of this, click the "invert normals" button in your 3D modeler.
 	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	glPolygonMode(GRAPHICS_RASTERIZE_FACE, GRAPHICS_RASTERIZE_MODE);
 }
 
