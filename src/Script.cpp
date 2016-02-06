@@ -292,7 +292,7 @@ void Script::bindInterface(Game& game)
 
 
 	// Bind a few useful GPUBuffers
-	LuaBinding(luaState).beginClass<ObjectGeometry::uintBuffer>("GPUBuffer_uint>")
+	LuaBinding(luaState).beginClass<ObjectGeometry::uintBuffer>("GPUBuffer_uint")
 		.addFunction("setMutableData", &ObjectGeometry::uintBuffer::setMutableData)
 		.addFunction("setImmutableData", &ObjectGeometry::uintBuffer::setImmutableData)
 
@@ -302,7 +302,7 @@ void Script::bindInterface(Game& game)
 	.endClass();
 
 
-	LuaBinding(luaState).beginClass<ObjectGeometry::vec2Buffer>("GPUBuffer_vec2>")
+	LuaBinding(luaState).beginClass<ObjectGeometry::vec2Buffer>("GPUBuffer_vec2")
 		.addFunction("setMutableData", &ObjectGeometry::vec2Buffer::setMutableData)
 		.addFunction("setImmutableData", &ObjectGeometry::vec2Buffer::setImmutableData)
 
@@ -312,7 +312,7 @@ void Script::bindInterface(Game& game)
 	.endClass();
 
 
-	LuaBinding(luaState).beginClass<ObjectGeometry::vec3Buffer>("GPUBuffer_vec3>")
+	LuaBinding(luaState).beginClass<ObjectGeometry::vec3Buffer>("GPUBuffer_vec3")
 		.addFunction("setMutableData", &ObjectGeometry::vec3Buffer::setMutableData)
 		.addFunction("setImmutableData", &ObjectGeometry::vec3Buffer::setImmutableData)
 
