@@ -37,9 +37,8 @@ private:
 
 	float mFieldOfViewX; // The horizontal field of view, in degrees
 	float mAspectRatio;
-	float mNearClippingPlane;
-	float mFarClippingPlane;
-
+	float mNearClippingDistance; // In meters
+	float mFarClippingPlaneDistance;
 public:
 	Camera();
 	~Camera() override;
@@ -51,6 +50,11 @@ public:
 
 	void setFieldOfView(float mFieldOfViewX);
 	void setAspectRatio(float aspectRatio);
+
+	void setNearClippingDistance(float distance);
+	float getNearClippingDistance();
+	void setFarClippingDistance(float distance);
+	float getFarClippingDistance();
 
 	glm::mat4 getViewMatrix() const;
 	glm::mat4 getProjectionMatrix() const;

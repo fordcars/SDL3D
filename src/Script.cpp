@@ -468,6 +468,11 @@ void Script::bindInterface(Game& game)
 		.addFunction("setUpVector", &Camera::setUpVector)
 		.addFunction("getUpVector", &Camera::getUpVector)
 		.addFunction("setFieldOfView", &Camera::setFieldOfView)
+
+		.addFunction("setNearClippingDistance", &Camera::setNearClippingDistance)
+		.addFunction("getNearClippingDistance", &Camera::getNearClippingDistance)
+		.addFunction("setFarClippingDistance", &Camera::setFarClippingDistance)
+		.addFunction("getFarClippingDistance", &Camera::getFarClippingDistance)
 	.endClass();
 
 

@@ -38,8 +38,8 @@ Camera::Camera() // Constructor
 	mAspectRatio = 4 / 3;
 
 	PhysicsBody& physicsBody = getPhysicsBody();
-	mNearClippingPlane = PHYSICS_PIXELS_PER_METER * 0.05f; // Relative to pixels per meter
-	mFarClippingPlane = PHYSICS_PIXELS_PER_METER * 100.0f; // 100 meters max
+	mNearClippingDistance = 0.05f;
+	mFarClippingPlaneDistance = 100.0f; // 100 meters max
 }
 
 Camera::~Camera()
@@ -79,6 +79,26 @@ void Camera::setAspectRatio(float aspectRatio)
 	mAspectRatio = aspectRatio;
 }
 
+void Camera::setNearClippingDistance(float distance)
+{
+	mNearClippingDistance = distance;
+}
+
+float Camera::getNearClippingDistance()
+{
+	return mNearClippingDistance;
+}
+
+void Camera::setFarClippingDistance(float distance)
+{
+	mFarClippingPlaneDistance = distance;
+}
+
+float Camera::getFarClippingDistance()
+{
+	return mFarClippingPlaneDistance;
+}
+
 glm::mat4 Camera::getViewMatrix() const
 {
 	const PhysicsBody& physicsBody = getPhysicsBody();
@@ -108,7 +128,8 @@ glm::mat4 Camera::getProjectionMatrix() const
 	float radFOVX = glm::radians(mFieldOfViewX); // Glm takes radians
 	float radFOVY = 2 * atan( tan(radFOVX / 2) / mAspectRatio);
 	
-	glm::mat4 projectionMatrix = glm::perspective(radFOVY, mAspectRatio, mNearClippingPlane, mFarClippingPlane);
+	glm::mat4 projectionMatrix = glm::perspective(radFOVY, mAspectRatio,
+		mNearClippingDistance * PHYSICS_PIXELS_PER_METER, mFarClippingPlaneDistance * PHYSICS_PIXELS_PER_METER);
 
 	return projectionMatrix;
 }
