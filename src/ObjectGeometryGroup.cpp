@@ -122,7 +122,7 @@ bool ObjectGeometryGroup::loadOBJFile(const std::string& OBJfilePath)
 			currentShape.mesh.texcoords.size()/2 != currentShape.mesh.normals.size()/3)
 		{
 			Utils::CRASH("OBJ data for geometry '" + currentShape.name + "' in file '" + OBJfilePath +
-				"' for group '" + mName + "' is not coherent! Did you include normals/texcoords?");
+				"' for group '" + mName + "' is not coherent! Did you include normals/texcoords and in the same amount?");
 			return false;
 		}
 

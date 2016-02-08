@@ -9,3 +9,4 @@
 - I made CppBindClass' private interface public in CppBindClass.h at line 417 because of errors. Hopefully LuaIntf will fix this!
 
 - Right now, gravity is always 0.
+- All objects must have positions, u/v coords and normals and in same numbers!
