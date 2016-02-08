@@ -21,9 +21,12 @@
 
 #include <EntityManager.hpp>
 #include <Utils.hpp>
+#include <Definitions.hpp>
 
 #include <algorithm> // For finding in vector
 #include <string>
+
+#include <Box2D/Box2D.h>
 
 EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
@@ -39,18 +42,6 @@ EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 EntityManager::~EntityManager()
 {
 	// Do nothing
-}
-
-// Allows us to do slow motion!
-// In seconds
-void EntityManager::setPhysicsTimePerStep(float time)
-{
-	mPhysicsTimePerStep = time;
-}
-
-float EntityManager::getPhysicsTimePerStep()
-{
-	return mPhysicsTimePerStep;
 }
 
 Camera& EntityManager::getGameCamera()
@@ -172,6 +163,18 @@ bool EntityManager::removeLight(lightPointer light)
 EntityManager::lightVector& EntityManager::getLights()
 {
 	return mLights;
+}
+
+// Allows us to do slow motion!
+// In seconds
+void EntityManager::setPhysicsTimePerStep(float time)
+{
+	mPhysicsTimePerStep = time;
+}
+
+float EntityManager::getPhysicsTimePerStep()
+{
+	return mPhysicsTimePerStep;
 }
 
 // Steps all entities

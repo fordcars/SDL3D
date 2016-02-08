@@ -45,7 +45,7 @@
 // http://glew.sourceforge.net/basic.html
 
 Game::Game()
-	: mEntityManager(glm::vec2(0.0f),  1 / static_cast<float>(DEFAULT_GAME_MAX_FRAMES_PER_SECOND)) // Set gravity in a very shitty way
+	: mEntityManager(glm::vec2(0.0f),  1 / static_cast<float>(DEFAULT_GAME_MAX_FRAMES_PER_SECOND))
 {
 	mName = DEFAULT_GAME_NAME; // Copy string
 
@@ -54,13 +54,14 @@ Game::Game()
 
 	// Limits the frames per second
 	// Time in miliseconds
-	mMinTimePerFrame = static_cast<int>(1000 / DEFAULT_GAME_MAX_FRAMES_PER_SECOND); // Truncation
-
+	mMaxFramesPerSecond = DEFAULT_GAME_MAX_FRAMES_PER_SECOND; // Truncation
 	mLastFrameTime = 0;
 
 	// This is the length of a step, used for movement and everything, in ms. 8 ms makes 120 steps per second.
 	// If the time of one frame is smaller than this value (ex: faster screens in the future), the game will slow down.
 	mStepLength = 8;
+
+	mGraphicsBackgroundColor = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	mInitialized = false;
 	mQuitting = false;
@@ -271,16 +272,18 @@ float Game::calculateAspectRatio()
 
 void Game::step(float divider) // Movement and all
 {
+	mEntityManager.step(divider);
+
 	// Run the script's step()
 	ResourceManager::scriptPointer mainScript = mResourceManager.findScript(MAIN_SCRIPT_NAME);
 	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_STEP);
-
-	mEntityManager.step(divider);
 }
 
 void Game::resetGraphics()
 {
-	glClearColor(0.1f, 0.1f, 1.0f, 1.0f); // Set clear color
+	// Set clear color
+	glClearColor(mGraphicsBackgroundColor.r, mGraphicsBackgroundColor.g, mGraphicsBackgroundColor.b,
+		1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
 
 	// It looks like it's better to call these each frame
@@ -322,10 +325,12 @@ void Game::doMainLoop()
 
 	mLastFrameTime = currentTime;
 
+	int minTimePerFrame = 1000 / mMaxFramesPerSecond; // In miliseconds
+
 	// If the frame took les ticks than the minimum, delay the next frame, virtually always does this.
-	if(fpsTimer.getTicks() < mMinTimePerFrame)
+	if(fpsTimer.getTicks() < minTimePerFrame)
 	{
-		SDL_Delay(mMinTimePerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
+		SDL_Delay(minTimePerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
 	}
 }
 
@@ -454,7 +459,7 @@ void Game::setSize(int width, int height)
 
 void Game::setMaxFramesPerSecond(int maxFPS)
 {
-	mMinTimePerFrame = static_cast<int>(1000 / maxFPS);
+	mMaxFramesPerSecond = maxFPS;
 }
 
 // Sets the game's main window position
@@ -468,6 +473,16 @@ void Game::setMainWindowPosition(int x, int y)
 void Game::reCenterMainWindow()
 {
 	setMainWindowPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+}
+
+void Game::setGraphicsBackgroundColor(glm::vec3 color)
+{
+	mGraphicsBackgroundColor = color;
+}
+
+glm::vec3 Game::getGraphicsBackgroundColor()
+{
+	return mGraphicsBackgroundColor;
 }
 
 ResourceManager& Game::getResourceManager()

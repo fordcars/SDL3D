@@ -55,9 +55,6 @@ public:
 	EntityManager(glm::vec2 gravity, float physicsTimePerStep);
 	~EntityManager();
 
-	void setPhysicsTimePerStep(float time);
-	float getPhysicsTimePerStep();
-
 	Camera& getGameCamera();
 
 	bool addObject(objectPointer object);
@@ -69,6 +66,9 @@ public:
 	lightPointer removeLight(std::size_t index);
 	bool removeLight(lightPointer light);
 	lightVector& getLights();
+
+	void setPhysicsTimePerStep(float time);
+	float getPhysicsTimePerStep();
 
 	void step(float divider);
 	void render();

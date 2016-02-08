@@ -27,10 +27,7 @@
 #include <InputManager.hpp>
 #include <EntityManager.hpp>
 
-#include <glm/gtx/rotate_vector.hpp> // For testing
-#include <glm/gtx/vector_angle.hpp> // For testing
-#include <ShadedObject.hpp> // For testing
-#include <Light.hpp> // For testing
+#include <glm/glm.hpp>
 
 class Game
 {
@@ -40,10 +37,12 @@ private:
 
 	int mWidth;
 	int mHeight;
-	int mMinTimePerFrame; // In miliseconds
+	int mMaxFramesPerSecond;
 	
 	int mLastFrameTime; // Time at last frame
 	int mStepLength;
+
+	glm::vec3 mGraphicsBackgroundColor;
 
 	bool mInitialized; // Set to true after initializing
 	bool mQuitting; // If set to true, the game will quit at the end of the frame
@@ -91,6 +90,9 @@ public:
 	void setMaxFramesPerSecond(int maxFPS);
 	void setMainWindowPosition(int x, int y);
 	void reCenterMainWindow();
+
+	void setGraphicsBackgroundColor(glm::vec3 color);
+	glm::vec3 getGraphicsBackgroundColor();
 
 	ResourceManager& getResourceManager();
 	InputManager& getInputManager();

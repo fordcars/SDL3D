@@ -175,6 +175,9 @@ void Script::bindInterface(Game& game)
 		.addFunction("setMainWindowPosition", &Game::setMainWindowPosition)
 		.addFunction("reCenterMainWindow", &Game::reCenterMainWindow)
 
+		.addFunction("setGraphicsBackgroundColor", &Game::setGraphicsBackgroundColor)
+		.addFunction("getGraphicsBackgroundColor", &Game::getGraphicsBackgroundColor)
+
 		.addFunction("getResourceManager", &Game::getResourceManager)
 		.addFunction("getInputManager", &Game::getInputManager)
 		.addFunction("getEntityManager", &Game::getEntityManager)
@@ -393,6 +396,11 @@ void Script::bindInterface(Game& game)
 		.addFunction("removeLight",
 			static_cast<bool(EntityManager::*) (EntityManager::lightPointer)>
 			(&EntityManager::removeLight))
+
+		.addFunction("getLights", &EntityManager::getLights)
+
+		.addFunction("setPhysicsTimePerStep", &EntityManager::setPhysicsTimePerStep)
+		.addFunction("getPhysicsTimePerStep", &EntityManager::getPhysicsTimePerStep)
 
 		.addFunction("getLights", &EntityManager::getLights)
 	.endClass();

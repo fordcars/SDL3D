@@ -32,6 +32,8 @@
 
 // Note: Box2D adds a skin around bodies to prevent tunnelling, so there might be a small visible gap between bodeis
 
+// I would like to keep this class as close to 3D as possible (no 2D specific methods)
+
 #include <PhysicsBody.hpp>
 
 #include <Utils.hpp>
@@ -1026,7 +1028,7 @@ void PhysicsBody::step(float timeStep)
 
 			mWorldBody->SetTransform(mWorldBody->GetPosition(), angleRadians);
 		}
-	}
+	} // Ignore if it wasn't added, it might be a body of type Ignored!
 }
 
 // A quick an easy renderer for debugging

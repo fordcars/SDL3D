@@ -25,7 +25,7 @@
 #include <math.h>
 
 Camera::Camera() // Constructor
-	: Entity(0.1f, PHYSICS_BODY_DYNAMIC) // Radius and physics type
+	: Entity(0.5f, PHYSICS_BODY_DYNAMIC) // Radius and physics type
 {
 	// Default values
 	mViewMatrix = glm::mat4(1.0f); // Identity matrix
@@ -37,7 +37,6 @@ Camera::Camera() // Constructor
 	mFieldOfViewX = 90.0f;
 	mAspectRatio = 4 / 3;
 
-	PhysicsBody& physicsBody = getPhysicsBody();
 	mNearClippingDistance = 0.05f;
 	mFarClippingPlaneDistance = 100.0f; // 100 meters max
 }

@@ -7,3 +7,5 @@
 - I added an int cast in LuaIntf's LuaState.h at line 133 AND line 591 to shush warnings about conversion. Hopefully LuaIntf will fix this!
 - I added an int 
 - I made CppBindClass' private interface public in CppBindClass.h at line 417 because of errors. Hopefully LuaIntf will fix this!
+
+- Right now, gravity is always 0.
