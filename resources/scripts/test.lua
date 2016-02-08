@@ -12,6 +12,8 @@ local function foo()
 	
 	game:setGraphicsBackgroundColor(Vec3(0, 0, 1))
 	
+	Utils.logprint("Engine version: " .. Engine.Version)
+	
 	local resourceManager = game:getResourceManager()
 	local inputManager = game:getInputManager()
 	local entityManager = game:getEntityManager()

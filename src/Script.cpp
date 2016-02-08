@@ -184,6 +184,12 @@ void Script::bindInterface(Game& game)
 	.endClass();
 
 
+	LuaBinding(luaState).beginModule("Engine")
+		.addConstant("Name", ENGINE_NAME)
+		.addConstant("Version", ENGINE_VERSION)
+	.endModule();
+
+
 	LuaBinding(luaState).beginClass<ResourceManager>("ResourceManager")
 		.addFunction("addShader",
 			// Specify which overload we want. Lua doesn't support functions with same names, though.
