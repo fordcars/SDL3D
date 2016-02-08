@@ -141,7 +141,7 @@ void PhysicsBody::init()
 
 	mDensity = 1.0f;
 	mFriction = 1.0f;
-	mRestitution = 0.1f;
+	mRestitution = 0.0f;
 	mWorldFriction = 1.0f;
 
 	mScaling = glm::vec3(1.0f);
