@@ -13,7 +13,7 @@ set outputFileExtension=.dds
 set batDirectory=%~dp0
 set sourcePath=%~1
 
-if [%sourcePath%]==[] (
+if ["%sourcePath%"]==[] (
 	echo You did not specify an input file! Try dragging one on this batch script
 	goto quit
 )
@@ -21,7 +21,7 @@ if [%sourcePath%]==[] (
 REM Get the filename (without the extension and the rest of the path)
 REM http://stackoverflow.com/questions/9252980/how-to-split-the-filename-from-a-full-path-in-batch
 REM http://stackoverflow.com/questions/3215501/batch-remove-file-extension
-for %%A in (%sourcePath%) do (
+for %%A in ("%sourcePath%") do (
 	set sourceFilename=%%~nA
 	set sourceFileExtension=%%~xA
 )
