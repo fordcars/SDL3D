@@ -10,3 +10,4 @@
 
 - Right now, gravity is always 0.
 - All objects must have positions, u/v coords and normals and in same numbers!
+- When using Blender (or others?) for making 3D models, make sure you generate U/V coords per mesh, not multiple meshes at a time!! This will generate the non-coherent object data error. Also, don't join objects!!
