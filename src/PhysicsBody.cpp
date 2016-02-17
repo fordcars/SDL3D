@@ -153,7 +153,7 @@ void PhysicsBody::init()
 // Static
 // Gives ownership
 // Circular shapes have 1 shape
-// Rotation and scaling are important here
+// Rotation and scaling are important here, they can't change dynamically so it's good
 PhysicsBody::shapeVector PhysicsBody::createShapesFromObjectGeometry(const ObjectGeometry& objectGeometry,
 	bool generateCircular, float pixelsPerMeter, glm::vec3 rotation, glm::vec3 scaling)
 {
@@ -390,7 +390,7 @@ float PhysicsBody::getCircleRadiusFromPoints(B2Vec2Vector points2D, b2Vec2 centr
 
 	for(b2Vec2 point : points2D)
 	{
-		float distanceSquared = (point.x * point.x) + (point.y * point.y);
+		float distanceSquared = getDistanceBetweenPointsSquared(point, centroid);
 
 		if(distanceSquared > farthestDistanceSquared)
 			farthestDistanceSquared = distanceSquared;
@@ -1056,10 +1056,11 @@ void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* came
 	{
 		// One shape per circular shape
 		b2CircleShape* circle = static_cast<b2CircleShape*>(mShapes[0].get());
+		glm::vec2 circleCenter = B2Vec2ToGlm(circle->m_p);
 
 		// Translation is done in the model matrix
 		// Put the circle on the object geometry shape (relative to the object geometry)
-		vec2Vector vertices2D = getCircleVertices(getShapesLocal2DCenter(), circle->m_radius, 10);
+		vec2Vector vertices2D = getCircleVertices(circleCenter, circle->m_radius, 10);
 
 		for(auto &vertex2D : vertices2D)
 		{
@@ -1074,7 +1075,9 @@ void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* came
 		// Front is the first element
 		// We need to add this otherwise we see a hole in the circle
 		localPositions3D.push_back(localPositions3D.front());
-		localPositions3D.push_back(glm::vec3(0.0f)); // Add the center of the circle
+		localPositions3D.push_back(glm::vec3(circleCenter.x * PHYSICS_PIXELS_PER_METER,
+			0.0f,
+			circleCenter.y * PHYSICS_PIXELS_PER_METER)); // Add the center of the circle
 
 		drawMode = GL_LINE_STRIP;
 	} else

@@ -130,6 +130,16 @@ private:
 		return (vector.x * vector.x) + (vector.y * vector.y);
 	}
 
+	static inline float getDistanceBetweenPointsSquared(const b2Vec2& point1, const b2Vec2& point2)
+	{
+		return (point2.x - point1.x)*(point2.x - point1.x) + (point2.y - point1.y)*(point2.y - point1.y);
+	}
+
+	static inline float getDistanceBetweenPoints(const b2Vec2& point1, const b2Vec2& point2)
+	{
+		return sqrt((point2.x - point1.x)*(point2.x - point1.x) + (point2.y - point1.y)*(point2.y - point1.y));
+	}
+
 	fixtureDefVector generateFixtureDefsAndSetBodyDef(b2BodyDef& bodyDef);
 	bool updateWorldBodyFixtures();
 
