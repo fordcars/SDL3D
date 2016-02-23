@@ -35,7 +35,7 @@ private:
 
 	// SDL_mixer needs pointers
 	// Smells like C!
-	Mix_Music* mMusicPointer;
+	Mix_Music* mMusicPointer; // Either this pointer or the chunk pointer is always defined (after load()), no need for checks!
 	// The music that last played, might still be playing or not
 	static Mix_Music* mLastPlayedMusic; // Only used for music, don't clear this!!!
 

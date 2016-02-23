@@ -78,11 +78,13 @@ void Camera::setAspectRatio(float aspectRatio)
 	mAspectRatio = aspectRatio;
 }
 
+// In meters, as always
 void Camera::setNearClippingDistance(float distance)
 {
 	mNearClippingDistance = distance;
 }
 
+// In meters, as always
 float Camera::getNearClippingDistance()
 {
 	return mNearClippingDistance;
