@@ -970,8 +970,6 @@ glm::mat4 PhysicsBody::generateModelMatrix()
 // timeStep in seconds, like Box2D (speed is in meters/seconds normally)
 void PhysicsBody::step(float timeStep)
 {
-	mPosition.y += mVelocity.y * timeStep; // Add the missing velocity
-
 	if(mWorldBody)
 	{
 		if(mWorldFriction != 0.0f)
@@ -1029,6 +1027,12 @@ void PhysicsBody::step(float timeStep)
 			mWorldBody->SetTransform(mWorldBody->GetPosition(), angleRadians);
 		}
 	} // Ignore if it wasn't added, it might be a body of type Ignored!
+
+	if(mType == PHYSICS_BODY_IGNORED)
+		// Add the missing velocity, time step is in seconds! Velocity is in meters per second.
+		mPosition += mVelocity * timeStep; // Do full movement if it is ignored, we are nice!
+	else
+		mPosition.y += mVelocity.y * timeStep;
 }
 
 // A quick an easy renderer for debugging

@@ -66,9 +66,9 @@
 // Physics
 #define PHYSICS_PIXELS_PER_METER 10.0f // Float
 
-#define PHYSICS_BODY_IGNORED 0    // Ignored by the physics engine
+#define PHYSICS_BODY_IGNORED 0    // Ignored by the physics engine, still moves 'cus we are nice
 #define PHYSICS_BODY_STATIC 1     // Does not move, collides
-#define PHYSICS_BODY_KINEMATIC 2  // Moves but does not collide or respond to forces
+#define PHYSICS_BODY_KINEMATIC 2  // Moves and collides, but does not move according to those collisions
 #define PHYSICS_BODY_DYNAMIC 3    // Moves and collides like in real life
 
 // Constants

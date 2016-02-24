@@ -14,3 +14,5 @@
 
 - Everything is in meters/degrees!
 - Model data, however, has to be in pixels, not meters!
+
+- gameStep() in Lua is normally called multiple times per frame
