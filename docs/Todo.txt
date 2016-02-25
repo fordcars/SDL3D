@@ -1,5 +1,7 @@
 -In PhysicsBody when generating model matrix, make the Box2D angle the actual angle instead of relative to the current rotation of the other axes?
 
+- Lua timer!
+
 - Have a renderAllDebugShapesWithCoords() to relieve the work load from Lua (and usless redraws!)
 -Sometimes stays alive for a few seconds (like 10) after quitting?
 -In PhysicsBody, render debug shapes at the center of the objects themselves instead of relative to object geometry?
