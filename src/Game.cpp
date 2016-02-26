@@ -368,8 +368,8 @@ bool Game::init()
 		return false;
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, GRAPHICS_OPENGL_MAJOR_VERSION);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, GRAPHICS_OPENGL_MINOR_VERSION);
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -383,6 +383,14 @@ bool Game::init()
 	}
 
 	mMainContext = SDL_GL_CreateContext(mMainWindow); // Create OpenGL context!
+
+	if(!mMainContext)
+	{
+		Utils::CRASH_FROM_SDL("Unable to create OpenGL context! This game requries OpenGL " +
+			std::to_string(GRAPHICS_OPENGL_MAJOR_VERSION) + "." + std::to_string(GRAPHICS_OPENGL_MINOR_VERSION) +
+			". Does your system support it? Try updating your graphics drivers!");
+		return false;
+	}
 
 	SDL_GL_SetSwapInterval(1); // Kind of VSync?
 
@@ -398,7 +406,7 @@ bool Game::init()
 	glVersion = "Graphics: " + glVersion;
 	Utils::LOGPRINT(glVersion);
 	
-	if(!checkCompability()) // Logs errors if it is not compatible
+	if(!checkCompability()) // This function logs errors
 	{
 		Utils::CRASH("System not compatible, cancelling init.");
 		return false;
