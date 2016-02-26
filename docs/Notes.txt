@@ -1,4 +1,4 @@
-- The shaders are encoded in ASCII (or UTF-8, using the first bits)
+- It is good practice to encode shaders as ANSI to support different graphics implementations
 - If there are holes in models, click the "invert normals" button in your 3D modeler.
 
 - Models are loaded as objects, not groups (.obj).
