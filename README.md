@@ -6,7 +6,11 @@ This is a very simple 3D Lua-scriptable game engine using SDL and OpenGL.
 Features
 --------
 
-- Todoooo after Lua API
+- 3D rendering with OpenGL
+- Uses SDL
+- SDL_mixer sounds
+- Box2D physics
+- Lua API
 
 Compiling
 --------
