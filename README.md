@@ -13,6 +13,12 @@ Compiling
 
 Check out Compiling.txt.
 
+Roadmap
+--------
+
+- Proper rendering engine (render using material files)
+- 3D physics?
+
 Support
 --------
 
