@@ -173,9 +173,13 @@ void Script::bindInterface(Game& game)
 	LuaBinding(luaState).beginClass<Game>("Game")
 		.addFunction("quit", &Game::quit) // &Game::quit returns quit()'s address
 		.addFunction("setName", &Game::setName)
+		.addFunction("getName", &Game::getName)
 		.addFunction("setSize", &Game::setSize)
+		.addFunction("getSize", &Game::getSize)
+
 		.addFunction("setMaxFramesPerSecond", &Game::setMaxFramesPerSecond)
 		.addFunction("setMainWindowPosition", &Game::setMainWindowPosition)
+		.addFunction("getMainWindowPosition", &Game::getMainWindowPosition)
 		.addFunction("reCenterMainWindow", &Game::reCenterMainWindow)
 
 		.addFunction("setGraphicsBackgroundColor", &Game::setGraphicsBackgroundColor)

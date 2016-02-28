@@ -86,15 +86,12 @@ public:
 	// Useful for scripting and other things
 	void setName(const std::string& name);
 	std::string getName();
-
 	void setSize(glm::ivec2 size);
 	glm::vec2 getSize();
 
 	void setMaxFramesPerSecond(int maxFPS);
-
 	void setMainWindowPosition(glm::ivec2 position);
 	glm::ivec2 getMainWindowPosition();
-
 	void reCenterMainWindow();
 
 	void setGraphicsBackgroundColor(glm::vec3 color);
