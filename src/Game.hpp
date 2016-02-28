@@ -35,8 +35,7 @@ private:
 	std::string mName;
 	std::string mLogFile;
 
-	int mWidth;
-	int mHeight;
+	glm::ivec2 mSize;
 	int mMaxFramesPerSecond;
 	
 	int mLastFrameTime; // Time at last frame
@@ -86,9 +85,16 @@ public:
 
 	// Useful for scripting and other things
 	void setName(const std::string& name);
-	void setSize(int width, int height);
+	std::string getName();
+
+	void setSize(glm::ivec2 size);
+	glm::vec2 getSize();
+
 	void setMaxFramesPerSecond(int maxFPS);
-	void setMainWindowPosition(int x, int y);
+
+	void setMainWindowPosition(glm::ivec2 position);
+	glm::ivec2 getMainWindowPosition();
+
 	void reCenterMainWindow();
 
 	void setGraphicsBackgroundColor(glm::vec3 color);

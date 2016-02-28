@@ -74,14 +74,14 @@ bool Script::clarifyError(const std::string& errorMessage)
 	if(errorMessage.find("bad argument #-2") != std::string::npos)
 	{
 		clarifiedError = true;
-		clarifiedErrorMessage = "We predict a function is returning an object of a non-binded class. If this is the case, this is a bug in this engine (!), please contact the developpers.";
+		clarifiedErrorMessage = "We suspect a function is returning an object of a non-binded class. If this is the case, this is a bug in this engine (!), please contact the developpers.";
 	}
 
 	// A module fonction is being called using the ':' syntax instead of the '.' syntax!
 	if(errorMessage.find("on bad self") != std::string::npos)
 	{
 		clarifiedError = true;
-		clarifiedErrorMessage = "We predict you are attempting to call a function that is not binded to an object using ':'. Please use the '.' syntax instead!";
+		clarifiedErrorMessage = "We suspect you are attempting to call a function that is not binded to an object using ':'. Please use the '.' syntax instead!";
 	}
 
 	if(clarifiedError)
@@ -552,6 +552,16 @@ void Script::bindInterface(Game& game)
 	.endModule();
 	
 	// Basic glm bindings
+	LuaBinding(luaState).beginClass<glm::ivec2>("IVec2") // Small glm::ivec2 binding
+		.addConstructor(LUA_ARGS(int, int))
+
+		.addVariable("x", &glm::ivec2::x) // Accessible in Lua using the '.' syntax
+		.addVariable("y", &glm::ivec2::y)
+
+		.addVariable("r", &glm::ivec2::r)
+		.addVariable("g", &glm::ivec2::g)
+	.endClass();
+
 	LuaBinding(luaState).beginClass<glm::vec2>("Vec2")
 		.addConstructor(LUA_ARGS(float, float))
 

@@ -49,8 +49,8 @@ Game::Game()
 {
 	mName = DEFAULT_GAME_NAME; // Copy string
 
-	mWidth = DEFAULT_GAME_WINDOW_WIDTH;
-	mHeight = DEFAULT_GAME_WINDOW_HEIGHT;
+	mSize.x = DEFAULT_GAME_WINDOW_WIDTH;
+	mSize.y = DEFAULT_GAME_WINDOW_HEIGHT;
 
 	// Limits the frames per second
 	// Time in miliseconds
@@ -159,7 +159,7 @@ bool Game::checkCompability()
 void Game::setupGraphics() // VAO and OpenGL options
 {
 	// Make sure the OpenGL context extends over the whole screen
-	glViewport(0, 0, mWidth, mHeight);
+	glViewport(0, 0, mSize.x, mSize.y);
 
 	GLuint vertexArrayID; // VAO - vertex aray object
 	glGenVertexArrays(1, &vertexArrayID);
@@ -267,7 +267,7 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 
 float Game::calculateAspectRatio()
 {
-	return (  static_cast<float>(mWidth) / static_cast<float>(mHeight)  );
+	return (  static_cast<float>(mSize.x) / static_cast<float>(mSize.y)  );
 }
 
 void Game::step(float divider) // Movement and all
@@ -374,7 +374,7 @@ bool Game::init()
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	mMainWindow = SDL_CreateWindow(mName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mWidth, mHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	mMainWindow = SDL_CreateWindow(mName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mSize.x, mSize.y, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	
 	if(!mMainWindow) // If the window failed to create, crash
 	{
@@ -450,19 +450,27 @@ void Game::setName(const std::string& name)
 	SDL_SetWindowTitle(mMainWindow, name.c_str());
 }
 
-// Sets the game's size
-void Game::setSize(int width, int height)
+std::string Game::getName()
 {
-	mWidth = width;
-	mHeight = height;
-	SDL_SetWindowSize(mMainWindow, width, height);
+	return mName;
+}
+
+// Sets the game's size (width and height)
+void Game::setSize(glm::ivec2 size)
+{
+	mSize = size;
+	SDL_SetWindowSize(mMainWindow, size.x, size.y);
 	
 	// Resize the OpenGL viewport
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, size.x, size.y);
 
 	// Update camera
-
 	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
+}
+
+glm::vec2 Game::getSize()
+{
+	return mSize;
 }
 
 void Game::setMaxFramesPerSecond(int maxFPS)
@@ -472,15 +480,24 @@ void Game::setMaxFramesPerSecond(int maxFPS)
 
 // Sets the game's main window position
 // The coords are the top left corner
-void Game::setMainWindowPosition(int x, int y)
+void Game::setMainWindowPosition(glm::ivec2 position)
 {
-	SDL_SetWindowPosition(mMainWindow, x, y);
+	SDL_SetWindowPosition(mMainWindow, position.x, position.y);
+}
+
+glm::ivec2 Game::getMainWindowPosition()
+{
+	int x = 0;
+	int y = 0;
+	SDL_GetWindowPosition(mMainWindow, &x, &y);
+
+	return glm::ivec2(x, y);
 }
 
 // Re-centers the game's main window on the first display
 void Game::reCenterMainWindow()
 {
-	setMainWindowPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+	setMainWindowPosition(glm::vec2(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED));
 }
 
 void Game::setGraphicsBackgroundColor(glm::vec3 color)
