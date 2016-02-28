@@ -471,7 +471,7 @@ void Game::setMaxFramesPerSecond(int maxFPS)
 }
 
 // Sets the game's main window position
-// The coords are the top 
+// The coords are the top left corner
 void Game::setMainWindowPosition(int x, int y)
 {
 	SDL_SetWindowPosition(mMainWindow, x, y);

@@ -19,6 +19,9 @@
 
 // The whole interface is defined here! This class has A LOT of dependencies!
 
+// Don't overuse static function binding (use a normal function binding instead) to avoid
+// confusing syntax ('.' instead of ':').
+
 // This class is a single script. A script can be multiple files, but this is Lua's job.
 // Happily, it looks like splitting the lua states per script, like here, is a good idea.
 // http://lua-users.org/lists/lua-l/2003-11/msg00011.html
