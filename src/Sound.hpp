@@ -54,13 +54,13 @@ public:
 	bool play(int numberOfLoops = 0);
 	bool isPlaying();
 
-	void halt();
+	bool halt();
 	void pause();
 	bool isPaused();
 	void resume();
 
-	bool fadeIn(int fadeTime, int loops = 0);
-	bool fadeOut(int fadeTime);
+	bool fadeIn(float fadeTime, int loops = 0);
+	bool fadeOut(float fadeTime);
 
 	void setVolume(int volume);
 	int getVolume();

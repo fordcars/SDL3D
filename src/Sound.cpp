@@ -184,8 +184,15 @@ bool Sound::isPlaying()
 }
 
 // Halts the sound. You will need to call play() to play the sound again.
-void Sound::halt()
+// Returns true on success
+bool Sound::halt()
 {
+	if(!isPlaying()) // If it's not playing
+	{
+		Utils::CRASH("Sound '" + mName + "' cannot be halted since it is not playing! Please play the song before trying to halt it.");
+		return false;
+	}
+
 	switch(mType)
 	{
 	case SOUND_MUSIC:
@@ -199,8 +206,10 @@ void Sound::halt()
 		break;
 
 	default:
-		break;
+		return false;
 	}
+
+	return true;
 }
 
 // Pausing can't fail, it will pause anything, including a halted sound.
@@ -271,15 +280,17 @@ void Sound::resume()
 	}
 }
 
-// Fade time in miliseconds
+// Fade time in seconds
 // Plays the sound (no need to call play())
 // If loops is -1, it will loop forever
-bool Sound::fadeIn(int fadeTime, int loops)
+bool Sound::fadeIn(float fadeTime, int loops)
 {
+	int fadeTimeInMS = static_cast<int>(fadeTime * 1000.0f); // Convert to miliseconds
+
 	switch(mType)
 	{
 	case SOUND_MUSIC:
-		if(Mix_FadeInMusic(mMusicPointer, loops, fadeTime) < 0)
+		if(Mix_FadeInMusic(mMusicPointer, loops, fadeTimeInMS) < 0)
 		{
 			Utils::CRASH_FROM_SDL("Failed to fade in for music sound '" + mName + "'!");
 			return false;
@@ -289,7 +300,7 @@ bool Sound::fadeIn(int fadeTime, int loops)
 		return true;
 
 	case SOUND_CHUNK:
-		if(Mix_FadeInChannel(mChunkChannel, mChunkPointer, loops, fadeTime) < 0)
+		if(Mix_FadeInChannel(mChunkChannel, mChunkPointer, loops, fadeTimeInMS) < 0)
 		{
 			Utils::CRASH_FROM_SDL("Failed to fade in for chunk sound '" + mName + "'!");
 			return false;
@@ -301,14 +312,22 @@ bool Sound::fadeIn(int fadeTime, int loops)
 	}
 }
 
-// In miliseconds
+// In seconds
 // When finished, halts the sound
-bool Sound::fadeOut(int fadeTime)
+bool Sound::fadeOut(float fadeTime)
 {
+	int fadeTimeInMS = static_cast<int>(fadeTime * 1000.0f); // Convert to miliseconds
+
+	if(!isPlaying()) // If it's not playing
+	{
+		Utils::CRASH("Sound '" + mName + "' cannot be faded out since it is not playing! Please play the song before trying to fade out.");
+		return false;
+	}
+
 	switch(mType)
 	{
 	case SOUND_MUSIC:
-		if(Mix_FadeOutMusic(fadeTime) == 0) // Why SDL_mixer, WHY 0!
+		if(Mix_FadeOutMusic(fadeTimeInMS) == 0) // Why SDL_mixer, WHY 0!
 		{
 			// Failed
 			Utils::CRASH_FROM_SDL("Failed to fade out for music sound '" + mName + "'!");
@@ -317,7 +336,7 @@ bool Sound::fadeOut(int fadeTime)
 		return true;
 
 	case SOUND_CHUNK:
-		if(Mix_FadeOutChannel(mChunkChannel, fadeTime) == 0) // Oh, this is why
+		if(Mix_FadeOutChannel(mChunkChannel, fadeTimeInMS) == 0) // Oh, this is why
 		{
 			// Failed
 			Utils::CRASH_FROM_SDL("Failed to fade out for chunk sound '" + mName + "'!");

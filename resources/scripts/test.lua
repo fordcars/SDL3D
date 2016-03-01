@@ -37,7 +37,7 @@ local function foo()
 	resourceManager:addNamedSound("music", "texasradiofish_-_Funk_n_Jazz.ogg", SoundType.Music)
 	resourceManager:addSound("soundEffect.ogg", SoundType.Chunk)
 	
-	resourceManager:findSound("music"):fadeIn(10000, -1)
+	resourceManager:findSound("music"):fadeIn(10, -1)
 	
 	inputManager:registerKeys({KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
 		KeyCode.w, KeyCode.a, KeyCode.s, KeyCode.d, KeyCode.SPACE, KeyCode.LSHIFT, KeyCode.LCTRL, KeyCode.m})

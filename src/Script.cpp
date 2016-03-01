@@ -307,14 +307,14 @@ void Script::bindInterface(Game& game)
 
 	LuaBinding(luaState).beginClass<Sound>("Sound")
 		.addFunction("getName", &Sound::getName)
-		.addFunction("play", &Sound::play, LUA_ARGS(_def<int, 0>))
+		.addFunction("play", &Sound::play, LUA_ARGS(_def<int, 0>)) // Specify the loop argument is optional
 		.addFunction("isPlaying", &Sound::isPlaying)
 		.addFunction("halt", &Sound::halt)
 		.addFunction("pause", &Sound::pause)
 		.addFunction("isPaused", &Sound::isPaused)
 		.addFunction("resume", &Sound::resume)
 
-		.addFunction("fadeIn", &Sound::fadeIn, LUA_ARGS(int, _def<int, 0>))
+		.addFunction("fadeIn", &Sound::fadeIn, LUA_ARGS(float, _def<int, 0>)) // Specify the loop argument is optional
 		.addFunction("fadeOut", &Sound::fadeOut)
 
 		.addFunction("setVolume", &Sound::setVolume)
