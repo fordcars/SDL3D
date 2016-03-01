@@ -349,6 +349,7 @@ bool Sound::fadeOut(float fadeTime)
 	}
 }
 
+// Volume is between 0 to 128 (MIX_MAX_VOLUME)
 void Sound::setVolume(int volume)
 {
 	switch(mType)
