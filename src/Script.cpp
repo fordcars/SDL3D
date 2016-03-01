@@ -336,6 +336,8 @@ void Script::bindInterface(Game& game)
 		// No argument version of readData()
 		.addFunction("readData",
 			static_cast<std::vector<unsigned int>(ObjectGeometry::uintBuffer::*)() const> (&ObjectGeometry::uintBuffer::readData))
+		
+		.addFunction("modifyData", &ObjectGeometry::uintBuffer::modifyData)
 	.endClass();
 
 
@@ -346,6 +348,8 @@ void Script::bindInterface(Game& game)
 		// No argument version of readData()
 		.addFunction("readData",
 			static_cast<std::vector<glm::vec2>(ObjectGeometry::vec2Buffer::*)() const> (&ObjectGeometry::vec2Buffer::readData))
+
+		.addFunction("modifyData", &ObjectGeometry::vec2Buffer::modifyData)
 	.endClass();
 
 
@@ -356,6 +360,8 @@ void Script::bindInterface(Game& game)
 		// No argument version of readData()
 		.addFunction("readData",
 			static_cast<std::vector<glm::vec3>(ObjectGeometry::vec3Buffer::*)() const> (&ObjectGeometry::vec3Buffer::readData))
+		
+		.addFunction("modifyData", &ObjectGeometry::vec3Buffer::modifyData)
 	.endClass();
 
 
