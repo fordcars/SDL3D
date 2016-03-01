@@ -108,6 +108,7 @@ std::string ResourceManager::getFullScriptPath(const std::string& path)
 
 /////// Shaders ///////
 // Factory
+// I find that 'add' is a good verb since ResourceManager will TRACK the shader, but my opinion is subject to change.
 ResourceManager::shaderPointer
 	ResourceManager::addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
@@ -213,17 +214,7 @@ ResourceManager::objectGeometryGroup_pointer
 	std::string path = getFullResourcePath(objectFile);
 	objectGeometryGroup_pointer group(new ObjectGeometryGroup(name, path));
 
-	objectGeometryGroup_mapPair groupPair(name, group);
-	std::pair<objectGeometryGroup_map::iterator, bool> newlyAddedPair = mObjectGeometryGroupMap.insert(groupPair);
-	
-	if(newlyAddedPair.second == false) // It already exists in the map
-	{
-		std::string error = "Object geometry group '" + name + "' already exists!";
-		Utils::CRASH(error);
-		return newlyAddedPair.first->second;
-	}
-
-	return newlyAddedPair.first->second;
+	return addObjectGeometryGroup(group);
 }
 
 ResourceManager::objectGeometryGroup_pointer
@@ -231,6 +222,26 @@ ResourceManager::objectGeometryGroup_pointer
 {
 	std::string name = getBasename(objectFile);
 	return addObjectGeometryGroup(name, objectFile);
+}
+
+// Gets the name from the object geometry group pointer
+// This function lets us use Resourcemanager to keep track of custom-made object geometry groups
+ResourceManager::objectGeometryGroup_pointer
+	ResourceManager::addObjectGeometryGroup(objectGeometryGroup_pointer objectGeometryGroupPointer)
+{
+	std::string name = objectGeometryGroupPointer->getName();
+
+	objectGeometryGroup_mapPair groupPair(name, objectGeometryGroupPointer);
+	std::pair<objectGeometryGroup_map::iterator, bool> newlyAddedPair = mObjectGeometryGroupMap.insert(groupPair);
+
+	if(newlyAddedPair.second == false) // It already exists in the map
+	{
+		std::string error = "Object geometry group '" + name + "' already exists and cannot be added!";
+		Utils::CRASH(error);
+		return newlyAddedPair.first->second;
+	}
+
+	return newlyAddedPair.first->second;
 }
 
 ResourceManager::objectGeometryGroup_pointer

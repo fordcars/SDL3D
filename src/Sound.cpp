@@ -273,6 +273,7 @@ void Sound::resume()
 
 // Fade time in miliseconds
 // Plays the sound (no need to call play())
+// If loops is -1, it will loop forever
 bool Sound::fadeIn(int fadeTime, int loops)
 {
 	switch(mType)

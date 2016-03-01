@@ -100,6 +100,7 @@ public:
 
 	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& name, const std::string& objectFile);
 	objectGeometryGroup_pointer addObjectGeometryGroup(const std::string& objectFile);
+	objectGeometryGroup_pointer addObjectGeometryGroup(objectGeometryGroup_pointer objectGeometryGroupPointer);
 	objectGeometryGroup_pointer findObjectGeometryGroup(const std::string& objectName);
 	void clearObjectGeometryGroups();
 

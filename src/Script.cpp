@@ -200,6 +200,7 @@ void Script::bindInterface(Game& game)
 	LuaBinding(luaState).beginClass<ResourceManager>("ResourceManager")
 		.addFunction("addShader",
 			// Specify which overload we want. Lua doesn't support functions with same names, though.
+			// (ResourceManager::*) says this is a pointer to a function
 			static_cast<ResourceManager::shaderPointer(ResourceManager::*) (const std::string&, const std::string&)>
 				(&ResourceManager::addShader))
 
@@ -227,6 +228,10 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("addNamedObjectGeometryGroup",
 			static_cast<ResourceManager::objectGeometryGroup_pointer(ResourceManager::*) (const std::string&, const std::string&)>
+			(&ResourceManager::addObjectGeometryGroup))
+
+		.addFunction("addCustomObjectGeometryGroup",
+			static_cast<ResourceManager::objectGeometryGroup_pointer(ResourceManager::*) (ResourceManager::objectGeometryGroup_pointer)>
 			(&ResourceManager::addObjectGeometryGroup))
 
 		.addFunction("findObjectGeometryGroup", &ResourceManager::findObjectGeometryGroup)
@@ -263,6 +268,9 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginClass<ObjectGeometryGroup>("ObjectGeometryGroup")
+		// We can create a group to make custom objects from Lua
+		.addConstructor(LUA_SP(std::shared_ptr<ObjectGeometryGroup>), LUA_ARGS(std::string))
+
 		.addFunction("getName", &ObjectGeometryGroup::getName)
 		.addFunction("addObjectGeometry", &ObjectGeometryGroup::addObjectGeometry)
 		.addFunction("findObjectGeometry", &ObjectGeometryGroup::findObjectGeometry)
@@ -273,6 +281,7 @@ void Script::bindInterface(Game& game)
 	LuaBinding(luaState).beginClass<ObjectGeometry>("ObjectGeometry")
 		// You can create this type of object, but it will be stored as an std::shared_ptr
 		// You need to specify LUA_ARGS with a LUA_SP container
+		// There is a constructor like that we can construct or own geometry from Lua (without an object file).
 		.addConstructor(LUA_SP(std::shared_ptr<ObjectGeometry>), LUA_ARGS(
 			const std::string&,
 			const ObjectGeometry::uintVector&,
@@ -281,6 +290,18 @@ void Script::bindInterface(Game& game)
 			const ObjectGeometry::vec3Vector&))
 
 		.addFunction("getName", &ObjectGeometry::getName)
+		.addFunction("getIndexBuffer",
+			// To get the non-const version
+			static_cast<ObjectGeometry::uintBuffer&(ObjectGeometry::*) ()> (&ObjectGeometry::getIndexBuffer))
+
+		.addFunction("getPositionBuffer",
+			static_cast<ObjectGeometry::vec3Buffer&(ObjectGeometry::*) ()> (&ObjectGeometry::getPositionBuffer))
+
+		.addFunction("getUVBuffer",
+			static_cast<ObjectGeometry::vec2Buffer&(ObjectGeometry::*) ()> (&ObjectGeometry::getUVBuffer))
+
+		.addFunction("getNormalBuffer",
+			static_cast<ObjectGeometry::vec3Buffer&(ObjectGeometry::*) ()> (&ObjectGeometry::getNormalBuffer))
 	.endClass();
 
 
