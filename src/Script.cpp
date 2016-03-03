@@ -330,8 +330,10 @@ void Script::bindInterface(Game& game)
 
 	// Bind a few useful GPUBuffers
 	LuaBinding(luaState).beginClass<ObjectGeometry::uintBuffer>("GPUBuffer_uint")
+		// We could of added a constructor, but I figured it would be pretty much useless, since we can't control
+		// how buffers are sent to shaders from Lua.
 		.addFunction("setMutableData", &ObjectGeometry::uintBuffer::setMutableData)
-		.addFunction("setImmutableData", &ObjectGeometry::uintBuffer::setImmutableData)
+		// Don't export setImmutableData since it would make the Lua API too heavy and complicated (bitwise combinations)
 
 		// No argument version of readData()
 		.addFunction("readData",
