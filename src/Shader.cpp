@@ -20,8 +20,6 @@
 #include <Shader.hpp>
 #include <Utils.hpp>
 
-#include <ResourceManager.hpp> // For getFileContents();
-
 // Takes the shader paths for better error logs
 Shader::Shader(const std::string& name,
 			   const std::string& vertexShaderPath,
