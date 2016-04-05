@@ -21,6 +21,8 @@
 // I am pretty sure constantly rebinding a buffer isn't too bad
 // Useful for using as an interface for other classes (retun this instead of writing an interface)
 
+// Every function that calls OpenGL stuff must call bind() first
+
 #ifndef GPU_BUFFER_HPP
 #define GPU_BUFFER_HPP
 
@@ -73,14 +75,14 @@ public:
 			other.bind();
 			glGetBufferParameteriv(other.mTarget, GL_BUFFER_STORAGE_FLAGS, &immutableFlags);
 			
-			setImmutableData(other.readData(), immutableFlags);
+			setImmutableData(other.read(), immutableFlags);
 		} else
 		{
 			GLint usage;
 			other.bind();
 			glGetBufferParameteriv(other.mTarget, GL_BUFFER_USAGE, &usage);
 
-			setMutableData(other.readData(), usage);
+			setMutableData(other.read(), usage);
 		}
 	}
 
@@ -130,13 +132,27 @@ public:
 		glBufferData(mTarget, sizeof(bufferDataType) * data.size(), data.data(), usage);
 	}
 
+	// Uses defaut usage, easier Lua binding have a function overload to do it
+	// instead of a default C++ argument (=value in parameter definition)
+	void setMutableData(const std::vector<bufferDataType>& data)
+	{
+		setMutableData(data, GL_DYNAMIC_DRAW); // Binding is done in there
+	}
+
 	void setImmutableData(const std::vector<bufferDataType>& data, GLenum immutableFlags) // immutableFlags being a bitwise operation
 	{
 		bind();
 		glBufferStorage(mTarget, sizeof(bufferDataType) * data.size(), data.data(), immutableFlags);
 	}
 
-	std::vector<bufferDataType> readData(GLintptr offset, GLsizeiptr size) const
+	// Easier Lua binding, see setMutableData(data)
+	void setImmutableData(const std::vector<bufferDataType>& data)
+	{
+		// Binding is done in there:
+		setImmutableData(data, GL_DYNAMIC_STORAGE_BIT); // Best flag I could find?
+	}
+
+	std::vector<bufferDataType> read(GLintptr offset, GLsizeiptr size) const
 	{
 		bind();
 		std::vector<bufferDataType> data(size / sizeof(bufferDataType)); // Allocate
@@ -146,17 +162,19 @@ public:
 	}
 
 	// Read all of the data
-	std::vector<bufferDataType> readData() const
+	std::vector<bufferDataType> read() const
 	{
-		return readData(0, getSize());
+		return read(0, getSize());
 	}
 
 	// If the buffer is immutable, make sure you gave the right immutableFlags to make it changeable
-	void modifyData(GLintptr offset, const std::vector<bufferDataType>& data)
+	// Will replace the bytes starting at offset
+	void modify(GLintptr offset, const std::vector<bufferDataType>& data)
 	{
 		bind();
 		glBufferSubData(mTarget, offset, sizeof(bufferDataType) * data.size(), data.data());
 	}
+
 };
 
 #endif /* GPU_BUFFER_HPP */

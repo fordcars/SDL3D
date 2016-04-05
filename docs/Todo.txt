@@ -1,3 +1,7 @@
+-Fix uninitialized read in misc/FunctionVisualizer/resources/mainBUGGED.lua
+
+-To make it faster, use delta instead of multiple steps per frame?
+
 -In PhysicsBody when generating model matrix, make the Box2D angle the actual angle instead of relative to the current rotation of the other axes?
 
 - Lua timer!
@@ -10,6 +14,8 @@
 -Give lua access to gravity and have projection instead of hardcoded coords for 2D physics?
 
 -Write a template container and keep those instances instead of a bunch of maps in ResourceManager. Add the ability to duplicate resources in this container!
+
+-Make physics faster by having less steps per frame.
 
 -USE UNIFORM BLOCK FOR LIGHTS?
 -Give lightSSSS to shader + don't care about lights that are too far away

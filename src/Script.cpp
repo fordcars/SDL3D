@@ -332,38 +332,57 @@ void Script::bindInterface(Game& game)
 	LuaBinding(luaState).beginClass<ObjectGeometry::uintBuffer>("GPUBuffer_uint")
 		// We could of added a constructor, but I figured it would be pretty much useless, since we can't control
 		// how buffers are sent to shaders from Lua.
-		.addFunction("setMutableData", &ObjectGeometry::uintBuffer::setMutableData)
-		// Don't export setImmutableData since it would make the Lua API too heavy and complicated (bitwise combinations)
 
-		// No argument version of readData()
-		.addFunction("readData",
-			static_cast<std::vector<unsigned int>(ObjectGeometry::uintBuffer::*)() const> (&ObjectGeometry::uintBuffer::readData))
+		// Simplified 1-argument versions of setMutableData and setImmutableData
+		.addFunction("setMutableData",
+			static_cast<void (ObjectGeometry::uintBuffer::*)(const std::vector<unsigned int>&)>
+			(&ObjectGeometry::uintBuffer::setMutableData))
+
+		.addFunction("setImmutableData",
+			static_cast<void (ObjectGeometry::uintBuffer::*)(const std::vector<unsigned int>&)>
+			(&ObjectGeometry::uintBuffer::setImmutableData))
+
+		// No argument version of read()
+		.addFunction("read",
+			static_cast<std::vector<unsigned int>(ObjectGeometry::uintBuffer::*)() const> (&ObjectGeometry::uintBuffer::read))
 		
-		.addFunction("modifyData", &ObjectGeometry::uintBuffer::modifyData)
+		.addFunction("modify", &ObjectGeometry::uintBuffer::modify)
 	.endClass();
 
 
 	LuaBinding(luaState).beginClass<ObjectGeometry::vec2Buffer>("GPUBuffer_vec2")
-		.addFunction("setMutableData", &ObjectGeometry::vec2Buffer::setMutableData)
-		.addFunction("setImmutableData", &ObjectGeometry::vec2Buffer::setImmutableData)
+		// Simplified 1-argument versions of setMutableData and setImmutableData
+		.addFunction("setMutableData",
+			static_cast<void (ObjectGeometry::vec2Buffer::*)(const std::vector<glm::vec2>&)>
+			(&ObjectGeometry::vec2Buffer::setMutableData))
+
+		.addFunction("setImmutableData",
+			static_cast<void (ObjectGeometry::vec2Buffer::*)(const std::vector<glm::vec2>&)>
+			(&ObjectGeometry::vec2Buffer::setImmutableData))
 
 		// No argument version of readData()
 		.addFunction("readData",
-			static_cast<std::vector<glm::vec2>(ObjectGeometry::vec2Buffer::*)() const> (&ObjectGeometry::vec2Buffer::readData))
+			static_cast<std::vector<glm::vec2>(ObjectGeometry::vec2Buffer::*)() const> (&ObjectGeometry::vec2Buffer::read))
 
-		.addFunction("modifyData", &ObjectGeometry::vec2Buffer::modifyData)
+		.addFunction("modifyData", &ObjectGeometry::vec2Buffer::modify)
 	.endClass();
 
 
 	LuaBinding(luaState).beginClass<ObjectGeometry::vec3Buffer>("GPUBuffer_vec3")
-		.addFunction("setMutableData", &ObjectGeometry::vec3Buffer::setMutableData)
-		.addFunction("setImmutableData", &ObjectGeometry::vec3Buffer::setImmutableData)
+		// Simplified 1-argument versions of setMutableData and setImmutableData
+		.addFunction("setMutableData",
+			static_cast<void (ObjectGeometry::vec3Buffer::*)(const std::vector<glm::vec3>&)>
+			(&ObjectGeometry::vec3Buffer::setMutableData))
+
+		.addFunction("setImmutableData",
+			static_cast<void (ObjectGeometry::vec3Buffer::*)(const std::vector<glm::vec3>&)>
+			(&ObjectGeometry::vec3Buffer::setImmutableData))
 
 		// No argument version of readData()
 		.addFunction("readData",
-			static_cast<std::vector<glm::vec3>(ObjectGeometry::vec3Buffer::*)() const> (&ObjectGeometry::vec3Buffer::readData))
+			static_cast<std::vector<glm::vec3>(ObjectGeometry::vec3Buffer::*)() const> (&ObjectGeometry::vec3Buffer::read))
 		
-		.addFunction("modifyData", &ObjectGeometry::vec3Buffer::modifyData)
+		.addFunction("modifyData", &ObjectGeometry::vec3Buffer::modify)
 	.endClass();
 
 

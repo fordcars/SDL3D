@@ -41,7 +41,7 @@ public:
 	~InputManager();
 	void registerKey(int sdlKey);
 	void registerKeys(const keyVector& keys);
-	bool isKeyPressed(const int sdlKey);
+	bool isKeyPressed(int sdlKey);
 
 	void updateKeyByEvent(SDL_Event event);
 };

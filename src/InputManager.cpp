@@ -51,7 +51,7 @@ void InputManager::registerKeys(const keyVector& keys)
 		registerKey(key);
 }
 
-bool InputManager::isKeyPressed(const int sdlKey)
+bool InputManager::isKeyPressed(int sdlKey)
 {
 	sdlKeyMap::const_iterator got = mKeys.find(sdlKey);
 

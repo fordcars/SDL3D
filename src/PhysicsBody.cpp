@@ -236,8 +236,8 @@ PhysicsBody::shapeUniquePointer PhysicsBody::createShapesFromRadius(float radius
 PhysicsBody::B2Vec2Vector PhysicsBody::get2DObjectGeometryCoords(const ObjectGeometry& objectGeometry,
 	float pixelsPerMeter, glm::vec3 rotation, glm::vec3 scaling)
 {
-	ObjectGeometry::uintVector indices = objectGeometry.getIndexBuffer().readData();
-	ObjectGeometry::vec3Vector positions3D = objectGeometry.getPositionBuffer().readData();
+	ObjectGeometry::uintVector indices = objectGeometry.getIndexBuffer().read();
+	ObjectGeometry::vec3Vector positions3D = objectGeometry.getPositionBuffer().read();
 
 	// generate a matrix so we can easily have rotation and scaling
 	glm::mat4 matrix = generateModelMatrix(glm::vec3(0.0f), rotation, scaling / pixelsPerMeter);
@@ -885,8 +885,8 @@ glm::vec3 PhysicsBody::getShapesLocal3DCenter() const
 
 		if(mObjectGeometry)
 		{
-			ObjectGeometry::uintVector indices = mObjectGeometry->getIndexBuffer().readData();
-			ObjectGeometry::vec3Vector positions3D = mObjectGeometry->getPositionBuffer().readData();
+			ObjectGeometry::uintVector indices = mObjectGeometry->getIndexBuffer().read();
+			ObjectGeometry::vec3Vector positions3D = mObjectGeometry->getPositionBuffer().read();
 
 			std::size_t indexCount = indices.size();
 													  // Convert polygons to 2D
