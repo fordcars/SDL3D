@@ -49,6 +49,7 @@ Camera& EntityManager::getGameCamera()
 	return mGameCamera;
 }
 
+// Returns false on failure
 bool EntityManager::addObject(objectPointer object) // Give it a shared pointer
 {
 	if(std::find(mObjects.begin(), mObjects.end(), object) == mObjects.end()) // Does not already exist
@@ -165,8 +166,8 @@ EntityManager::lightVector& EntityManager::getLights()
 	return mLights;
 }
 
+// Set the number of seconds elapsed per frame (will be under 0 most of the time)
 // Allows us to do slow motion!
-// In seconds
 void EntityManager::setPhysicsTimePerStep(float time)
 {
 	mPhysicsTimePerStep = time;

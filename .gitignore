@@ -5,6 +5,11 @@
 *.lo
 *.o
 *.a
+<<<<<<< HEAD
+=======
+*.obj
+
+>>>>>>> master
 
 # Executables
 *.exe
@@ -12,3 +17,5 @@
 *.app
 
 build/
+
+!resources/ # Since we ignore .obj files, we need to unignore those in the resources directory (3D objects)

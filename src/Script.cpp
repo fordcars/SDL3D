@@ -462,8 +462,6 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("setPhysicsTimePerStep", &EntityManager::setPhysicsTimePerStep)
 		.addFunction("getPhysicsTimePerStep", &EntityManager::getPhysicsTimePerStep)
-
-		.addFunction("getLights", &EntityManager::getLights)
 	.endClass();
 
 

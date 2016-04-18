@@ -1,6 +1,9 @@
 -Fix uninitialized read in misc/FunctionVisualizer/resources/mainBUGGED.lua
+-Add to Utils(?) a function to convert from pixels to meters for Lua
 
 -To make it faster, use delta instead of multiple steps per frame?
+
+-Definitely try to make it faster CPU wise. Also, when there are a lot of verticies, it slows down A LOT CPU side!
 
 -In PhysicsBody when generating model matrix, make the Box2D angle the actual angle instead of relative to the current rotation of the other axes?
 
