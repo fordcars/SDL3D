@@ -64,8 +64,7 @@ std::string ResourceManager::getBasename(const std::string& path)
 
 	// C++11 raw string literal, DELI is a random word I chose to delimit the string.
 	// A raw string is a string that does not have escape sequences, so we don't need to escape the back slashes, etc.
-	//  Syntax option basic to make sure we support most systems.
-	std::regex regex(R"DELI(^.*[\/\\])DELI", std::regex_constants::basic);
+	std::regex regex(R"DELI(^.*[\/\\])DELI", std::regex_constants::basic); // Syntax option basic to make sure we support most systems
 	bool isPath = std::regex_search(path, match, regex); // If this is false, it is simply a file
 
 	std::string file = "";

@@ -23,7 +23,7 @@
 // Coords: meters
 // Angles: degrees
 
-#include <Game.hpp> // Angled brakets ("<>") involve a more general search
+#include <Game.hpp> // Angled brakets (< >) involve a more general search
 
 #include <Utils.hpp>
 #include <SimpleTimer.hpp> // For game loop

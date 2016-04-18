@@ -19,3 +19,6 @@ VisualStudio:
 
 GNU:
 Run "make" in the build directory
+
+If you get an "error adding symbols: DSO missing from command line" error, you need to set the "LIBS" environment variable to "-ldl".
+So, you could do "LIBS=-ldl" and then "make" in the terminal.

@@ -58,7 +58,7 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 
 	std::size_t length = shaderCode.length();
 
-	if(length > std::numeric_limits<int>::max())
+	if(length > std::numeric_limits<int>max())
 	{
 		Utils::CRASH("Overflow! Shader at '" + shaderPath  + "' too long! How is this possible?!");
 		return 0;

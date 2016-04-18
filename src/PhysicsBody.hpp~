@@ -150,7 +150,7 @@ public:
 	PhysicsBody(const PhysicsBody& other);
 	~PhysicsBody();
 
-	void setObjectGeometry(constObjectGeometryPointer objectGeometry);
+	void PhysicsBody::setObjectGeometry(constObjectGeometryPointer objectGeometry);
 
 	bool calculateShapes();
 	bool calculateShapes(bool isCircularShape, glm::vec3 scaling);
