@@ -14,4 +14,4 @@
 
 build/
 
-!resources/ # Since we ignore .obj files, we need to unignore those in the resources directory (3D objects)
+!resources/* # Since we ignore .obj files, we need to unignore those in the resources directory (3D objects)
