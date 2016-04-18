@@ -5,11 +5,7 @@
 *.lo
 *.o
 *.a
-<<<<<<< HEAD
-=======
 *.obj
-
->>>>>>> master
 
 # Executables
 *.exe
