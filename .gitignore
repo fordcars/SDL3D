@@ -1,11 +1,11 @@
 # Files ignored by git
 
 # Compiled Object files
-*.slo
-*.lo
-*.o
-*.a
-*.obj
+lib/**/*.slo
+lib/**/*.lo
+lib/**/*.o
+lib/**/*.a
+lib/**/*.obj
 
 # Executables
 *.exe
@@ -13,5 +13,3 @@
 *.app
 
 build/
-
-!resources/*.obj # Since we ignore .obj files, we need to unignore those in the resources directory (3D objects)
