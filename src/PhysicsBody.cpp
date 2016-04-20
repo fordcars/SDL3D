@@ -265,7 +265,7 @@ PhysicsBody::B2Vec2Vector PhysicsBody::get2DObjectGeometryCoords(const ObjectGeo
 // Copies and returns a new vector
 // Uses p2t::Points for compability with poly2tri
 std::vector<p2t::Point> PhysicsBody::monotoneChainConvexHull(B2Vec2Vector points2D)
-{Utils::LOGPRINT(std::to_string(b2_linearSlop));
+{
 	int numberOfPoints = points2D.size(), hullIndex = 0; // THIS NEEDS TO BE AN INT (we need negative values!)
 	std::vector<p2t::Point> hull(2 * numberOfPoints); // *2 to make sure
 

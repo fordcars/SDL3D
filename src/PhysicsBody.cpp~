@@ -204,11 +204,6 @@ PhysicsBody::shapeVector PhysicsBody::createShapesFromObjectGeometry(const Objec
 				p2tToB2Vec2( *( triangle->GetPoint(0) ) ),
 				p2tToB2Vec2( *( triangle->GetPoint(1) ) ),
 				p2tToB2Vec2( *( triangle->GetPoint(2) ) )};
-Utils::LOGPRINT("");
-Utils::LOGPRINT(std::string("P1:") + std::to_string(trianglePoints[0].x) + ", " + std::to_string(trianglePoints[0].y));
-Utils::LOGPRINT(std::string("P2:") + std::to_string(trianglePoints[1].x) + ", " + std::to_string(trianglePoints[1].y));
-Utils::LOGPRINT(std::string("P3:") + std::to_string(trianglePoints[2].x) + ", " + std::to_string(trianglePoints[2].y));
-Utils::LOGPRINT("");
 
 			// Here, the vertices need to be counter-clockwise
 			// poly2tri outputs counter-clockwise triangles, so we are good
