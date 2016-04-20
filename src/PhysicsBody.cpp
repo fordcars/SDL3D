@@ -205,6 +205,8 @@ PhysicsBody::shapeVector PhysicsBody::createShapesFromObjectGeometry(const Objec
 				p2tToB2Vec2( *( triangle->GetPoint(1) ) ),
 				p2tToB2Vec2( *( triangle->GetPoint(2) ) )};
 
+			// Here, the vertices need to be counter-clockwise
+			// poly2tri outputs counter-clockwise triangles, so we are good
 			newShape->Set(trianglePoints.data(), trianglePoints.size());
 
 			shapes[i] = shapeUniquePointer(newShape);
@@ -263,7 +265,7 @@ PhysicsBody::B2Vec2Vector PhysicsBody::get2DObjectGeometryCoords(const ObjectGeo
 // Copies and returns a new vector
 // Uses p2t::Points for compability with poly2tri
 std::vector<p2t::Point> PhysicsBody::monotoneChainConvexHull(B2Vec2Vector points2D)
-{
+{Utils::LOGPRINT(std::to_string(b2_linearSlop));
 	int numberOfPoints = points2D.size(), hullIndex = 0; // THIS NEEDS TO BE AN INT (we need negative values!)
 	std::vector<p2t::Point> hull(2 * numberOfPoints); // *2 to make sure
 
@@ -310,7 +312,8 @@ std::vector<p2t::Point> PhysicsBody::monotoneChainConvexHull(B2Vec2Vector points
 
 					if(k != i) // Don't compare with the same point
 					{
-						if(distanceSquared(comparingPoint1, comparingPoint2) <= 0.005f * 0.005f)
+						if(distanceSquared(comparingPoint1, comparingPoint2) <=
+						PHYSICS_BODY_MIN_VERTEX_DISTANCE * PHYSICS_BODY_MIN_VERTEX_DISTANCE)
 						{
 							hull.erase(hull.begin() + k); // Erase one of them
 							length--;

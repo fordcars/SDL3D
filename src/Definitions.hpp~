@@ -77,7 +77,6 @@
 #define PHYSICS_BODY_DYNAMIC 3    // Moves and collides like in real life
 
 // The closest vertices can be. Box2D has this value at 0.05f, and poly2tri at anything but 0.
-// Vertices too close will be ignore by the physics engine.
 #define PHYSICS_BODY_MIN_VERTEX_DISTANCE 0.06f
 
 // Constants

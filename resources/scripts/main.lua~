@@ -31,8 +31,8 @@ function gameStep()
 	local buildingPosition = test.building:getPhysicsBody():getPosition()
 	test.building:getPhysicsBody():setPosition(Vec3(buildingPosition.x, 0, 0))
 	
-	local rotation = test.firstMonkey:getPhysicsBody():getRotation()
-	test.firstMonkey:getPhysicsBody():setRotation(Vec3(rotation.x + 0.1, rotation.y, rotation.z))
+	--local rotation = test.firstMonkey:getPhysicsBody():getRotation()
+	--test.firstMonkey:getPhysicsBody():setRotation(Vec3(rotation.x + 0.1, rotation.y, rotation.z))
 end
 
 -- http://www.scs.ryerson.ca/~danziger/mth141/Handouts/Slides/projections.pdf

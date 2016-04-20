@@ -65,6 +65,10 @@ Game::Game()
 
 	mInitialized = false;
 	mQuitting = false;
+
+	// These will be set later
+	mMainWindow = nullptr;
+	mMainContext = nullptr;
 }
 
 Game::~Game() // Deconstructor
@@ -161,7 +165,7 @@ void Game::setupGraphics() // VAO and OpenGL options
 	// Make sure the OpenGL context extends over the whole screen
 	glViewport(0, 0, mSize.x, mSize.y);
 
-	GLuint vertexArrayID; // VAO - vertex aray object
+	GLuint vertexArrayID; // VAO - vertex array object
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
 }

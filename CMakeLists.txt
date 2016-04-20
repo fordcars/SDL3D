@@ -208,8 +208,9 @@ include_directories(
 # WIN32 is needed to make this a Win32 GUI application, MACOSX_BUNDLE
 # activates bundle mode on OS X and the last two things are our source
 # and header files this executable consists of.
+# We need to call this before linking libraries
 add_executable(
-	SDL3D
+	SDL3DMain # Different name than project name to support Eclipse
 	WIN32
 	MACOSX_BUNDLE
 	${SOURCES}
@@ -222,7 +223,7 @@ add_executable(
 
 # For all build configurations
 target_link_libraries(
-	SDL3D
+	SDL3DMain
 	${OPENGL_LIBRARIES}
 	${SDL2_LIBRARY}
 	${SDL2MAIN_LIBRARY}
@@ -235,19 +236,19 @@ target_link_libraries(
 
 # For debug only
 target_link_libraries(
-	SDL3D debug
+	SDL3DMain debug
 	${BOX2D_LIBRARY_DEBUG}
 )
 
 # For release and others
 target_link_libraries(
-	SDL3D optimized
+	SDL3DMain optimized
 	${BOX2D_LIBRARY_RELEASE}
 )
 
 # For final flags, make sure this is after all other libraries!
 target_link_libraries(
-	SDL3D
+	SDL3DMain
 	-ldl # To remove missing DSO symbol error, it has to be here (annoyingly)
 )
 
@@ -255,7 +256,7 @@ target_link_libraries(
 
 if(UNIX)
 	# Copy resources
-	add_custom_command(TARGET SDL3D POST_BUILD
+	add_custom_command(TARGET SDL3DMain POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${RESOURCE_DIR} ${LINUX_OUTPUT_DIR}/${RESOURCE_DIR_EXE})
 endif()
@@ -264,17 +265,17 @@ endif()
 if(WIN32)
 	# Copy SDL
 	# Copies the whole .dll directory
-	add_custom_command(TARGET SDL3D POST_BUILD
+	add_custom_command(TARGET SDL3DMain POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${SDL2_DIR}/lib/x86 ${VS_OUTPUT_DIR})
 	
 	# Copy Lua
-	add_custom_command(TARGET SDL3D POST_BUILD
+	add_custom_command(TARGET SDL3DMain POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${LUA_DIR}/lib/x86 ${VS_OUTPUT_DIR})
 	
 	# Copy resources
-	add_custom_command(TARGET SDL3D POST_BUILD
+	add_custom_command(TARGET SDL3DMain POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${RESOURCE_DIR} ${VS_OUTPUT_DIR}/${RESOURCE_DIR_EXE})
 endif()
@@ -284,19 +285,19 @@ set(FRAMEWORKIFY_SCRIPT tools/Frameworkify/frameworkify.py)
 
 if(APPLE)
 	# SDL
-	add_custom_command(TARGET SDL3D POST_BUILD
+	add_custom_command(TARGET SDL3DMain POST_BUILD
 		COMMAND python ${FRAMEWORKIFY_SCRIPT} ${XCODE_OUTPUT_DIR}
 		${SDL2_LIBRARY})
 	
 	# Lua
-	add_custom_command(TARGET SDL3D POST_BUILD
+	add_custom_command(TARGET SDL3DMain POST_BUILD
 		COMMAND python ${FRAMEWORKIFY_SCRIPT} ${XCODE_OUTPUT_DIR}
  		${LUA_LIBRARY})
 	
 	# Copy resources
 	# I think this works as long as the application is not a bundle, otherwise we have to change this. Info:
 	# http://stackoverflow.com/questions/27181879/cmake-copy-icon-to-bundle-resources
-	add_custom_command(TARGET SDL3D POST_BUILD
+	add_custom_command(TARGET SDL3DMain POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${RESOURCE_DIR} ${XCODE_OUTPUT_DIR}/${RESOURCE_DIR_EXE})
 endif()
