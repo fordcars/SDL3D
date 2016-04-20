@@ -1,7 +1,7 @@
 # Files ignored by git
 
 # Compiled Object files
-lib/**/*.slo
+lib/**/*.slo # First slash (/) to make sure we are ignoring the lib directory in the parent directory only
 lib/**/*.lo
 lib/**/*.o
 lib/**/*.a
