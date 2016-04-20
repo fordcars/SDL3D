@@ -17,7 +17,7 @@
 
 # This file based off: https://github.com/mitsuhiko/immersedcode/blob/master/2011/4/6/sdl13-intro.rst
 
-# TODO: Make it work with everything (Linux, compile with -ldl), make it funner to use.
+# TODO: Make it work with everything, make it funner to use.
 
 # NOTES: CMAKE_CURRENT_SOURCE_DIR is the root directory of the project.
 # Feel free to add include paths for static libraries if you want to.
@@ -102,16 +102,18 @@ set(HEADERS
 )
 
 # Things specific to certain compilers
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") # Checks the compiler, not the OS
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
 
 	SET(CMAKE_FIND_LIBRARY_PREFIXES "lib")
 	SET(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
 
-# Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+# As cool as Cmake is, it still has some quirks, MSVC is a predefined variable, so can't be checked as a string like the others 
+elseif(MSVC)
 	SET(CMAKE_CXX_FLAGS_DEBUG
 		"${CMAKE_CXX_FLAGS_DEBUG} /wd4100 /wd4127 /wd4189 /wd4512 /wd4702")
+		
+	# Repairs conflicts with Windows libraries, or tries to. If it doesn't work, building as release will work.
 	SET(CMAKE_EXE_LINKER_FLAGS /NODEFAULTLIB:\"LIBCMT, MSVCRT, MSVPRTD\")
 
 	SET(CMAKE_FIND_LIBRARY_PREFIXES "")
@@ -247,14 +249,17 @@ target_link_libraries(
 )
 
 # For final flags, make sure this is after all other libraries!
-target_link_libraries(
-	SDL3DMain
-	-ldl # To remove missing DSO symbol error, it has to be here (annoyingly)
-)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+	target_link_libraries(
+		SDL3DMain
+		-ldl # To remove missing DSO symbol error, it has to be here (annoyingly)
+	)
+endif()
+
 
 ### Executable is completed at this point ###
 
-if(UNIX)
+if(UNIX) # Checks the OS, not the compiler
 	# Copy resources
 	add_custom_command(TARGET SDL3DMain POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory

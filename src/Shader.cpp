@@ -58,7 +58,12 @@ GLuint Shader::compileShader(const std::string& shaderPath, const std::string& s
 
 	std::size_t length = shaderCode.length();
 
-	if(length > std::numeric_limits<int>::max())
+	// But why this weird syntax for a function? Because sometimes Visual Studio is a big pile of urgh.
+	// This weird (func)() syntax instead of func() syntax avoids having Visual Studio think max is one of its
+	// predefined macros (normally done in windows.h). Normally, you could define NOMINMAX before including a
+	// Windows header to solve the problem, but I could not identify where and which Windows header was
+	// defining min and max.
+	if(length > (std::numeric_limits<unsigned int>::max)() )
 	{
 		Utils::CRASH("Overflow! Shader at '" + shaderPath  + "' too long! How is this possible?!");
 		return 0;

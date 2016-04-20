@@ -25,9 +25,9 @@
 
 #include <Game.hpp> // Angled brakets ("<>") involve a more general search
 
+#include <Definitions.hpp> 
 #include <Utils.hpp>
 #include <SimpleTimer.hpp> // For game loop
-#include <Definitions.hpp>
 
 #include <LuaRef.h> // For getting references from scripts
 #include <SDL_mixer.h>

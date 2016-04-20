@@ -62,7 +62,6 @@ std::string ResourceManager::getBasename(const std::string& path)
 	}
 	
 	std::string file("");
-
 	std::size_t lastPosition = path.find_last_of("/\\"); // Search for the last slash or backslash (escaped here)
 	
 	if(lastPosition != std::string::npos) // Slash found
