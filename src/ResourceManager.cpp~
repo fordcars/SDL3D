@@ -54,28 +54,37 @@ ResourceManager::~ResourceManager()
 // Example: C:\Users\File.dll -> File
 std::string ResourceManager::getBasename(const std::string& path)
 {
-	// IF the string is empty, don't bother!
+	// If the string is empty, don't bother!
 	if(path.empty())
+	{
+		Utils::CRASH("Resource manager path is empy!");
 		return std::string();
+	}
+	
+	std::string file("");
 
-	// Get the file out of the path, example: thing.dll
-	// http://stackoverflow.com/questions/4154070/getting-just-the-file-name-from-full-path
-	std::smatch match;
+	std::size_t lastPosition = path.find_last_of("/\\"); // Search for the last slash or backslash (escaped here)
+	
+	if(lastPosition != std::string::npos) // Slash found
+	{
+		std::size_t firstFileNameChar = lastPosition + 1;
 
-	// C++11 raw string literal, DELI is a random word I chose to delimit the string.
-	// A raw string is a string that does not have escape sequences, so we don't need to escape the back slashes, etc.
-	std::regex regex(R"DELI(^.*[\/\\])DELI", std::regex_constants::basic); // Syntax option basic to make sure we support most systems
-	bool isPath = std::regex_search(path, match, regex); // If this is false, it is simply a file
+		if(firstFileNameChar > path.length()) // There are no characters after the slash
+		{
+			Utils::CRASH("Resource manager path '" + path + "' is a directory, not a file!");
+			return std::string();
+		}
 
-	std::string file = "";
-
-	if(isPath)
-		file = match.suffix().str();
-	else
-		// If it is not a path, it was already a file (or lets hope so)
+		file = path.substr(firstFileNameChar);
+	} else
+	{
+		// No slash in the path
 		file = path;
+	}
 
-	// Get the basename, example: thing
+		
+
+	// Get the basename, so remove the extension if it was present
 	std::size_t firstDot = file.find('.'); // Returns the index of the first found dot
 
 	if(firstDot == std::string::npos) // No dot in this file
@@ -150,7 +159,7 @@ ResourceManager::shaderPointer ResourceManager::findShader(const std::string& na
 
 	if(got==mShaderMap.end())
 	{
-		std::string error = "Shader '" + name + "' not found!";
+		std::string error = "Shader '" + name + "' cannot be found! Did you add it?";
 		Utils::CRASH(error);
 		return got->second; // Can't return nothing here!
 	}
@@ -196,7 +205,7 @@ ResourceManager::texturePointer ResourceManager::findTexture(const std::string& 
 
 	if(got == mTextureMap.end())
 	{
-		std::string error = "Texture '" + name + "' not found!";
+		std::string error = "Texture '" + name + "' cannot be found! Did you add it?";
 		Utils::CRASH(error);
 		return got->second;
 	}
@@ -254,7 +263,7 @@ ResourceManager::objectGeometryGroup_pointer
 
 	if(got == mObjectGeometryGroupMap.end()) // end() is past-the-end element iterator, so not found in the map!
 	{
-		std::string error = "Object geometry group '" + name + "' not found!";
+		std::string error = "Object geometry group '" + name + "' cannot be found! Did you add it?";
 		Utils::CRASH(error);
 		return got->second;
 	}
@@ -300,7 +309,7 @@ ResourceManager::scriptPointer ResourceManager::findScript(const std::string& na
 
 	if(got == mScriptMap.end())
 	{
-		std::string error = "Script '" + name + "' not found!";
+		std::string error = "Script '" + name + "' cannot be found! Did you add it?";
 		Utils::CRASH(error);
 		return got->second;
 	}
@@ -345,7 +354,7 @@ ResourceManager::soundPointer ResourceManager::findSound(const std::string& name
 
 	if(got == mSoundMap.end())
 	{
-		std::string error = "Sound '" + name + "' not found!";
+		std::string error = "Sound '" + name + "' cannot be found! Did you add it?";
 		Utils::CRASH(error);
 		return got->second;
 	}

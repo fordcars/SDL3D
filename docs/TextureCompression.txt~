@@ -1,0 +1,10 @@
+---- Windows ----
+Dependencies:
+-AMDCompressCLI
+-ImageMagik (which includes the required mogrify)
+
+Currently (as of 2015), AMDCompressCLI can't be ran from somewhere else than its installed directory. Because of this, you must paste its directory in SDL3D_DDS_Texture_Compressor.bat at the variable compressorExeDirectory.
+
+ImageMagik's mogrify works fine with running from different places, so when installing ImageMagik, select the option to have it included in your path environment variable (or you can do this manually).
+
+To run the script, simply drag the texture you wish to compress on the batch script. The compressed texture should appear in the same directory as the script.

@@ -5,6 +5,7 @@
 - When rendering mincraft scene, we see a lot of filtering artefacts since the textures are very close to each other (we shouldn't be using filtering at all when rendering Minecraft scenes). This has to do with the filtering when generating the mipmaps for the texture.
 
 - I added an int cast in LuaIntf's LuaState.h at line 133 AND line 591 to shush warnings about conversion. Hopefully LuaIntf will fix this!
+- I added an int 
 - I made CppBindClass' private interface public in CppBindClass.h at line 417 because of errors. Hopefully LuaIntf will fix this!
 
 - Right now, gravity is always 0.

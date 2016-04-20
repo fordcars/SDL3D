@@ -1,0 +1,2 @@
+Getting a bunch of undefined references to Lua when linking SDL3D!
+Ah ha! You probably did not compile Lua as C++! See Compiling.txt for informtation on how to compile it as C++ according to your system.

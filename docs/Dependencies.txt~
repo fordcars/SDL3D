@@ -1,7 +1,7 @@
 - SDL2
 - SDL2_mixer (SDL2 extension) and it's libraries for loading multiple formats
 - glm
-- Lua 5.1+ COMPILED AS C++
+- Lua 5.1+
 - Glad generated OpenGL loader
 - TinyObjLoader
 - Box2D
