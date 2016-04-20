@@ -81,7 +81,6 @@ std::string ResourceManager::getBasename(const std::string& path)
 		// No slash in the path
 		file = path;
 	}
-
 		
 
 	// Get the basename, so remove the extension if it was present
