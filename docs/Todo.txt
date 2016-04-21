@@ -1,5 +1,6 @@
 -Fix uninitialized read in misc/FunctionVisualizer/resources/mainBUGGED.lua
 -Add to Utils(?) a function to convert from pixels to meters for Lua
+-Fix weird crash on Windows that happens on a certain build a few seconds after you quit.
 
 -To make it faster, use delta instead of multiple steps per frame?
 
