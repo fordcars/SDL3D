@@ -1,15 +1,17 @@
 # Files ignored by git
 
 # Compiled Object files
-lib/**/*.slo # First slash (/) to make sure we are ignoring the lib directory in the parent directory only
-lib/**/*.lo
-lib/**/*.o
-lib/**/*.a
-lib/**/*.obj
+# A leading slash (/) will make sure we only ignore the files in the lib folder
+# present in the same directory as .gitignore.
+/lib/**/*.slo
+/lib/**/*.lo
+/lib/**/*.o
+/lib/**/*.a
+/lib/**/*.obj
 
 # Executables
 *.exe
 *.out
 *.app
 
-build/
+/build/

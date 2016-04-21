@@ -1,0 +1,7 @@
+C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/Testbed/CMakeFiles/Testbed.dir
+C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/HelloWorld/CMakeFiles/HelloWorld.dir
+C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/Box2D/CMakeFiles/Box2D.dir
+C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/glew/CMakeFiles/glew.dir
+C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/glfw/CMakeFiles/glfw.dir

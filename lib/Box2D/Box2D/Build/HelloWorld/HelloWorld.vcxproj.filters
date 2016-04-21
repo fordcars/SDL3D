@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="Windows-1252"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Carl\Documents\GitHub\SDL3D\lib\Box2D\HelloWorld\HelloWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Carl\Documents\GitHub\SDL3D\lib\Box2D\HelloWorld\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{66767884-0AF3-493D-898F-0E45E4AEE064}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

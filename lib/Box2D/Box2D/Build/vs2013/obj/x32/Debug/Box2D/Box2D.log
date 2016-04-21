@@ -1,0 +1,66 @@
+﻿  b2WheelJoint.cpp
+..\..\Box2D\Dynamics\Joints\b2WheelJoint.cpp(144): error C2220: warning treated as error - no 'object' file generated
+..\..\Box2D\Dynamics\Joints\b2WheelJoint.cpp(144): warning C4456: declaration of 'd' hides previous local declaration
+  ..\..\Box2D\Dynamics\Joints\b2WheelJoint.cpp(144): note: to simplify migration, consider the temporary use of /Wv:18 flag with the version of the compiler with which you used to build without warnings
+  ..\..\Box2D\Dynamics\Joints\b2WheelJoint.cpp(106): note: see declaration of 'd'
+  b2WeldJoint.cpp
+  b2RopeJoint.cpp
+  b2RevoluteJoint.cpp
+  b2PulleyJoint.cpp
+  b2PrismaticJoint.cpp
+  b2MouseJoint.cpp
+  b2MotorJoint.cpp
+  b2Joint.cpp
+  b2GearJoint.cpp
+  b2FrictionJoint.cpp
+  b2DistanceJoint.cpp
+  b2PolygonContact.cpp
+  b2PolygonAndCircleContact.cpp
+  b2EdgeAndPolygonContact.cpp
+  b2EdgeAndCircleContact.cpp
+  b2ContactSolver.cpp
+..\..\Box2D\Dynamics\Contacts\b2ContactSolver.cpp(348): error C2220: warning treated as error - no 'object' file generated
+..\..\Box2D\Dynamics\Contacts\b2ContactSolver.cpp(348): warning C4456: declaration of 'i' hides previous local declaration
+  ..\..\Box2D\Dynamics\Contacts\b2ContactSolver.cpp(348): note: to simplify migration, consider the temporary use of /Wv:18 flag with the version of the compiler with which you used to build without warnings
+  ..\..\Box2D\Dynamics\Contacts\b2ContactSolver.cpp(293): note: see declaration of 'i'
+  b2Contact.cpp
+  b2CircleContact.cpp
+  b2ChainAndPolygonContact.cpp
+  Generating Code...
+  Compiling...
+  b2ChainAndCircleContact.cpp
+  b2WorldCallbacks.cpp
+  b2World.cpp
+  b2Island.cpp
+..\..\Box2D\Dynamics\b2Island.cpp(315): error C2220: warning treated as error - no 'object' file generated
+..\..\Box2D\Dynamics\b2Island.cpp(315): warning C4456: declaration of 'i' hides previous local declaration
+  ..\..\Box2D\Dynamics\b2Island.cpp(315): note: to simplify migration, consider the temporary use of /Wv:18 flag with the version of the compiler with which you used to build without warnings
+  ..\..\Box2D\Dynamics\b2Island.cpp(310): note: see declaration of 'i'
+  b2Fixture.cpp
+  b2ContactManager.cpp
+  b2Body.cpp
+  b2Timer.cpp
+  b2StackAllocator.cpp
+  b2Settings.cpp
+  b2Math.cpp
+  b2Draw.cpp
+  b2BlockAllocator.cpp
+  b2PolygonShape.cpp
+  b2EdgeShape.cpp
+  b2CircleShape.cpp
+  b2ChainShape.cpp
+  b2TimeOfImpact.cpp
+  b2DynamicTree.cpp
+  b2Distance.cpp
+  Generating Code...
+  Compiling...
+  b2Collision.cpp
+  b2CollidePolygon.cpp
+  b2CollideEdge.cpp
+  b2CollideCircle.cpp
+..\..\Box2D\Collision\b2CollideCircle.cpp(141): error C2220: warning treated as error - no 'object' file generated
+..\..\Box2D\Collision\b2CollideCircle.cpp(141): warning C4456: declaration of 'separation' hides previous local declaration
+  ..\..\Box2D\Collision\b2CollideCircle.cpp(141): note: to simplify migration, consider the temporary use of /Wv:18 flag with the version of the compiler with which you used to build without warnings
+  ..\..\Box2D\Collision\b2CollideCircle.cpp(64): note: see declaration of 'separation'
+  b2BroadPhase.cpp
+  Generating Code...

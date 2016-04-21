@@ -1,0 +1,4 @@
+﻿  Checking Build System
+  CMake is re-running because C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/CMakeFiles/generate.stamp dependency file is missing.
+CUSTOMBUILD : CMake error : The source directory "C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D" does not appear to contain CMakeLists.txt.
+  Specify --help for usage, or press the help button on the CMake GUI.

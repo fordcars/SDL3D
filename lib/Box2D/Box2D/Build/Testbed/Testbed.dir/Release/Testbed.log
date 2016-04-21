@@ -1,0 +1,8 @@
+﻿C:\Program Files (x86)\MSBuild\14.0\bin\Microsoft.Common.CurrentVersion.targets(1610,5): warning : The referenced project 'C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/Box2D/Box2D.vcxproj' does not exist.
+C:\Program Files (x86)\MSBuild\14.0\bin\Microsoft.Common.CurrentVersion.targets(1610,5): warning : The referenced project 'C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/ZERO_CHECK.vcxproj' does not exist.
+C:\Program Files (x86)\MSBuild\14.0\bin\Microsoft.Common.CurrentVersion.targets(1610,5): warning : The referenced project 'C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/glew/glew.vcxproj' does not exist.
+C:\Program Files (x86)\MSBuild\14.0\bin\Microsoft.Common.CurrentVersion.targets(1610,5): warning : The referenced project 'C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Build/glfw/glfw.vcxproj' does not exist.
+  Building Custom Rule C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D/Testbed/CMakeLists.txt
+  CMake is re-running because C:\Users\Carl\Documents\GitHub\SDL3D\lib\Box2D\Build\Testbed\CMakeFiles\generate.stamp dependency file is missing.
+CUSTOMBUILD : CMake error : The source directory "C:/Users/Carl/Documents/GitHub/SDL3D/lib/Box2D" does not appear to contain CMakeLists.txt.
+  Specify --help for usage, or press the help button on the CMake GUI.
