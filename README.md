@@ -17,7 +17,7 @@ Platforms
 SDL3D is supported on multiple platforms, but should be compilable on on other platforms without too much work.
 
 - Windows
-- Linux (tested on Ubuntu)
+- Linux (tested on Ubuntu 14.04 LTS Desktop)
 
 Compiling
 --------
