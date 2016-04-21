@@ -14,4 +14,7 @@
 *.out
 *.app
 
+# Linux hidden temporary files (files ending with a tilde (~))
+*~
+
 /build/

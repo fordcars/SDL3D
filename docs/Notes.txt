@@ -15,3 +15,5 @@
 - Model data, however, has to be in pixels, not meters!
 
 - gameStep() in Lua is normally called multiple times per frame
+
+- The precision of the shapes of physics bodies for small shapes can vary if vertices are too close to each other.
