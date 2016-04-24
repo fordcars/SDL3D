@@ -442,6 +442,12 @@ PhysicsBody::vec2Vector PhysicsBody::getCircleVertices(glm::vec2 origin, float r
 
 // Static
 // Translation in meters and rotation in degrees as always
+// The order of transformations is:
+// 1- Scaling
+// 2- Rotation x
+// 3- Rotation y
+// 4- Rotation z
+// 5- Translation
 glm::mat4 PhysicsBody::generateModelMatrix(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scaling)
 {
 	glm::mat4 modelM;
