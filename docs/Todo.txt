@@ -1,6 +1,8 @@
--Fix uninitialized read in misc/FunctionVisualizer/resources/mainBUGGED.lua
+-Fix uninitialized read with textured object in misc/FunctionVisualizer/resources/mainBUGGED.lua
 -Add to Utils(?) a function to convert from pixels to meters for Lua
--Fix weird crash on Windows that happens on a certain build a few seconds after you quit. I think it is the same bug as below (game stays alive for a while after quitting) and I think it is due to the fact I am forgetting to quit cleanly a certain .dll.
+
+-Fix weird crash on Windows that happens sometimes. It happens a few seconds after you quit. I think it is the same bug as below (game stays alive for a while after quitting) and I think it is due to the fact I am forgetting to quit cleanly a certain .dll.
+-- Only happens when we load resources?
 
 -To make it faster, use delta instead of multiple steps per frame?
 

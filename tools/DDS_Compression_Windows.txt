@@ -6,3 +6,5 @@ Currently, to use AmdCompressCLI, you must specify it's path in the script. (che
 You must add ImageMagick path to your Path environment variable.
 
 To compress a texture, drag-and-drop it over the compression script.
+
+Note: It looks like when you try to compress .png textures that has only a few colors, AMDCompressCLI fails to load the image. This is probably due to some fancy .png optimization I don't know of. To avoid this problem, you can convert your .png to .bmp and compress that file instead.
