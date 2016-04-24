@@ -5,6 +5,7 @@
 -- Only happens when we load resources?
 
 -To make it faster, use delta instead of multiple steps per frame?
+-Give us a way to check if it is the first step of a frame in lua gameStep().
 
 -Definitely try to make it faster CPU wise. Also, when there are a lot of verticies, it slows down A LOT CPU side!
 
