@@ -4,7 +4,9 @@
 -Fix weird crash on Windows that happens sometimes. It happens a few seconds after you quit. I think it is the same bug as below (game stays alive for a while after quitting) and I think it is due to the fact I am forgetting to quit cleanly a certain .dll.
 -- Only happens when we load resources?
 
--To make it faster, use delta instead of multiple steps per frame?
+-Rename rotation to orientation, since it looks like rotation is an operation, and orientation is a state. What about scaling?
+
+-To make it faster, use delta instead of multiple steps per frame? Or nah?
 -Give us a way to check if it is the first step of a frame in lua gameStep().
 
 -Definitely try to make it faster CPU wise. Also, when there are a lot of verticies, it slows down A LOT CPU side!

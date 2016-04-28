@@ -452,28 +452,29 @@ glm::mat4 PhysicsBody::generateModelMatrix(glm::vec3 translation, glm::vec3 rota
 {
 	glm::mat4 modelM;
 
-	// Scaling * rotation * translation
+	// Obviously we have to multiply matrices in reverse of the transformation order we want
+	glm::mat4 translationM = glm::translate(glm::mat4(1.0f), translation * PHYSICS_PIXELS_PER_METER);
+
 	glm::vec3 rotationInRadians = glm::vec3(
 		degreesToRadians(rotation.x),
 		degreesToRadians(rotation.y),
 		degreesToRadians(rotation.z));
 
-	glm::mat4 translationM = glm::translate(glm::mat4(1.0f), translation * PHYSICS_PIXELS_PER_METER);
-
 	// Big chunk since we have to do x, y and z rotation manually
-	glm::mat4 rotationXM = glm::rotate(translationM,
-		rotationInRadians.x, // Glm takes radians
-		glm::vec3(1.0f, 0.0f, 0.0f));
+	// 
+	glm::mat4 rotationZM = glm::rotate(translationM,
+		rotationInRadians.z, // Glm takes radians
+		glm::vec3(0.0f, 0.0f, 1.0f));
 
-	glm::mat4 rotationXYM = glm::rotate(rotationXM,
+	glm::mat4 rotationZYM = glm::rotate(rotationZM,
 		rotationInRadians.y,
 		glm::vec3(0.0f, 1.0f, 0.0f));
 
-	glm::mat4 rotationXYZM = glm::rotate(rotationXYM,
-		rotationInRadians.z,
-		glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 rotationZYXM = glm::rotate(rotationZYM,
+		rotationInRadians.x,
+		glm::vec3(1.0f, 0.0f, 0.0f));
 
-	modelM = glm::scale(rotationXYZM, scaling);
+	modelM = glm::scale(rotationZYXM, scaling);
 
 	return modelM;
 }
