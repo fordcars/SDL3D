@@ -28,8 +28,8 @@
 
 #include <Box2D/Box2D.h>
 
-EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
-	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
+EntityManager::EntityManager(Game& game, glm::vec2 gravity, float physicsTimePerStep)
+	: mGame(game), mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
 {
 	// Defaults
 	mPhysicsTimePerStep = physicsTimePerStep;

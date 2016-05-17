@@ -37,4 +37,4 @@ public:
 	void render(const Camera& camera) override;
 };
 
-#endif /* SHADED_OBJECT_HPP */
+#endif // SHADED_OBJECT_HPP

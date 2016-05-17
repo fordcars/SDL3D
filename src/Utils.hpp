@@ -108,4 +108,4 @@ namespace Utils
 	}
 }
 
-#endif /* UTILS_HPP */
+#endif // UTILS_HPP

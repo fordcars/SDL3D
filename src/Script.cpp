@@ -125,6 +125,7 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 #include <ResourceManager.hpp>
 #include <InputManager.hpp>
 #include <EntityManager.hpp>
+#include <GraphicsManager.hpp>
 
 #include <Shader.hpp>
 #include <Texture.hpp>
@@ -182,12 +183,10 @@ void Script::bindInterface(Game& game)
 		.addFunction("getMainWindowPosition", &Game::getMainWindowPosition)
 		.addFunction("reCenterMainWindow", &Game::reCenterMainWindow)
 
-		.addFunction("setGraphicsBackgroundColor", &Game::setGraphicsBackgroundColor)
-		.addFunction("getGraphicsBackgroundColor", &Game::getGraphicsBackgroundColor)
-
 		.addFunction("getResourceManager", &Game::getResourceManager)
 		.addFunction("getInputManager", &Game::getInputManager)
 		.addFunction("getEntityManager", &Game::getEntityManager)
+		.addFunction("getGraphicsManager", &Game::getGraphicsManager)
 	.endClass();
 
 
@@ -581,6 +580,12 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("setOnState", &Light::setOnState)
 		.addFunction("isOn", &Light::isOn)
+	.endClass();
+
+
+	LuaBinding(luaState).beginClass<GraphicsManager>("GraphicsManager")
+		.addFunction("setBackgroundColor", &GraphicsManager::setBackgroundColor)
+		.addFunction("getBackgroundColor", &GraphicsManager::getBackgroundColor)
 	.endClass();
 
 

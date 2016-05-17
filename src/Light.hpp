@@ -39,16 +39,16 @@ public:
 	~Light() override;
 
 	void setDiffuseColor(glm::vec3 color);
-	glm::vec3 getDiffuseColor();
+	glm::vec3 getDiffuseColor() const;
 
 	void setSpecularColor(glm::vec3 color);
-	glm::vec3 getSpecularColor();
+	glm::vec3 getSpecularColor() const;
 
 	void setPower(float power);
-	float getPower();
+	float getPower() const;
 
 	void setOnState(bool onState);
-	bool isOn();
+	bool isOn() const;
 };
 
-#endif /* LIGHT_HPP */
+#endif // LIGHT_HPP

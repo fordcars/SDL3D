@@ -26,6 +26,7 @@
 #include <ResourceManager.hpp>
 #include <InputManager.hpp>
 #include <EntityManager.hpp>
+#include <GraphicsManager.hpp>
 
 #include <glm/glm.hpp>
 
@@ -41,8 +42,6 @@ private:
 	int mLastFrameTime; // Time at last frame
 	int mStepLength;
 
-	glm::vec3 mGraphicsBackgroundColor;
-
 	bool mInitialized; // Set to true after initializing
 	bool mQuitting; // If set to true, the game will quit at the end of the frame
 
@@ -52,10 +51,11 @@ private:
 
 	ResourceManager mResourceManager; // On stack, calls its constructor by itself and cleans (deconstructs) itself like magic.
 									  // But in this case, we need data from the user to create the resource manager, so we
-									  // need a list initialization. See the Game constructor in Game.cpp
+									  // need a list initialization. See the Game constructor in Game.cpp.
 
 	InputManager mInputManager;
 	EntityManager mEntityManager;
+	GraphicsManager mGraphicsManager;
 
 	static std::string getBasePath();
 
@@ -70,7 +70,6 @@ private:
 	float calculateAspectRatio();
 
 	void step(float divider);
-	void resetGraphics();
 	void render();
 	void doMainLoop();
 
@@ -94,12 +93,10 @@ public:
 	glm::ivec2 getMainWindowPosition();
 	void reCenterMainWindow();
 
-	void setGraphicsBackgroundColor(glm::vec3 color);
-	glm::vec3 getGraphicsBackgroundColor();
-
 	ResourceManager& getResourceManager();
 	InputManager& getInputManager();
 	EntityManager& getEntityManager();
+	GraphicsManager& getGraphicsManager();
 };
 
-#endif /* GAME_HPP */
+#endif // GAME_HPP

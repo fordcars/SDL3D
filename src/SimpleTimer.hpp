@@ -34,4 +34,4 @@ public:
 	int getTicks();
 };
 
-#endif /* SIMPLETIMER_HPP */
+#endif // SIMPLETIMER_HPP

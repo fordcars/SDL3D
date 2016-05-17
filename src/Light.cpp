@@ -47,7 +47,7 @@ void Light::setDiffuseColor(glm::vec3 color)
 	mDiffuseColor = color;
 }
 
-glm::vec3 Light::getDiffuseColor()
+glm::vec3 Light::getDiffuseColor() const
 {
 	return mDiffuseColor;
 }
@@ -57,7 +57,7 @@ void Light::setSpecularColor(glm::vec3 color)
 	mSpecularColor = color;
 }
 
-glm::vec3 Light::getSpecularColor()
+glm::vec3 Light::getSpecularColor() const
 {
 	return mSpecularColor;
 }
@@ -67,7 +67,7 @@ void Light::setPower(float power)
 	mPower = power;
 }
 
-float Light::getPower()
+float Light::getPower() const
 {
 	return mPower;
 }
@@ -77,7 +77,7 @@ void Light::setOnState(bool onState)
 	mOnState = onState;
 }
 
-bool Light::isOn()
+bool Light::isOn() const
 {
 	return mOnState;
 }

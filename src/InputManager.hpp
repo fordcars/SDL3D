@@ -26,18 +26,20 @@
 #include <cstddef> // For std::size_t
 #include <vector>
 
+class Game;
 class InputManager
 {
 private:
 	using sdlKeyMap = std::map<int, bool>; // Using a non-const key seems to be more compatible with different implementations
 	using sdlKeyMapPair = std::pair<int, bool>;
 
+	Game& mGame;
 	sdlKeyMap mKeys;
 
 public:
 	using keyVector = std::vector<int>;
 
-	InputManager();
+	InputManager(Game& game);
 	~InputManager();
 	void registerKey(int sdlKey);
 	void registerKeys(const keyVector& keys);
@@ -46,4 +48,4 @@ public:
 	void updateKeyByEvent(SDL_Event event);
 };
 
-#endif /* INPUT_MANAGER_HPP */
+#endif // INPUT_MANAGER_HPP

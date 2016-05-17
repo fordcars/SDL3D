@@ -42,4 +42,4 @@ public:
 	const PhysicsBody& getPhysicsBody() const;
 };
 
-#endif /* ENTITY_HPP */
+#endif // ENTITY_HPP

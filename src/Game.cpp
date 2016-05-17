@@ -45,7 +45,10 @@
 // http://glew.sourceforge.net/basic.html
 
 Game::Game()
-	: mEntityManager(glm::vec2(0.0f),  1 / static_cast<float>(DEFAULT_GAME_MAX_FRAMES_PER_SECOND))
+	: mResourceManager(*this),
+	mInputManager(*this),
+	mEntityManager(*this, glm::vec2(0.0f), 1 / static_cast<float>(DEFAULT_GAME_MAX_FRAMES_PER_SECOND)),
+	mGraphicsManager(*this)
 {
 	mName = DEFAULT_GAME_NAME; // Copy string
 
@@ -60,8 +63,6 @@ Game::Game()
 	// This is the length of a step, used for movement and everything, in ms. 8 ms makes 120 steps per second.
 	// If the time of one frame is smaller than this value (ex: faster screens in the future), the game will slow down.
 	mStepLength = 8;
-
-	mGraphicsBackgroundColor = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	mInitialized = false;
 	mQuitting = false;
@@ -283,24 +284,6 @@ void Game::step(float divider) // Movement and all
 	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_STEP);
 }
 
-void Game::resetGraphics()
-{
-	// Set clear color
-	glClearColor(mGraphicsBackgroundColor.r, mGraphicsBackgroundColor.g, mGraphicsBackgroundColor.b,
-		1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear both color buffers and depth (z-indexes) buffers to push a clean buffer when done
-
-	// It looks like it's better to call these each frame
-	glEnable(GL_DEPTH_TEST);// Enable depth test (check if z is closer to the screen than last fragement's z)
-	glDepthFunc(GL_LESS); // Accept the fragment closer to the camera
-
-	// Cull triangles which normal is not towards the camera
-	// If there are holes in the model because of this, click the "invert normals" button in your 3D modeler.
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glPolygonMode(GRAPHICS_RASTERIZE_FACE, GRAPHICS_RASTERIZE_MODE);
-}
-
 void Game::render()
 {
 	mEntityManager.render();
@@ -316,7 +299,7 @@ void Game::doMainLoop()
 	int numberOfStepsToDo = (currentTime - mLastFrameTime)/mStepLength;
 
 	doEvents();
-	resetGraphics(); // Call before step if we want to do stuff in there
+	mGraphicsManager.cleanGraphics(); // Call before step
 
 	if(mLastFrameTime != 0) // Make sure everything is good before moving stuff!
 	{
@@ -504,16 +487,6 @@ void Game::reCenterMainWindow()
 	setMainWindowPosition(glm::vec2(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED));
 }
 
-void Game::setGraphicsBackgroundColor(glm::vec3 color)
-{
-	mGraphicsBackgroundColor = color;
-}
-
-glm::vec3 Game::getGraphicsBackgroundColor()
-{
-	return mGraphicsBackgroundColor;
-}
-
 ResourceManager& Game::getResourceManager()
 {
 	return mResourceManager;
@@ -527,4 +500,9 @@ InputManager& Game::getInputManager()
 EntityManager& Game::getEntityManager()
 {
 	return mEntityManager;
+}
+
+GraphicsManager& Game::getGraphicsManager()
+{
+	return mGraphicsManager;
 }

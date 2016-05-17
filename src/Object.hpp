@@ -51,4 +51,4 @@ public:
 	virtual void render(const Camera& camera); // Override this if you need to!
 };
 
-#endif /* OBJECT_HPP */
+#endif // OBJECT_HPP

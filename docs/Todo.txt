@@ -2,7 +2,7 @@
 -Add to Utils(?) a function to convert from pixels to meters for Lua
 
 -Fix weird crash on Windows that happens sometimes. It happens a few seconds after you quit. I think it is the same bug as below (game stays alive for a while after quitting) and I think it is due to the fact I am forgetting to quit cleanly a certain .dll.
--- Only happens when we load resources?
+-- Only happens when we load resources? Only happens when the game has been running for at least a few seconds?
 
 -Rename rotation to orientation, since it looks like rotation is an operation, and orientation is a state. What about scaling?
 
@@ -20,11 +20,12 @@
 -In PhysicsBody, render debug shapes at the center of the objects themselves instead of relative to object geometry?
 
 -Ability to create camera with/without physics?
--Give lua access to gravity and have projection instead of hardcoded coords for 2D physics?
+-Give Lua access to gravity and have projection instead of hardcoded coords for 2D physics?
+-Have setType() and getType() in PhysicsBody so we can change the type?
 
 -Write a template container and keep those instances instead of a bunch of maps in ResourceManager. Add the ability to duplicate resources in this container!
 
--Make physics faster by having less steps per frame.
+-Make physics faster by having less steps per frame?
 
 -USE UNIFORM BLOCK FOR LIGHTS?
 -Give lightSSSS to shader + don't care about lights that are too far away

@@ -46,4 +46,4 @@ public:
 	void render(const Camera& camera) override;
 };
 
-#endif /* TEXTURED_OBJECT_HPP */
+#endif // TEXTURED_OBJECT_HPP

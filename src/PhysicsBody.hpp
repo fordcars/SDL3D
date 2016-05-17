@@ -199,4 +199,4 @@ public:
 	void renderDebugShape(constShaderPointer shader, const Camera* camera);
 };
 
-#endif /* PHYSICS_BODY_HPP */
+#endif // PHYSICS_BODY_HPP

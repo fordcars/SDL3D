@@ -54,4 +54,4 @@ public:
 	GLuint getType() const;
 };
 
-#endif /* TEXTURE_HPP */
+#endif // TEXTURE_HPP

@@ -139,6 +139,13 @@ public:
 		setMutableData(data, GL_DYNAMIC_DRAW); // Binding is done in there
 	}
 
+	// Alocate memory only
+	void setMutableData(std::size_t size, GLenum usage = GL_DYNAMIC_DRAW)
+	{
+		bind();
+		glBufferData(mTarget, size, nullptr, usage);
+	}
+
 	void setImmutableData(const std::vector<bufferDataType>& data, GLenum immutableFlags) // immutableFlags being a bitwise operation
 	{
 		bind();
@@ -150,6 +157,13 @@ public:
 	{
 		// Binding is done in there:
 		setImmutableData(data, GL_DYNAMIC_STORAGE_BIT); // Best flag I could find?
+	}
+
+	// Alocate memory only
+	void setImmutableData(std::size_t size, GLenum immutableFlags = GL_DYNAMIC_STORAGE_BIT)
+	{
+		bind();
+		glBufferStorage(mTarget, size, nullptr, immutableFlags);
 	}
 
 	std::vector<bufferDataType> read(GLintptr offset, GLsizeiptr size) const
@@ -177,4 +191,4 @@ public:
 
 };
 
-#endif /* GPU_BUFFER_HPP */
+#endif // GPU_BUFFER_HPP

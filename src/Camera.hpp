@@ -60,4 +60,4 @@ public:
 	glm::mat4 getProjectionMatrix() const;
 };
 
-#endif /* CAMERA_HPP */
+#endif // CAMERA_HPP

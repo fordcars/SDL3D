@@ -73,4 +73,4 @@ public:
 	const vec3Buffer& getNormalBuffer() const;
 };
 
-#endif /* OBJECT_GEOMETRY_HPP */
+#endif // OBJECT_GEOMETRY_HPP

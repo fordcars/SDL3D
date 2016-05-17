@@ -56,4 +56,4 @@ public:
 	void runFunction(const std::string& functionName);
 };
 
-#endif /* SCRIPT_MANAGER_HPP */
+#endif // SCRIPT_MANAGER_HPP

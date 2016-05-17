@@ -33,13 +33,17 @@
 
 // Resource names are also kept in their instances, so don't change them randomly without updating the resources
 
-ResourceManager::ResourceManager()
+ResourceManager::ResourceManager(Game& game)
+	: mGame(game)
 {
+	// Keep in mind that here we cannot use the game reference since it is not done being constructed.
+
 	mBasePath = "";
 }
 
 
-ResourceManager::ResourceManager(const std::string& basePath)
+ResourceManager::ResourceManager(Game& game, const std::string& basePath)
+	: mGame(game)
 {
 	mBasePath = basePath;
 }

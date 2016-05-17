@@ -31,6 +31,7 @@
 #include <vector>
 #include <cstddef> // For std::size_t
 
+class Game;
 class EntityManager
 {
 public: // Public aliases
@@ -41,6 +42,8 @@ public: // Public aliases
 	using lightVector = std::vector<lightPointer>;
 
 private:
+	Game& mGame;
+
 	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.
 
 	objectVector mObjects;
@@ -52,7 +55,7 @@ private:
 	int mPhysicsPositionIterations;
 
 public:
-	EntityManager(glm::vec2 gravity, float physicsTimePerStep);
+	EntityManager(Game& game, glm::vec2 gravity, float physicsTimePerStep);
 	~EntityManager();
 
 	Camera& getGameCamera();
@@ -74,4 +77,4 @@ public:
 	void render();
 };
 
-#endif /* ENTITY_MANAGER_HPP */
+#endif // ENTITY_MANAGER_HPP

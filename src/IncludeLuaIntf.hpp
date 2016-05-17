@@ -19,8 +19,8 @@
 
 // This will make sure all of the macros are defined when including LuaIntf
 
-#ifndef INCLUDE_LUA_INTF_
-#define INCLUDE_LUA_INTF_
+#ifndef INCLUDE_LUA_INTF
+#define INCLUDE_LUA_INTF
 
 #include <memory>
 #include <vector>
@@ -35,4 +35,4 @@ namespace LuaIntf
 	LUA_USING_MAP_TYPE(std::map);
 }
 
-#endif /* INCLUDE_LUA_INTF_ */
+#endif // INCLUDE_LUA_INTF

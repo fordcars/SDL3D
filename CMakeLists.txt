@@ -61,6 +61,7 @@ set(SOURCES
 	src/Script.cpp
 	src/Sound.cpp
 	src/PhysicsBody.cpp
+	src/GraphicsManager.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -94,11 +95,11 @@ set(HEADERS
 	src/EntityManager.hpp
 	src/Script.hpp
 	src/Sound.hpp
-
-	# THIS FILE INCLUDES LuaIntf.cpp FILES!!!! THIS IS WHY WE DON'T NEED TO EXPLICITELY COMPILE THOSE .cpp FILES.
-	src/IncludeLuaIntf.hpp
-
 	src/PhysicsBody.hpp
+	src/GraphicsManager.hpp
+
+	# THIS FILE INCLUDES LuaIntf FILES! This is why we don't need to explicitly compile those .cpp files.
+	src/IncludeLuaIntf.hpp
 )
 
 # Things specific to certain compilers

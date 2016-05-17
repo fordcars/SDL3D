@@ -62,4 +62,4 @@ public:
 	objectGeometryVector getObjectGeometries();
 };
 
-#endif /* OBJECT_GEOMETRY_GROUP_HPP */
+#endif // OBJECT_GEOMETRY_GROUP_HPP

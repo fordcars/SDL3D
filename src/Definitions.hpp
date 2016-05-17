@@ -36,6 +36,8 @@
 #define GRAPHICS_RASTERIZE_FACE GL_FRONT_AND_BACK
 #define GRAPHICS_RASTERIZE_MODE GL_FILL
 
+#define GRAPHICS_MAX_LIGHTS 256
+
 // Defines how many chunk sounds can exist. A super high number exceeding memory could segfault!
 #define MAX_SOUND_CHANNELS 50
 
@@ -84,4 +86,4 @@
 #define CONST_PI 3.14159f
 #define CONST_TWO_PI 2 * CONST_PI
 
-#endif /* DEFINITIONS_HPP */
+#endif // DEFINITIONS_HPP

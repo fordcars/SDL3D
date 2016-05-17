@@ -20,4 +20,4 @@
 #ifndef SDL3D_HPP
 #define SDL3D_HPP
 
-#endif /* SDL3D_HPP */
+#endif // SDL3D_HPP

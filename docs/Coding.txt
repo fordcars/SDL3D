@@ -6,3 +6,7 @@
 - Normally, error messages are printed in the function themselves and not where the functions are being called from. This is gives the ability to give coherent error messages throughout the code.
 
 - Functions that can fail should return true (success) or false (failed) when possible. Most of the time, we will not grab onto this return value, though.
+
+- Try to use OpenGL's datatypes for variables specific to OpenGL functions (like GLuint, GLenum, etc).
+
+- Prefix class members with 'm' and class constants with 'c'.
