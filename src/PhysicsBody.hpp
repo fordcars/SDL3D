@@ -22,13 +22,13 @@
 #ifndef PHYSICS_BODY_HPP
 #define PHYSICS_BODY_HPP
 
-#include <Definitions.hpp>
-#include <ObjectGeometry.hpp>
+#include "Definitions.hpp"
+#include "ObjectGeometry.hpp"
 
-#include <Box2D.h>
+#include "Box2D.h"
 
-#include <poly2tri.h>
-#include <glm/glm.hpp>
+#include "poly2tri.h"
+#include "glm/glm.hpp"
 
 #include <memory>
 #include <vector>

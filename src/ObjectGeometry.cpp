@@ -17,8 +17,8 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <ObjectGeometry.hpp>
-#include <Utils.hpp> // For vector stuff and error messages
+#include "ObjectGeometry.hpp"
+#include "Utils.hpp" // For vector stuff and error messages
 
 // ObjectGeometry
 

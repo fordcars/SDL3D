@@ -22,14 +22,14 @@
 #ifndef OBJECT_GEOMETRY_HPP
 #define OBJECT_GEOMETRY_HPP
 
-#include <memory> // For smart pointers
+#include "Shader.hpp"
+#include "GPUBuffer.hpp"
 
+#include "glm/glm.hpp"
+
+#include <memory> // For smart pointers
 #include <string>
 #include <vector>
-#include <glm/glm.hpp>
-
-#include <Shader.hpp>
-#include <GPUBuffer.hpp>
 
 class ObjectGeometry
 {

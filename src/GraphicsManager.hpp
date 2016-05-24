@@ -20,13 +20,13 @@
 #ifndef GRAPHICS_MANAGER_HPP
 #define GRAPHICS_MANAGER_HPP
 
-#include <glm/glm.hpp>
+#include "GPUBuffer.hpp"
+#include "Light.hpp"
+
+#include "glm/glm.hpp"
 
 #include <string>
 #include <vector>
-
-#include <GPUBuffer.hpp>
-#include <Light.hpp>
 
 class Game; // Forward declare game to avoid circular dependencies
 class GraphicsManager

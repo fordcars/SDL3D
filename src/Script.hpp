@@ -22,8 +22,8 @@
 #ifndef SCRIPT_MANAGER_HPP
 #define SCRIPT_MANAGER_HPP
 
-#include <IncludeLuaIntf.hpp>
-#include <LuaRef.h>
+#include "IncludeLuaIntf.hpp"
+#include "LuaRef.h"
 #include <string>
 
 // Forward declare Game since we don't want to include Game.hpp again from ResourceManager.hpp!

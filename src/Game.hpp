@@ -20,15 +20,14 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include <glad/glad.h>
-#include <SDL.h>
+#include "ResourceManager.hpp"
+#include "InputManager.hpp"
+#include "EntityManager.hpp"
+#include "GraphicsManager.hpp"
 
-#include <ResourceManager.hpp>
-#include <InputManager.hpp>
-#include <EntityManager.hpp>
-#include <GraphicsManager.hpp>
+#include "SDL.h"
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 
 class Game
 {

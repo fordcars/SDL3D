@@ -22,9 +22,9 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
-#include <PhysicsBody.hpp>
-#include <ObjectGeometry.hpp>
-#include <glm/glm.hpp>
+#include "PhysicsBody.hpp"
+#include "ObjectGeometry.hpp"
+#include "glm/glm.hpp"
 
 class Entity
 {

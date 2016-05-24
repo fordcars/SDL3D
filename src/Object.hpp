@@ -20,12 +20,12 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
-#include <Entity.hpp>
-#include <ObjectGeometry.hpp>
-#include <Camera.hpp>
+#include "Entity.hpp"
+#include "ObjectGeometry.hpp"
+#include "Camera.hpp"
 
-#include <glm/glm.hpp>
-#include <glad/glad.h> // OpenGL, rendering and all
+#include "glm/glm.hpp"
+#include "glad/glad.h" // OpenGL, rendering and all
 
 class Object : public Entity
 {

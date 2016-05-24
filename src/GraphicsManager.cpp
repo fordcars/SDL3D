@@ -17,13 +17,13 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <GraphicsManager.hpp>
-
-#include <algorithm>
-#include <glad/glad.h>
+#include "GraphicsManager.hpp"
 
 #include "Utils.hpp"
-#include <Definitions.hpp>
+#include "Definitions.hpp"
+
+#include "glad/glad.h"
+#include <algorithm>
 
 // According to the std140 layout, see modifyLightBuffer()
 // You don't need the 'static' keyword here since it was already declared, like a static function.

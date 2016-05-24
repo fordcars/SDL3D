@@ -20,8 +20,8 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
+#include "glad/glad.h"
 #include <map>
-#include <glad/glad.h>
 #include <string>
 
 class Shader

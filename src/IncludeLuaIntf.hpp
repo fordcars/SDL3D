@@ -22,11 +22,11 @@
 #ifndef INCLUDE_LUA_INTF
 #define INCLUDE_LUA_INTF
 
+#include "LuaIntf.h"
+
 #include <memory>
 #include <vector>
 #include <map>
-
-#include <LuaIntf.h>
 
 namespace LuaIntf
 {

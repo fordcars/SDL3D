@@ -20,10 +20,10 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-#include <Entity.hpp>
+#include "Entity.hpp"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp> // For lookAt() and others
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp" // For lookAt() and others
 
 class Camera : public Entity
 {

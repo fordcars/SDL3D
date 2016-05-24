@@ -34,14 +34,14 @@
 
 // I would like to keep this class as close to 3D as possible (no 2D specific methods)
 
-#include <PhysicsBody.hpp>
+#include "PhysicsBody.hpp"
 
-#include <Utils.hpp>
-#include <GPUBuffer.hpp>
-#include <Camera.hpp>
-#include <ShadedObject.hpp>
+#include "Utils.hpp"
+#include "GPUBuffer.hpp"
+#include "Camera.hpp"
+#include "ShadedObject.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/gtc/matrix_transform.hpp"
 
 #include <cstddef> // For std::size_t
 #include <algorithm>

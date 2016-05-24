@@ -17,10 +17,10 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <Texture.hpp>
-#include <Definitions.hpp> // For various definitions
+#include "Texture.hpp"
+#include "Definitions.hpp" // For various definitions
 
-#include <Utils.hpp> // For log
+#include "Utils.hpp" // For log
 
 #include <fstream> // For files
 #include <vector>

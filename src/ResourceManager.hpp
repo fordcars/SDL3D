@@ -20,17 +20,17 @@
 #ifndef RESOURCE_MANAGER_HPP
 #define RESOURCE_MANAGER_HPP
 
-#include <Shader.hpp>
-#include <Texture.hpp>
-#include <ObjectGeometryGroup.hpp>
-#include <Script.hpp>
-#include <Sound.hpp>
+#include "Shader.hpp"
+#include "Texture.hpp"
+#include "ObjectGeometryGroup.hpp"
+#include "Script.hpp"
+#include "Sound.hpp"
 
-#include <Definitions.hpp>
+#include "Definitions.hpp"
 
-#include <glad/glad.h>
+#include "glad/glad.h"
+
 #include <string>
-
 #include <map>
 #include <memory> // For shared_ptr
 

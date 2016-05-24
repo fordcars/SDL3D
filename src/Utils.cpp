@@ -17,13 +17,13 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <Utils.hpp>
-#include <Definitions.hpp>
+#include "Utils.hpp"
+#include "Definitions.hpp"
 
-#include <SDL.h> // For quitting
-#include <SDL_mixer.h> // For quitting
+#include "SDL.h" // For quitting
+#include "SDL_mixer.h" // For quitting
+
 #include <fstream>
-
 #include <sstream> // For std::getLine()
 
 namespace Utils

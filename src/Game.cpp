@@ -23,22 +23,21 @@
 // Coords: meters
 // Angles: degrees
 
-#include <Game.hpp> // Angled brakets ("<>") involve a more general search
+#include "Game.hpp"
 
-#include <Definitions.hpp> 
-#include <Utils.hpp>
-#include <SimpleTimer.hpp> // For game loop
+#include "Definitions.hpp"
+#include "Utils.hpp"
+#include "SimpleTimer.hpp" // For game loop
 
-#include <LuaRef.h> // For getting references from scripts
-#include <SDL_mixer.h>
+#include "LuaRef.h" // For getting references from scripts
+#include "SDL_mixer.h"
+#include "glm/glm.hpp"
+#include "glad/glad.h" // For compability checks and error handling
 
 #include <string> // No .h for c++
 
 #include <math.h>
 #include <memory> // For smart pointers
-
-#include <glm/glm.hpp>
-#include <glad/glad.h> // For compability checks
 
 // With the help of:
 // https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_%28C_/_SDL%29

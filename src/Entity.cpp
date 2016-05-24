@@ -19,7 +19,7 @@
 
 // Use this class to expand
 
-#include <Entity.hpp>
+#include "Entity.hpp"
 
 Entity::Entity()
 {

@@ -27,7 +27,7 @@
 // - mat4 MVP
 // - vec3 color
 
-#include <Object.hpp>
+#include "Object.hpp"
 
 // Objects copy objectGeometry instead of pointing to them, allow you to modify them
 Object::Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer,

@@ -17,16 +17,16 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <ResourceManager.hpp>
-#include <Utils.hpp>
+#include "ResourceManager.hpp"
+#include "Utils.hpp"
+
+#include "glm/gtc/type_ptr.hpp"
 
 #include <fstream>
 #include <vector>
 #include <cstddef> // For std::size_t
 #include <fstream> // For object loading
-#include <regex>
-
-#include <glm/gtc/type_ptr.hpp>
+#include <regex> // For searching in file paths and stuff
 
 // Shaders must be ASCII or UTF-8
 // Reference: http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.2:-Shaders.html

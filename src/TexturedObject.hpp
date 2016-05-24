@@ -20,10 +20,10 @@
 #ifndef TEXTURED_OBJECT_HPP
 #define TEXTURED_OBJECT_HPP
 
-#include <Object.hpp>
-#include <ObjectGeometry.hpp>
-#include <Texture.hpp>
-#include <Camera.hpp>
+#include "Object.hpp"
+#include "ObjectGeometry.hpp"
+#include "Texture.hpp"
+#include "Camera.hpp"
 
 #include <memory> // For smart pointers
 

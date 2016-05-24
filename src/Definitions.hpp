@@ -20,11 +20,11 @@
 #ifndef DEFINITIONS_HPP
 #define DEFINITIONS_HPP
 
+#include "glad/glad.h"
+
 #include <vector>
 #include <map>
 #include <memory>
-
-#include <glad/glad.h>
 
 #define ENGINE_NAME "SDL3D"
 #define ENGINE_VERSION "0.1"

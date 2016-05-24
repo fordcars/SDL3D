@@ -21,12 +21,12 @@
 #define TEXTURE_HPP
 
 // For DDS files
-#define FOURCC_DXT1 0x31545844
-#define FOURCC_DXT3 0x33545844
-#define FOURCC_DXT5 0x35545844
+#define FOURCC_DXT1 0x31545844 // "DXT1" is ASCII
+#define FOURCC_DXT3 0x33545844 // "DXT3" is ASCII
+#define FOURCC_DXT5 0x35545844 // "DXT5" is ASCII
 
+#include "glad/glad.h"
 #include <string>
-#include <glad/glad.h>
 
 // Since I am not feeling like rewriting OpenGL, this class is more of a datatype with functions
 

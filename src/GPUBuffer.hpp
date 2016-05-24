@@ -26,7 +26,7 @@
 #ifndef GPU_BUFFER_HPP
 #define GPU_BUFFER_HPP
 
-#include <glad/glad.h> // glad.h is compatible with C++
+#include "glad/glad.h" // glad.h is compatible with C++
 #include <vector>
 #include <cstddef> // For std::size_t
 

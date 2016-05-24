@@ -20,12 +20,12 @@
 #ifndef ENTITY_MANAGER_HPP
 #define ENTITY_MANAGER_HPP
 
-#include <Object.hpp>
-#include <Light.hpp>
-#include <Camera.hpp>
+#include "Object.hpp"
+#include "Light.hpp"
+#include "Camera.hpp"
 
-#include <Box2D.h>
-#include <glm/glm.hpp>
+#include "Box2D.h"
+#include "glm/glm.hpp"
 
 #include <memory>
 #include <vector>

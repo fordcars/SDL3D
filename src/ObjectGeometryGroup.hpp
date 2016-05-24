@@ -20,13 +20,12 @@
 #ifndef OBJECT_GEOMETRY_GROUP_HPP
 #define OBJECT_GEOMETRY_GROUP_HPP
 
-#include <memory> // For smart pointers
+#include "ObjectGeometry.hpp"
 
+#include <memory> // For smart pointers
 #include <string>
 #include <vector>
 #include <map>
-
-#include <ObjectGeometry.hpp>
 
 // Fancy! You can group object geometries together. Ex: levels, complex objects, animations, etc
 class ObjectGeometryGroup

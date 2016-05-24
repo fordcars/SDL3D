@@ -20,7 +20,7 @@
 #ifndef SOUND_HPP
 #define SOUND_HPP
 
-#include <SDL_mixer.h>
+#include "SDL_mixer.h"
 #include <string>
 
 class Sound

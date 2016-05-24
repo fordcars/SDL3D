@@ -20,9 +20,9 @@
 #ifndef LIGHT_HPP
 #define LIGHT_HPP
 
-#include <Entity.hpp>
+#include "Entity.hpp"
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 
 class Light : public Entity
 {

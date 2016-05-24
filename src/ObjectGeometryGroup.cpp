@@ -17,16 +17,16 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <ObjectGeometryGroup.hpp>
+#include "ObjectGeometryGroup.hpp"
+
+#include "Utils.hpp" // For vector stuff and error messages
+#include "ResourceManager.hpp" // For getting the basename of files
+#include "tiny_obj_loader.h"
 
 #include <sstream>
 #include <fstream> // For file stuff
 #include <algorithm>
 #include <cstddef> // For std::size_t
-#include <tiny_obj_loader.h>
-
-#include <Utils.hpp> // For vector stuff and error messages
-#include <ResourceManager.hpp> // For getting the basename of files
 
 ObjectGeometryGroup::ObjectGeometryGroup(const std::string& name)
 {

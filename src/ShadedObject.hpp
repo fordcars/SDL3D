@@ -20,10 +20,10 @@
 #ifndef SHADED_OBJECT_HPP
 #define SHADED_OBJECT_HPP
 
-#include <TexturedObject.hpp>
-#include <ObjectGeometry.hpp>
-#include <Texture.hpp>
-#include <Camera.hpp>
+#include "TexturedObject.hpp"
+#include "ObjectGeometry.hpp"
+#include "Texture.hpp"
+#include "Camera.hpp"
 
 #include <memory> // For smart pointers
 

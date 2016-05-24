@@ -20,7 +20,7 @@
 #ifndef INPUT_MANAGER_HPP
 #define INPUT_MANAGER_HPP
 
-#include <SDL.h>
+#include "SDL.h"
 
 #include <map>
 #include <cstddef> // For std::size_t

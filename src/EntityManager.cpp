@@ -19,14 +19,14 @@
 
 // This class will hold onto all entities, but it will NOT take ownership!
 
-#include <EntityManager.hpp>
-#include <Utils.hpp>
-#include <Definitions.hpp>
+#include "EntityManager.hpp"
+#include "Utils.hpp"
+#include "Definitions.hpp"
+
+#include "Box2D/Box2D.h"
 
 #include <algorithm> // For finding in vector
 #include <string>
-
-#include <Box2D/Box2D.h>
 
 EntityManager::EntityManager(Game& game, glm::vec2 gravity, float physicsTimePerStep)
 	: mGame(game), mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh

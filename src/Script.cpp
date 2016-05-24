@@ -26,9 +26,9 @@
 // Happily, it looks like splitting the lua states per script, like here, is a good idea.
 // http://lua-users.org/lists/lua-l/2003-11/msg00011.html
 
-#include <Script.hpp>
-#include <Utils.hpp>
-#include <Game.hpp>
+#include "Script.hpp"
+#include "Utils.hpp"
+#include "Game.hpp"
 
 #include <exception> // For handling the script's exceptions
 #include <memory> // For smart pointers
@@ -121,31 +121,31 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 }
 
 // All includes for the bindings
-#include <Game.hpp>
-#include <ResourceManager.hpp>
-#include <InputManager.hpp>
-#include <EntityManager.hpp>
-#include <GraphicsManager.hpp>
+#include "Game.hpp"
+#include "ResourceManager.hpp"
+#include "InputManager.hpp"
+#include "EntityManager.hpp"
+#include "GraphicsManager.hpp"
 
-#include <Shader.hpp>
-#include <Texture.hpp>
-#include <ObjectGeometryGroup.hpp>
-#include <ObjectGeometry.hpp>
-#include <Sound.hpp>
-#include <GPUBuffer.hpp>
-#include <Entity.hpp>
-#include <Camera.hpp>
+#include "Shader.hpp"
+#include "Texture.hpp"
+#include "ObjectGeometryGroup.hpp"
+#include "ObjectGeometry.hpp"
+#include "Sound.hpp"
+#include "GPUBuffer.hpp"
+#include "Entity.hpp"
+#include "Camera.hpp"
 
-#include <Object.hpp>
-#include <TexturedObject.hpp>
-#include <ShadedObject.hpp>
-#include <PhysicsBody.hpp>
+#include "Object.hpp"
+#include "TexturedObject.hpp"
+#include "ShadedObject.hpp"
+#include "PhysicsBody.hpp"
 
-#include <Utils.hpp>
+#include "Utils.hpp"
 
-#include <Definitions.hpp>
-#include <glm/glm.hpp>
-#include <SDL_keycode.h> // For key codes
+#include "Definitions.hpp"
+#include "glm/glm.hpp"
+#include "SDL_keycode.h" // For key codes
 
 // Binds all of the classes and functions. This creates our API!
 // We need a Game instance to give it to the scripts.

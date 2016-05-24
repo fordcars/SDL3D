@@ -17,11 +17,11 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include <InputManager.hpp>
+#include "InputManager.hpp"
 
-#include <SDL.h>
+#include "SDL.h"
+#include "Utils.hpp"
 #include <string>
-#include <Utils.hpp>
 
 InputManager::InputManager(Game& game)
 	: mGame(game)

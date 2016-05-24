@@ -22,10 +22,10 @@
 // Also, don't expect music sounds to store their pause/volume and all if they are replaced by another
 // Sound chunks are fine since each of them have their own software channel
 
-#include <Sound.hpp>
+#include "Sound.hpp"
 
-#include <Utils.hpp>
-#include <Definitions.hpp>
+#include "Utils.hpp"
+#include "Definitions.hpp"
 
 // Done once
 // Static member initialized

@@ -16,12 +16,11 @@
 //// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
-#include <main.hpp> // <> because of CMake? Probably, <> is for the system include directory
+#include "main.hpp"
 
-#include <Game.hpp>
-#include <Utils.hpp>
+#include "Game.hpp"
+#include "Utils.hpp"
 
-#include <stdio.h>
 #include <memory> // For smart pointers. C++ libraries have no .h
 
 int main(int argc, char **argv)
