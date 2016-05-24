@@ -22,13 +22,13 @@
 #include <algorithm>
 #include <glad/glad.h>
 
-#include <Utils.hpp>
+#include "Utils.hpp"
 #include <Definitions.hpp>
 
 // According to the std140 layout, see modifyLightBuffer()
-// You don't need the 'static' keyword here since it was already declared
+// You don't need the 'static' keyword here since it was already declared, like a static function.
 const int GraphicsManager::cLightSize = (sizeof(float) * 4 * 3) + (sizeof(float) * 2);
-// TODOOOO CONSTRUCTING THIS EXPLODESSSSSS, THEN ENTITYMANAGER CALL LIGHT FUNCTION TO GIVE IT INDEX AND GRAPHICSMANAGER
+// TODOOOO RENAME SDL3D.cpp to main.cpp and MOVE GL+ INITIALIZATION TO HIGHER CLASS THAN GAME (AND INITIALIZE UTILS THERE TOO!), THEN ENTITYMANAGER CALL LIGHT FUNCTION TO GIVE IT INDEX AND GRAPHICSMANAGER
 GraphicsManager::GraphicsManager(Game& game)
 	: mGame(game),
 	mLightBuffer(GL_UNIFORM_BUFFER),

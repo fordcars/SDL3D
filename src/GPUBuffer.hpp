@@ -42,8 +42,9 @@ public:
 	// Even if auto binding is not on, calling bind() will still bind to the default target
 	GPUBuffer(GLenum target = GL_ARRAY_BUFFER, bool autoBind = true)
 	{
-		setTarget(target);
+		mID = 0;
 		mAutoBind = autoBind;
+		mTarget = target;
 
 		glGenBuffers(1, &mID); // 1 for 1 buffer
 	}

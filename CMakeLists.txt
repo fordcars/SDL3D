@@ -41,7 +41,8 @@ set(POLY2TRI_DIR ${LIBRARY_DIR}/poly2tri/poly2tri)
 
 # A list of header and source files
 set(SOURCES
-    src/SDL3D.cpp
+    src/main.cpp
+	src/Engine.cpp
 	src/Game.cpp
 	src/Utils.cpp
 	src/ResourceManager.cpp
@@ -74,7 +75,8 @@ AUX_SOURCE_DIRECTORY(${POLY2TRI_DIR}/common SOURCES)
 
  # Shows up in VisualStudio
 set(HEADERS
-    src/SDL3D.hpp
+    src/main.hpp
+	src/Engine.hpp
 	src/Game.hpp
 	src/Utils.hpp
 	src/Definitions.hpp

@@ -16,24 +16,18 @@
 //// along with SDL3D. If not, see <http://www.gnu.org/licenses/>.
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
-#include <SDL3D.hpp> // <> because of CMake? Probably, <> is for the system include directory
 
-#include <Game.hpp>
-#include <Utils.hpp>
+#ifndef ENGINE_HPP
+#define ENGINE_HPP
 
-#include <stdio.h>
-#include <memory> // For smart pointers. C++ libraries have no .h
+#include <memory>
 
-int main(int argc, char **argv)
+class Engine
 {
-	// As annoying as it is to call this here, we have since we need to be
-	// able to log as quick as possible (ex: constructing the Game).
-	Utils::clearDataOutput();
-	
-	Game game;
-	
-	game.init();
-	game.startMainLoop(); // Runs the game, returns when the game quits
+private:
+public:
+	Engine();
+	~Engine();
+};
 
-    return 0;
-}
+#endif // ENGINE_HPP
