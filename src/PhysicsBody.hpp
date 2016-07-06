@@ -50,7 +50,7 @@ private:
 	using vec2Vector = std::vector<glm::vec2>;
 	using vec3Vector = std::vector<glm::vec3>;
 
-	void init();
+	void initMembers();
 
 	// Will be able to hold different Box2D shapes, this is why it is a pointer
 	// This will hold the shape of this body. If you want to modify it in the world, get the shape from the world!
@@ -191,7 +191,7 @@ public:
 	bool addToWorld(b2World* world);
 	void removeFromWorld();
 
-	glm::mat4 generateModelMatrix();
+	glm::mat4 generateModelMatrix() const;
 
 	void step(float timeStep);
 

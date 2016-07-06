@@ -28,11 +28,13 @@
 #include <algorithm> // For finding in vector
 #include <string>
 
-EntityManager::EntityManager(Game& game, glm::vec2 gravity, float physicsTimePerStep)
-	: mGame(game), mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
+EntityManager::EntityManager(graphicsManagerPointer graphicsManager, glm::vec2 gravity)
+	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion
 {
+	mGraphicsManager = graphicsManager;
+
 	// Defaults
-	mPhysicsTimePerStep = physicsTimePerStep;
+	mPhysicsTimePerStep = 1 / static_cast<float>(DEFAULT_GAME_MAX_FRAMES_PER_SECOND);
 	mPhysicsVelocityIterations = 6;
 	mPhysicsPositionIterations = 2;
 
@@ -70,7 +72,7 @@ bool EntityManager::addObject(objectPointer object) // Give it a shared pointer
 // Returns the removed object, or an empty pointer on error.
 EntityManager::objectPointer EntityManager::removeObject(std::size_t index)
 {
-	if(index+1 <= mObjects.size()) // Check if vector subscript out of range, I really hate runtime errors
+	if(index < mObjects.size()) // Check if vector subscript out of range, I really hate runtime errors
 	{
 		objectPointer removedItem = mObjects[index];
 
@@ -82,7 +84,7 @@ EntityManager::objectPointer EntityManager::removeObject(std::size_t index)
 	} else
 	{
 		Utils::CRASH("Cannot remove object at index '" + std::to_string(index) +
-			"', the index is higher than the amount of objects!");
+			"', the index is higher than the amount of objects (" + std::to_string(mObjects.size()) + ")!");
 		return objectPointer();
 	}
 }
@@ -116,6 +118,7 @@ bool EntityManager::addLight(lightPointer light) // Give it an actual object
 	{
 		mLights.push_back(light);
 		light->getPhysicsBody().addToWorld(&mPhysicsWorld);
+		mGraphicsManager->addLight(*light);
 
 		return true;
 	} else
@@ -127,20 +130,21 @@ bool EntityManager::addLight(lightPointer light) // Give it an actual object
 
 EntityManager::lightPointer EntityManager::removeLight(std::size_t index)
 {
-	if(index + 1 > mLights.size())
+	if(index < mLights.size())
 	{
 		lightPointer removedItem = mLights[index];
 
 		lightVector::iterator iterator = mLights.begin() + index;
 		mLights.erase(iterator);
 
+		mGraphicsManager->removeLight(*removedItem);
 		removedItem->getPhysicsBody().removeFromWorld();
 		return removedItem;
 	}
 	else
 	{
 		Utils::CRASH("Cannot remove light at index '" + std::to_string(index) +
-			"'; the index is higher than the amount of lights!");
+			"'; the index is higher than the amount of lights (" + std::to_string(mLights.size()) + ")!");
 		return lightPointer(); // Return an empty pointer
 	}
 }
@@ -151,6 +155,7 @@ bool EntityManager::removeLight(lightPointer light)
 
 	if(found != mLights.end()) // If it is found
 	{
+		mGraphicsManager->removeLight(*light);
 		light->getPhysicsBody().removeFromWorld();
 		mLights.erase(found); // Remove it
 		return true;
@@ -173,7 +178,7 @@ void EntityManager::setPhysicsTimePerStep(float time)
 	mPhysicsTimePerStep = time;
 }
 
-float EntityManager::getPhysicsTimePerStep()
+float EntityManager::getPhysicsTimePerStep() const
 {
 	return mPhysicsTimePerStep;
 }
@@ -184,10 +189,10 @@ void EntityManager::step(float divider)
 {
 	float time = mPhysicsTimePerStep / divider;
 
-	for(auto &object : mObjects)
+	for(auto& object : mObjects)
 		object->getPhysicsBody().step(time);
 
-	for(auto &light : mLights)
+	for(auto& light : mLights)
 		light->getPhysicsBody().step(time);
 
 	mGameCamera.getPhysicsBody().step(time);
@@ -195,10 +200,15 @@ void EntityManager::step(float divider)
 	mPhysicsWorld.Step(time, mPhysicsVelocityIterations, mPhysicsPositionIterations);
 }
 
-void EntityManager::render() // Renders all entities that can be rendered
+// Renders all entities that can be rendered
+// Do not call this method directly! Call renderScene() from GraphicsManager
+void EntityManager::render()
 {
-	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
-	{
-		(*it)->render(mGameCamera);
-	}
+	// Update light buffer with the modifed lights
+	for(auto& light : mLights)
+		if(light->wasModified())
+			mGraphicsManager->modifyLightInBuffer(*light);
+
+	for(auto& object : mObjects)
+		object->render(mGameCamera);
 }

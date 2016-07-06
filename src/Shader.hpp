@@ -27,13 +27,13 @@
 class Shader
 {
 private:
-	using GLuintMap = std::map<std::string, GLuint>;
-	using GLuintMapPair = std::pair<std::string, GLuint>;
+	using gluintMap = std::map<std::string, GLuint>; // Un-capitalized gluint in name to avoid confusion with GLuint type
+	using gluintMapPair = std::pair<std::string, GLuint>;
 
 	std::string mName; // Useful for error messages, don't change this stupidly
 
 	GLuint mID; // the ID of the shader, give this to OpenGL stuff. Could be const, but I left it non-const to make things easier.
-	GLuintMap mUniformMap; // Uniform variables, uniforms[uniformName] = uniform location
+	gluintMap mUniformMap; // Uniform variables, uniforms[uniformName] = uniform location
 
 	// Static because they donnot need an instance to work
 	static GLuint compileShader(const std::string& shaderPath, const std::string& shaderCode, GLenum type);

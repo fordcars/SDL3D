@@ -28,16 +28,14 @@
 #include <string>
 #include <vector>
 
-class Game; // Forward declare game to avoid circular dependencies
 class GraphicsManager
 {
 private:
 	static const int cLightSize;
 
-	Game& mGame;
-
+	glm::ivec2 mOutputSize;
 	glm::vec3 mBackgroundColor;
-	GPUBuffer<float> mLightBuffer;
+	GPUBuffer<float> mLightBuffer; // Uniform buffer
 
 	// Since all lights are the sime size, we can easily manage the uniform buffer's memory
 	// by having slots. Each slot has a 0-based index. When we remove lights, we create holes.
@@ -47,19 +45,24 @@ private:
 	std::vector<bool> mLightUsedBufferMap;
 
 public:
-	GraphicsManager(Game& game);
+	GraphicsManager(glm::ivec2 outputSize);
 	~GraphicsManager();
+	void init();
 
-	void cleanGraphics();
+	void clearScreen();
+
+	void setOutputSize(glm::ivec2 outputSize);
+	glm::ivec2 getOutputSize();
 
 	void setBackgroundColor(glm::vec3 color);
 	glm::vec3 getBackgroundColor();
 
-	bool modifyLightBuffer(const Light& light, int index);
+	bool updateLightBuffer(const Light& light);
 	int getNextAvailableLightIndex();
-	int addLight(const Light& light);
-	bool modifyLight(const Light& light, int index);
-	bool removeLight(int index);
+
+	bool addLight(Light& light);
+	bool removeLight(Light& light);
+	bool modifyLightInBuffer(const Light& light);
 };
 
 #endif // GRAPHICS_MANAGER_HPP

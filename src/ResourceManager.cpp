@@ -33,17 +33,7 @@
 
 // Resource names are also kept in their instances, so don't change them randomly without updating the resources
 
-ResourceManager::ResourceManager(Game& game)
-	: mGame(game)
-{
-	// Keep in mind that here we cannot use the game reference since it is not done being constructed.
-
-	mBasePath = "";
-}
-
-
-ResourceManager::ResourceManager(Game& game, const std::string& basePath)
-	: mGame(game)
+ResourceManager::ResourceManager(const std::string& basePath)
 {
 	mBasePath = basePath;
 }
@@ -93,12 +83,6 @@ std::string ResourceManager::getBasename(const std::string& path)
 		return file; // Set the name as the whole file name
 	else
 		return file.substr(0, firstDot); // The index of the first dot aka the length of the name
-}
-
-// The base path will be used to fetch resources and setup the script's require paths
-void ResourceManager::setBasePath(const std::string& basePath)
-{
-	mBasePath = basePath;
 }
 
 // Returns the full absolute resource path

@@ -23,8 +23,7 @@
 #include "Utils.hpp"
 #include <string>
 
-InputManager::InputManager(Game& game)
-	: mGame(game)
+InputManager::InputManager()
 {
 	// Do nothing
 }

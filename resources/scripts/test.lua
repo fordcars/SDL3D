@@ -10,17 +10,18 @@ local function foo()
 	game:setMaxFramesPerSecond(60)
 	game:reCenterMainWindow()
 	
-	game:setGraphicsBackgroundColor(Vec3(0, 0, 1))
-	
 	Utils.logprint("Engine version: " .. Engine.Version)
 	
 	local resourceManager = game:getResourceManager()
 	local inputManager = game:getInputManager()
 	local entityManager = game:getEntityManager()
+	local graphicsManager = game:getGraphicsManager()
 	
 	local camera = entityManager:getGameCamera()
 	camera:setFieldOfView(90)
 	camera:getPhysicsBody():calculateShapesFromRadius(0.1)
+	
+	graphicsManager:setBackgroundColor(Vec3(0, 0, 1))
 	
 	resourceManager:addShader("basic.v.glsl", "basic.f.glsl")
 	resourceManager:addShader("textured.v.glsl", "textured.f.glsl")

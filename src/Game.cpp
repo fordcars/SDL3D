@@ -32,27 +32,23 @@
 #include "LuaRef.h" // For getting references from scripts
 #include "SDL_mixer.h"
 #include "glm/glm.hpp"
-#include "glad/glad.h" // For compability checks and error handling
-
-#include <string> // No .h for c++
+#include "glad/glad.h" // For graphics and compability checks
 
 #include <math.h>
-#include <memory> // For smart pointers
+#include <cstddef> // For std::size_t
+#include <climits> // For CHAR_BIT
+#include <array>
 
 // With the help of:
 // https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_%28C_/_SDL%29
 // http://glew.sourceforge.net/basic.html
 
 Game::Game()
-	: mResourceManager(*this),
-	mInputManager(*this),
-	mEntityManager(*this, glm::vec2(0.0f), 1 / static_cast<float>(DEFAULT_GAME_MAX_FRAMES_PER_SECOND)),
-	mGraphicsManager(*this)
 {
 	mName = DEFAULT_GAME_NAME; // Copy string
+	mQuitting = false;
 
-	mSize.x = DEFAULT_GAME_WINDOW_WIDTH;
-	mSize.y = DEFAULT_GAME_WINDOW_HEIGHT;
+	mSize = glm::ivec2(DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
 
 	// Limits the frames per second
 	// Time in miliseconds
@@ -63,41 +59,155 @@ Game::Game()
 	// If the time of one frame is smaller than this value (ex: faster screens in the future), the game will slow down.
 	mStepLength = 8;
 
-	mInitialized = false;
-	mQuitting = false;
-
-	// These will be set later
+	// These will be set later during initialization
 	mMainWindow = nullptr;
 	mMainContext = nullptr;
+
+	init();
 }
 
 Game::~Game() // Deconstructor
 {
-	quit();
+	SDL_GL_DeleteContext(mMainContext);
+	SDL_DestroyWindow(mMainWindow);
 }
 
-// Static
-// Returns the directory where the game is being run (absolute path)
-// In Mac application bundles, this returns the bundle.app/Contents/Resources directory.
-// Fairly heavy function!
-std::string Game::getBasePath()
+// Initializes all systems
+// Returns false on failure
+// You cannot print anything in the log before calling this method
+bool Game::init()
 {
-	char *basePathPointer = SDL_GetBasePath(); // Must free this after!
+	// Clear the data log first like that we can quickly print stuff
+	Utils::clearDataOutput();
+	Utils::LOGPRINT(std::string() + "Starting " + ENGINE_NAME + " v" + ENGINE_VERSION + "!");
 
-	// SDL failed to get the base path
-	if(!basePathPointer)
+	initSDL();
+	initContext();
+
+	// Libraries are initialized, now we can construct our managers!
+	mResourceManager = resourceManagerPointer(new ResourceManager(getBasePath()));
+	mInputManager = inputManagerPointer(new InputManager());
+	mGraphicsManager = graphicsManagerPointer(new GraphicsManager(mSize));
+	mEntityManager = entityManagerPointer(new EntityManager(mGraphicsManager, glm::vec2(0.0f)));
+
+	// Scripts
+	// Only one script for now
+	ResourceManager::scriptPointer mainScript = mResourceManager->addScript(MAIN_SCRIPT_NAME, MAIN_SCRIPT_FILE);
+
+	mainScript->bindInterface(*this);
+	// Run the script to get all of the definitions and all
+	mainScript->run();
+	// Run the script's init function
+	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_INIT);
+
+	mEntityManager->getGameCamera().setAspectRatio(getAspectRatio());
+
+	Utils::LOGPRINT("Game initialization completed!");
+	return true;
+}
+
+// Returns false on failure
+bool Game::initSDL()
+{
+	// SDL_INIT_AUDIO for SDL_mixer
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO) < 0)
 	{
-		SDL_free(basePathPointer); // Free the memory!
-
-		std::string error = "Failed to get base path! Does your system support it? Search online on 'SDL_GetBasePath()' with your system for more information.";
-		Utils::CRASH_FROM_SDL(error);
-		return std::string();
+		// Failed
+		Utils::CRASH_FROM_SDL("Unable to initialize SDL!");
+		return false;
+	}
+	// Since we use this, we need to call gladLoadGLLoader() instead of gladLoadGL() later on
+	if(SDL_GL_LoadLibrary(nullptr) < 0)
+	{
+		Utils::CRASH_FROM_SDL("Unable to load OpenGL from SDL!");
+		return false;
+	}
+	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) // 2 for stereo
+	{
+		Utils::CRASH_FROM_SDL("Unable to open SDL_mixer!");
+		return false;
+	}
+	if(Mix_Init(MIX_INIT_FLAC | MIX_INIT_OGG) < 0)
+	{
+		Utils::CRASH_FROM_SDL("Unable to initialize SDL_mixer!");
+		return false;
+	}
+	if(Mix_AllocateChannels(MAX_SOUND_CHANNELS) < 0)
+	{
+		Utils::CRASH_FROM_SDL("Unable to allocate SDL_mixer channels!");
+		return false;
 	}
 
-	std::string basePath = basePathPointer;
-	SDL_free(basePathPointer); // SDL_free is a more cross-platform version of free()
+	Utils::LOGPRINT("SDL initialization complete.");
+	return true;
+}
 
-	return basePath;
+// This method initializes the graphics context, thus initializing OpenGL.
+// You cannot call anything from OpenGL before calling this.
+// Returns false on failure
+bool Game::initContext()
+{
+	// Creating an OpenGL context also initializes OpenGL, so this has to be done here
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, GRAPHICS_OPENGL_MAJOR_VERSION);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, GRAPHICS_OPENGL_MINOR_VERSION);
+
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+	SDL_GL_SetSwapInterval(1);
+
+	// Create the window
+	mMainWindow = SDL_CreateWindow(mName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mSize.x, mSize.y,
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+
+	if(!mMainWindow) // If the window failed to create, crash
+	{
+		Utils::CRASH_FROM_SDL("Unable to create window!");
+		return false;
+	}
+
+	// Create the context
+	mMainContext = SDL_GL_CreateContext(mMainWindow); // Create OpenGL context!
+
+	if(!mMainContext)
+	{
+		Utils::CRASH_FROM_SDL("Unable to create OpenGL context! This game requries OpenGL " +
+			std::to_string(GRAPHICS_OPENGL_MAJOR_VERSION) + "." + std::to_string(GRAPHICS_OPENGL_MINOR_VERSION) +
+			". Does your system support it? Try updating your graphics drivers!");
+		return false;
+	}
+
+	// Load OpenGL functions
+	if(!gladLoadGLLoader(SDL_GL_GetProcAddress))
+	{
+		Utils::CRASH("GLAD failed to load OpenGL!");
+		return false;
+	}
+
+	if(SDL_GL_MakeCurrent(mMainWindow, mMainContext) < 0)
+	{
+		Utils::CRASH_FROM_SDL("Unable to set current context!");
+		return false;
+	}
+
+	// Print OpenGL information
+	// Since OpenGL gives GLubytes, we need to reinterpret them into chars (unsigned to signed)
+	Utils::LOGPRINT("OpenGL information:");
+	Utils::LOGPRINT(" - Vendor: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
+	Utils::LOGPRINT(" - Renderer: " + std::string(reinterpret_cast<const char*>(glGetString(GL_RENDERER))));
+	Utils::LOGPRINT(" - Version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+	Utils::LOGPRINT("");
+
+	if(!checkCompability()) // This function logs errors
+	{
+		Utils::CRASH("System not compatible, cancelling init.");
+		return false;
+	}
+
+	checkForErrors();
+	Utils::LOGPRINT("Context initialization complete.");
+
+	return true;
 }
 
 // Checks if the game will work on the user's setup. Also checks for compiling environment compability.
@@ -108,31 +218,36 @@ bool Game::checkCompability()
 
 	// Check if glm::vecX are correct (just in-case)
 	// This is vital since we are passing glm::vecX to GL as if it was a simple array. It must not have any padding!
-	static_assert(sizeof(glm::vec4) == sizeof(GLfloat) * 4,
+	static_assert(sizeof(glm::vec4) == sizeof(float) * 4,
 		"Compiling environment does not support glm::vec4 direct access. Please download another version of glm or contact the project's developpers.");
-	static_assert(sizeof(glm::vec3) == sizeof(GLfloat) * 3,
+	static_assert(sizeof(glm::vec3) == sizeof(float) * 3,
 		"Compiling environment does not support glm::vec3 direct access. Please download another version of glm or contact the project's developpers.");
-	static_assert(sizeof(glm::vec2) == sizeof(GLfloat) * 2,
+	static_assert(sizeof(glm::vec2) == sizeof(float) * 2,
 		"Compiling environment does not support glm::vec2 direct access. Please download another version of glm or contact the project's developpers.");
+
+	// Check if types are the right sizes to make sure everything works with OpenGL
+	static_assert(CHAR_BIT * sizeof(int) == 32,
+		"Compiling environment does not have 32-bit ints. This could cause some compability problesm with OpenGL.");
+	static_assert(CHAR_BIT * sizeof(float) == 32,
+		"Compiling environment does not have 32-bit floats. This could cause some compability problesm with OpenGL.");
 
 	// Check system's compability (runtime)
 	// Check for GL extension compability
-	std::string extensions[] = {"GL_EXT_texture_compression_s3tc"};
-	int numberOfExtensions = 1;
+	std::array<std::string, 1> extensions = { "GL_EXT_texture_compression_s3tc" };
 
 	GLint numExt;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
 
 	bool isCompatible = true; // True if the game is compatible with the system (after we are done checking the setup here)
-	
-	for(int i = 0; i < numberOfExtensions; i++)
+
+	for(std::size_t i = 0; i < extensions.size(); i++)
 	{
 		bool foundExtension = false;
 
 		for(int extI = 0; extI < numExt; extI++)
 		{
 			std::string extensionString = (reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, extI))); // const unsigned char * to std::string
-			
+
 			if(extensionString == extensions[i])
 			{
 				foundExtension = true;
@@ -144,7 +259,7 @@ bool Game::checkCompability()
 		{
 			Utils::WARN("The extension " + extensions[i] + " has not been found on your system.");
 			isCompatible = false; // Not compatible!
-			// Don't break, let the user know what other extensions are not found (if it is the case)
+								  // Don't break, let the user know what other extensions are not found (if it is the case)
 		}
 	}
 
@@ -160,81 +275,23 @@ bool Game::checkCompability()
 	}
 }
 
-void Game::setupGraphics() // VAO and OpenGL options
+// Call each frame for safety. Do not call after deleting the OpenGL context.
+// Returns true if errors were found
+bool Game::checkForErrors()
 {
-	// Make sure the OpenGL context extends over the whole screen
-	glViewport(0, 0, mSize.x, mSize.y);
+	bool errorsFound = false;
 
-	GLuint vertexArrayID; // VAO - vertex array object
-	glGenVertexArrays(1, &vertexArrayID);
-	glBindVertexArray(vertexArrayID);
-}
-
-void Game::initMainLoop() // Initialize a few things before the main loop
-{
-	mResourceManager.setBasePath(getBasePath());
-
-	// Scripts
-	// Only one script for now
-	ResourceManager::scriptPointer mainScript = mResourceManager.addScript(MAIN_SCRIPT_NAME, MAIN_SCRIPT_FILE);
-
-	mainScript->bindInterface(*this);
-	// Run the script to get all of the definitions and all
-	mainScript->run();
-	// Run the script's init function
-	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_INIT);
-
-	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
-
-	EntityManager::lightPointer light(new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60));
-	mEntityManager.addLight(light);
-}
-
-void Game::cleanUp() // Cleans up everything. Call before quitting
-{
-	// Quit
-	// From https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_10.html#SEC10
-	for(int i = 0; i < 1000; i++) // I don't like infinite loops
-	{
-		if(Mix_Init(0))
-			Mix_Quit();
-		else
-			break;
-	}
-
-	Mix_CloseAudio();
-
-	SDL_GL_DeleteContext(mMainContext);
-	SDL_DestroyWindow(mMainWindow);
-	SDL_Quit();
-
-	Utils::LOGPRINT("Game quit successfully.");
-	Utils::closeLogFile();
-}
-
-void Game::doEvents()
-{
-	SDL_Event event;
-	while(SDL_PollEvent(&event))
-	{
-		mInputManager.updateKeyByEvent(event);
-
-		if(event.type == SDL_QUIT)
-			quit();
-	}
-}
-
-void Game::checkForErrors() // Call each frame for safety. Do not call after deleting the OpenGL context.
-{
 	const int maxGLErrors = 1000;
 	bool finishedGLErrors = false;
 
-	for(int i=0; i<maxGLErrors; i++) // Because meh, I don't like infinite loops
+	for(int i = 0; i<maxGLErrors; i++) // Because meh, I don't like infinite loops
 	{
 		GLenum err = glGetError();
-		
-		if(err!=GL_NO_ERROR) // There is an error
+
+		if(err != GL_NO_ERROR) // There is an error
 		{
+			errorsFound = true;
+
 			if(err == GL_INVALID_ENUM)
 				Utils::WARN("OpenGL error: GL_INVALID_ENUM");
 			else if(err == GL_INVALID_VALUE)
@@ -247,7 +304,8 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 				Utils::WARN("OpenGL error: GL_STACK_UNDERFLOW");
 			else if(err == GL_OUT_OF_MEMORY)
 				Utils::WARN("OpenGL error: GL_OUT_OF_MEMORY");
-		} else // No (more) errors!
+		}
+		else // No (more) errors!
 		{
 			finishedGLErrors = true;
 			break;
@@ -267,26 +325,31 @@ void Game::checkForErrors() // Call each frame for safety. Do not call after del
 		Utils::LOGPRINT("SDL message (most of the time you can ignore these): " + message);
 		SDL_ClearError();
 	}
+
+	return errorsFound;
 }
 
-float Game::calculateAspectRatio()
+// Returns the directory where the game is being run (absolute path)
+// In Mac application bundles, this returns the bundle.app/Contents/Resources directory.
+// Fairly heavy function!
+std::string Game::getBasePath()
 {
-	return (  static_cast<float>(mSize.x) / static_cast<float>(mSize.y)  );
-}
+	char *basePathPointer = SDL_GetBasePath(); // Must free this after!
 
-void Game::step(float divider) // Movement and all
-{
-	mEntityManager.step(divider);
+											   // SDL failed to get the base path
+	if(!basePathPointer)
+	{
+		SDL_free(basePathPointer); // Free the memory!
 
-	// Run the script's step()
-	ResourceManager::scriptPointer mainScript = mResourceManager.findScript(MAIN_SCRIPT_NAME);
-	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_STEP);
-}
+		std::string error = "Failed to get base path! Does your system support it? Search online on 'SDL_GetBasePath()' with your system for more information.";
+		Utils::CRASH_FROM_SDL(error);
+		return std::string();
+	}
 
-void Game::render()
-{
-	mEntityManager.render();
-	SDL_GL_SwapWindow(mMainWindow);
+	std::string basePath = basePathPointer;
+	SDL_free(basePathPointer); // SDL_free is a more cross-platform version of free()
+
+	return basePath;
 }
 
 void Game::doMainLoop()
@@ -295,10 +358,10 @@ void Game::doMainLoop()
 	int currentTime = fpsTimer.start();
 
 	// Number of steps we need to do to be where we want to be
-	int numberOfStepsToDo = (currentTime - mLastFrameTime)/mStepLength;
+	int numberOfStepsToDo = (currentTime - mLastFrameTime) / mStepLength;
 
 	doEvents();
-	mGraphicsManager.cleanGraphics(); // Call before step
+	mGraphicsManager->clearScreen(); // Call before step
 
 	if(mLastFrameTime != 0) // Make sure everything is good before moving stuff!
 	{
@@ -313,121 +376,84 @@ void Game::doMainLoop()
 
 	int minTimePerFrame = 1000 / mMaxFramesPerSecond; // In miliseconds
 
-	// If the frame took les ticks than the minimum, delay the next frame, virtually always does this.
+													  // If the frame took les ticks than the minimum, delay the next frame, virtually always does this.
 	if(fpsTimer.getTicks() < minTimePerFrame)
 	{
 		SDL_Delay(minTimePerFrame - fpsTimer.getTicks()); // Delay the remaining time for the ticks per frame wanted
 	}
 }
 
-// Public Interface //
-
-// Initializes the game
-// Returns false if it failed
-bool Game::init()
-{	
-	Utils::LOGPRINT(std::string() + "Starting " + ENGINE_NAME + " v" + ENGINE_VERSION + "!");
-
-	// SDL_INIT_AUDIO for SDL_mixer
-	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO) < 0)
+void Game::doEvents()
+{
+	SDL_Event event;
+	while(SDL_PollEvent(&event))
 	{
-		// Failed
-		Utils::CRASH_FROM_SDL("Unable to initialize SDL!");
-		return false;
+		if(event.type == SDL_QUIT) // For example, closing the window
+			mQuitting = true;
+
+		mInputManager->updateKeyByEvent(event);
 	}
-
-	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) // 2 for stereo
-	{
-		Utils::CRASH_FROM_SDL("Unable to open SDL_mixer!");
-		return false;
-	}
-
-	if(Mix_Init(MIX_INIT_FLAC | MIX_INIT_OGG) < 0)
-	{
-		Utils::CRASH_FROM_SDL("Unable to initialize SDL_mixer!");
-		return false;
-	}
-
-	if(Mix_AllocateChannels(MAX_SOUND_CHANNELS) < 0)
-	{
-		Utils::CRASH_FROM_SDL("Unable to allocate SDL_mixer channels!");
-		return false;
-	}
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, GRAPHICS_OPENGL_MAJOR_VERSION);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, GRAPHICS_OPENGL_MINOR_VERSION);
-
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-	mMainWindow = SDL_CreateWindow(mName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mSize.x, mSize.y, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	
-	if(!mMainWindow) // If the window failed to create, crash
-	{
-		Utils::CRASH_FROM_SDL("Unable to create window!");
-		return false;
-	}
-
-	mMainContext = SDL_GL_CreateContext(mMainWindow); // Create OpenGL context!
-
-	if(!mMainContext)
-	{
-		Utils::CRASH_FROM_SDL("Unable to create OpenGL context! This game requries OpenGL " +
-			std::to_string(GRAPHICS_OPENGL_MAJOR_VERSION) + "." + std::to_string(GRAPHICS_OPENGL_MINOR_VERSION) +
-			". Does your system support it? Try updating your graphics drivers!");
-		return false;
-	}
-
-	SDL_GL_SetSwapInterval(1); // Kind of VSync?
-
-	if(!gladLoadGL()) // Load OpenGL at runtime. I don't use SDL's loader, so no need to use gladLoadGLLoader().
-	{
-		Utils::CRASH("GLAD failed to load OpenGL!");
-		return false;
-	}
-
-	// Output OpenGL version
-	std::string glVersion;
-	glVersion = (const char* )glGetString(GL_VERSION);
-	glVersion = "Graphics: " + glVersion;
-	Utils::LOGPRINT(glVersion);
-	
-	if(!checkCompability()) // This function logs errors
-	{
-		Utils::CRASH("System not compatible, cancelling init.");
-		return false;
-	}
-	
-	setupGraphics();
-	checkForErrors();
-
-	Utils::LOGPRINT("Initialization finished!");
-	mInitialized = true;
-
-	return true;
 }
 
-void Game::startMainLoop() // Starts the main loop
+void Game::step(float divider) // Movement and all
 {
-	if(mInitialized)
+	mEntityManager->step(divider);
+
+	// Run the script's step()
+	ResourceManager::scriptPointer mainScript = mResourceManager->findScript(MAIN_SCRIPT_NAME);
+	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_STEP);
+}
+
+void Game::render()
+{
+	mEntityManager->render();
+	SDL_GL_SwapWindow(mMainWindow);
+}
+
+// Safely stops all systems
+void Game::cleanup()
+{
+	// Quit
+	// From https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_10.html#SEC10
+	for(int i = 0; i < 1000; i++) // I don't like infinite loops
 	{
-		initMainLoop();
+		if(Mix_Init(0))
+			Mix_Quit();
+		else
+			break;
+	}
 
-		while(!mQuitting) // While not quitting. mQuitting is set with quit()
-		{
-			doMainLoop();
-		}
+	SDL_GL_DeleteContext(mMainContext);
+	Mix_CloseAudio();
+	SDL_Quit();
 
-		cleanUp();
-	} else
-		Utils::CRASH("Game was not initialized before launching the main loop!");
+	Utils::LOGPRINT("Game quit successfully.");
+	Utils::closeLogFile();
+}
 
+// Public Interface //
+
+void Game::startMainLoop()
+{
+	while(!mQuitting) // While not quitting
+	{
+		doEvents();
+		doMainLoop();
+	}
+
+	cleanup();
 	return; // Quit!
 }
 
-void Game::quit() // Call this when you want to quit to be clean
+// Useful for Lua
+void Game::quit()
 {
 	mQuitting = true;
+}
+
+float Game::getAspectRatio()
+{
+	return (static_cast<float>(mSize.x) / static_cast<float>(mSize.y));
 }
 
 void Game::setName(const std::string& name)
@@ -447,11 +473,10 @@ void Game::setSize(glm::ivec2 size)
 	mSize = size;
 	SDL_SetWindowSize(mMainWindow, size.x, size.y);
 	
-	// Resize the OpenGL viewport
-	glViewport(0, 0, size.x, size.y);
+	mGraphicsManager->setOutputSize(size);
 
 	// Update camera
-	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
+	mEntityManager->getGameCamera().setAspectRatio(getAspectRatio());
 }
 
 glm::vec2 Game::getSize()
@@ -486,22 +511,22 @@ void Game::reCenterMainWindow()
 	setMainWindowPosition(glm::vec2(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED));
 }
 
-ResourceManager& Game::getResourceManager()
+Game::resourceManagerPointer Game::getResourceManager()
 {
 	return mResourceManager;
 }
 
-InputManager& Game::getInputManager()
+Game::inputManagerPointer Game::getInputManager()
 {
 	return mInputManager;
 }
 
-EntityManager& Game::getEntityManager()
+Game::entityManagerPointer Game::getEntityManager()
 {
 	return mEntityManager;
 }
 
-GraphicsManager& Game::getGraphicsManager()
+Game::graphicsManagerPointer Game::getGraphicsManager()
 {
 	return mGraphicsManager;
 }

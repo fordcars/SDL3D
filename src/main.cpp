@@ -24,15 +24,9 @@
 #include <memory> // For smart pointers. C++ libraries have no .h
 
 int main(int argc, char **argv)
-{
-	// As annoying as it is to call this here, we have since we need to be
-	// able to log as quick as possible (ex: constructing the Game).
-	Utils::clearDataOutput();
-	
+{	
 	Game game;
-	
-	game.init();
-	game.startMainLoop(); // Runs the game, returns when the game quits
+	game.startMainLoop();
 
     return 0;
 }

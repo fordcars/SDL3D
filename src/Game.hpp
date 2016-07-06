@@ -29,57 +29,65 @@
 
 #include "glm/glm.hpp"
 
+#include <memory> // For smart pointers
+#include <string>
+
 class Game
 {
+public:
+	using resourceManagerPointer = std::shared_ptr<ResourceManager>;
+	using inputManagerPointer = std::shared_ptr<InputManager>;
+	using entityManagerPointer = std::shared_ptr<EntityManager>;
+	using graphicsManagerPointer = std::shared_ptr<GraphicsManager>;
+
 private:
 	std::string mName;
-	std::string mLogFile;
 
+	bool mQuitting; // Set to true (through quit()) to quit the game
 	glm::ivec2 mSize;
 	int mMaxFramesPerSecond;
 	
 	int mLastFrameTime; // Time at last frame
 	int mStepLength;
 
-	bool mInitialized; // Set to true after initializing
-	bool mQuitting; // If set to true, the game will quit at the end of the frame
-
 	// Pointers for SDL stuff needed
 	SDL_Window* mMainWindow; // We might have multiple windows one day
 	SDL_GLContext mMainContext; // OpenGl context
 
-	ResourceManager mResourceManager; // On stack, calls its constructor by itself and cleans (deconstructs) itself like magic.
+	// These are pointers since we need to create them after some initialization
+	resourceManagerPointer mResourceManager; // On stack, calls its constructor by itself and cleans (deconstructs) itself like magic.
 									  // But in this case, we need data from the user to create the resource manager, so we
 									  // need a list initialization. See the Game constructor in Game.cpp.
 
-	InputManager mInputManager;
-	EntityManager mEntityManager;
-	GraphicsManager mGraphicsManager;
+	inputManagerPointer mInputManager;
+	entityManagerPointer mEntityManager;
+	graphicsManagerPointer mGraphicsManager;
 
-	static std::string getBasePath();
+	bool init();
+	bool initSDL();
+	bool initContext();
 
 	bool checkCompability();
-	void setupGraphics();
-	void initMainLoop();
-	void cleanUp();
+	bool checkForErrors();
+	std::string getBasePath();
+
+	void doMainLoop();
 
 	void doEvents();
-	void checkForErrors();
-
-	float calculateAspectRatio();
 
 	void step(float divider);
 	void render();
-	void doMainLoop();
+
+	void cleanup();
 
 public:
 	Game();
 	~Game();
 
-	// Vital functions
-	bool init();
 	void startMainLoop();
 	void quit();
+
+	float getAspectRatio();
 
 	// Useful for scripting and other things
 	void setName(const std::string& name);
@@ -92,10 +100,10 @@ public:
 	glm::ivec2 getMainWindowPosition();
 	void reCenterMainWindow();
 
-	ResourceManager& getResourceManager();
-	InputManager& getInputManager();
-	EntityManager& getEntityManager();
-	GraphicsManager& getGraphicsManager();
+	resourceManagerPointer getResourceManager();
+	inputManagerPointer getInputManager();
+	entityManagerPointer getEntityManager();
+	graphicsManagerPointer getGraphicsManager();
 };
 
 #endif // GAME_HPP

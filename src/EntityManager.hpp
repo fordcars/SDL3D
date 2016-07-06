@@ -23,6 +23,7 @@
 #include "Object.hpp"
 #include "Light.hpp"
 #include "Camera.hpp"
+#include "GraphicsManager.hpp"
 
 #include "Box2D.h"
 #include "glm/glm.hpp"
@@ -31,7 +32,6 @@
 #include <vector>
 #include <cstddef> // For std::size_t
 
-class Game;
 class EntityManager
 {
 public: // Public aliases
@@ -42,7 +42,9 @@ public: // Public aliases
 	using lightVector = std::vector<lightPointer>;
 
 private:
-	Game& mGame;
+	using graphicsManagerPointer = std::shared_ptr<GraphicsManager>;
+
+	graphicsManagerPointer mGraphicsManager;
 
 	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.
 
@@ -55,7 +57,7 @@ private:
 	int mPhysicsPositionIterations;
 
 public:
-	EntityManager(Game& game, glm::vec2 gravity, float physicsTimePerStep);
+	EntityManager(graphicsManagerPointer graphicsmanager, glm::vec2 gravity);
 	~EntityManager();
 
 	Camera& getGameCamera();
@@ -71,7 +73,7 @@ public:
 	lightVector& getLights();
 
 	void setPhysicsTimePerStep(float time);
-	float getPhysicsTimePerStep();
+	float getPhysicsTimePerStep() const;
 
 	void step(float divider);
 	void render();

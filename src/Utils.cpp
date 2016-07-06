@@ -101,12 +101,12 @@ void directly_crashFromSDL(const std::string& msg, int line, const char* file)
 {
 	std::string sdlError = SDL_GetError();
 
-	Utils::directly_logprint("\n" + msg, line, file);
+	Utils::directly_logprint("\nSDL error: " + msg, line, file);
 
 	if(!sdlError.empty())
-		Utils::directly_crash("SDL error: " + sdlError); // We already showed the line number and file up top
+		Utils::directly_crash("Error msg from SDL: " + sdlError); // We already showed the line number and file up top
 	else
-		Utils::directly_crash("No SDL error"); // We already showed the line number and file up top
+		Utils::directly_crash("No SDL error msg."); // We already showed the line number and file up top
 
 	SDL_ClearError();
 }

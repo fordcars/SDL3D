@@ -578,7 +578,8 @@ void Script::bindInterface(Game& game)
 		.addFunction("setPower", &Light::setPower)
 		.addFunction("getPower", &Light::getPower)
 
-		.addFunction("setOnState", &Light::setOnState)
+		.addFunction("turnOn", &Light::turnOn)
+		.addFunction("turnOff", &Light::turnOff)
 		.addFunction("isOn", &Light::isOn)
 	.endClass();
 

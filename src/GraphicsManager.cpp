@@ -24,20 +24,24 @@
 
 #include "glad/glad.h"
 #include <algorithm>
+#include <memory>
 
-// According to the std140 layout, see modifyLightBuffer()
+// The size of 1 light in a GPU buffer according to the std140 layout. See modifyLightBuffer()
 // You don't need the 'static' keyword here since it was already declared, like a static function.
 const int GraphicsManager::cLightSize = (sizeof(float) * 4 * 3) + (sizeof(float) * 2);
-// TODOOOO RENAME SDL3D.cpp to main.cpp and MOVE GL+ INITIALIZATION TO HIGHER CLASS THAN GAME (AND INITIALIZE UTILS THERE TOO!), THEN ENTITYMANAGER CALL LIGHT FUNCTION TO GIVE IT INDEX AND GRAPHICSMANAGER
-GraphicsManager::GraphicsManager(Game& game)
-	: mGame(game),
-	mLightBuffer(GL_UNIFORM_BUFFER),
+// TODOOOO MOVE GL+ INITIALIZATION TO HIGHER CLASS THAN GAME (AND INITIALIZE UTILS THERE TOO!), THEN ENTITYMANAGER CALL LIGHT FUNCTION TO GIVE IT INDEX AND GRAPHICSMANAGER
+// New TODO: Remove circular dependencies with Game and Engine and give EntityManager reference to GraphicsManager
+GraphicsManager::GraphicsManager(glm::ivec2 outputSize)
+	: mLightBuffer(GL_UNIFORM_BUFFER),
 	mLightUsedBufferMap(GRAPHICS_MAX_LIGHTS, false) // Fill in the vector with false
 {
+	mOutputSize = outputSize;
 	mBackgroundColor = glm::vec3(0.0f, 0.0f, 1.0f);
-
+	
 	// Alocate the buffer's memory
 	mLightBuffer.setMutableData(GRAPHICS_MAX_LIGHTS * cLightSize, GL_DYNAMIC_DRAW);
+
+	init();
 }
 
 GraphicsManager::~GraphicsManager()
@@ -45,8 +49,19 @@ GraphicsManager::~GraphicsManager()
 	// Do nothing
 }
 
+// Initialize a few graphics stuff
+void GraphicsManager::init()
+{
+	// Make sure the OpenGL context extends over the whole screen
+	glViewport(0, 0, mOutputSize.x, mOutputSize.y);
+
+	GLuint vertexArrayID; // VAO - vertex array object
+	glGenVertexArrays(1, &vertexArrayID);
+	glBindVertexArray(vertexArrayID);
+}
+
 // Call each frame
-void GraphicsManager::cleanGraphics()
+void GraphicsManager::clearScreen()
 {
 	// Set clear color
 	glClearColor(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, 1.0f);
@@ -65,11 +80,23 @@ void GraphicsManager::cleanGraphics()
 	glPolygonMode(GRAPHICS_RASTERIZE_FACE, GRAPHICS_RASTERIZE_MODE);
 }
 
+// Set the draw size in the framebuffer, mostly used internally
+void GraphicsManager::setOutputSize(glm::ivec2 outputSize)
+{
+	mOutputSize = outputSize;
+	glViewport(0, 0, outputSize.x, outputSize.y);
+}
+
+glm::ivec2 GraphicsManager::getOutputSize()
+{
+	return mOutputSize;
+}
+
+
 void GraphicsManager::setBackgroundColor(glm::vec3 color)
 {
 	mBackgroundColor = color;
 }
-
 
 glm::vec3 GraphicsManager::getBackgroundColor()
 {
@@ -78,11 +105,14 @@ glm::vec3 GraphicsManager::getBackgroundColor()
 
 // Returns true on success and false on failure
 // Modifies the uniform buffer with serialized data according to the std140 uniform block layout.
+// Can also be used to add a light in the buffer
 // The light is converted into serialized data with padding
 // according to std140. It is then written to the memory. Technically, all types should be 32-bit floats,
 // which is what OpenGL would want.
-bool GraphicsManager::modifyLightBuffer(const Light& light, int index)
+bool GraphicsManager::updateLightBuffer(const Light& light) // index is an int for Lua and consistency
 {
+	int index = light.getLightBufferIndex();
+
 	if(index < 0 && index >= GRAPHICS_MAX_LIGHTS)
 	{
 		Utils::CRASH("Light uniform buffer index '" + std::to_string(index) + "' to modify out of range!" +
@@ -108,48 +138,43 @@ bool GraphicsManager::modifyLightBuffer(const Light& light, int index)
 	return true;
 }
 
+// Returns -1 on error
 int GraphicsManager::getNextAvailableLightIndex()
 {
 	for(std::size_t i = 0; i < mLightUsedBufferMap.size(); i++)
 		if(mLightUsedBufferMap[i] == false)
 			return i;
 
-	return false; // If all indices are taken, out of memory!
+	return -1; // If all indices are taken, out of memory!
 }
 
 // Add a light according to the GLSL std140 uniform block layout
-// Returns the new light's index, or -1 on error
-int GraphicsManager::addLight(const Light& light)
+// Returns false on error
+bool GraphicsManager::addLight(Light& light)
 {
 	int ourIndex = getNextAvailableLightIndex();
 
-	if(ourIndex == false) // Failed, buffer is full!
+	if(ourIndex == -1) // Failed, buffer is full!
 	{
 		Utils::CRASH("Light uniform buffer out of memory! Cannot add a new light. You can only have up to " +
 			std::to_string(GRAPHICS_MAX_LIGHTS) + " lights.");
-		return -1;
-	}
-
-	modifyLightBuffer(light, ourIndex);
-	return ourIndex;
-}
-
-// Returns true on success, false on failure
-bool GraphicsManager::modifyLight(const Light& light, int index)
-{
-	if(mLightUsedBufferMap[index] == false) // No light here! Better be safe and tell the client.
-	{
-		Utils::CRASH("Light to modify in the uniform buffer at the index '" + std::to_string(index) + "' does not exist!");
 		return false;
 	}
 
-	modifyLightBuffer(light, index);
+	// Set the index of the light to our index (here, lights are used as containers for the indices)
+	// Hint: this is not OOP
+	light.setLightBufferIndex(ourIndex);
+	updateLightBuffer(light);
+
 	return true;
 }
 
+// After calling this, you cannot use the light anymore and you must call addLight() in order to use it again
 // "Frees" memory
-bool GraphicsManager::removeLight(int index)
+bool GraphicsManager::removeLight(Light& light)
 {
+	int index = light.getLightBufferIndex();
+
 	if(index < 0 && index >= GRAPHICS_MAX_LIGHTS)
 	{
 		Utils::CRASH("Light index to remove from uniform buffer out of range! Cannot remove.");
@@ -157,5 +182,21 @@ bool GraphicsManager::removeLight(int index)
 	}
 
 	mLightUsedBufferMap[index] = false; // Memory freed!
+	return true;
+}
+
+// Modify a light (the light must exist in order to be modified)
+// Returns true on success, false on failure
+bool GraphicsManager::modifyLightInBuffer(const Light& light)
+{
+	int index = light.getLightBufferIndex();
+
+	if(mLightUsedBufferMap[index] == false) // No light here! Better be safe and tell the client.
+	{
+		Utils::CRASH("Light to modify in the uniform buffer at the index '" + std::to_string(index) + "' does not exist!");
+		return false;
+	}
+
+	updateLightBuffer(light);
 	return true;
 }

@@ -51,7 +51,7 @@
 
 PhysicsBody::PhysicsBody()
 {
-	init();
+	initMembers();
 
 	if(mType != PHYSICS_BODY_IGNORED)
 		calculateShapes();
@@ -59,7 +59,7 @@ PhysicsBody::PhysicsBody()
 
 PhysicsBody::PhysicsBody(float radius, int type)
 {
-	init();
+	initMembers();
 
 	mType = type;
 
@@ -69,7 +69,7 @@ PhysicsBody::PhysicsBody(float radius, int type)
 
 PhysicsBody::PhysicsBody(constObjectGeometryPointer objectGeometry, bool circularShape, int type)
 {
-	init();
+	initMembers();
 
 	mObjectGeometry = objectGeometry;
 	mIsCircular = circularShape;
@@ -90,7 +90,7 @@ PhysicsBody::PhysicsBody(constObjectGeometryPointer objectGeometry, bool circula
 // Will copy, but will not touch any world
 PhysicsBody::PhysicsBody(const PhysicsBody& other)
 {
-	init();
+	initMembers();
 
 	mObjectGeometry = other.mObjectGeometry;
 
@@ -128,7 +128,7 @@ PhysicsBody::~PhysicsBody()
 	removeFromWorld();
 }
 
-void PhysicsBody::init()
+void PhysicsBody::initMembers()
 {
 	mWorldBody = nullptr;
 	mWorld = nullptr;
@@ -496,7 +496,7 @@ PhysicsBody::fixtureDefVector PhysicsBody::generateFixtureDefsAndSetBodyDef(b2Bo
 	bodyDef.bullet = mIsBullet;
 	bodyDef.fixedRotation = mIsFixtedRotation;
 
-	for(auto &shape : mShapes)
+	for(auto& shape : mShapes)
 	{
 		b2FixtureDef fixtureDef;
 
@@ -559,7 +559,7 @@ bool PhysicsBody::updateWorldBodyFixtures()
 			// This function takes a body def since I wanted to limit the amount of functions that checked the physics body type
 			fixtureDefVector newFixtureDefs = generateFixtureDefsAndSetBodyDef(dummyDef);
 
-			for(auto &fixtureDef : newFixtureDefs)
+			for(auto& fixtureDef : newFixtureDefs)
 				mWorldBody->CreateFixture(&fixtureDef);
 
 			return true;
@@ -864,7 +864,7 @@ glm::vec2 PhysicsBody::getShapesLocal2DCenter() const
 			}
 
 			// Find average center
-			for(auto &centroid : centroids)
+			for(auto& centroid : centroids)
 			{
 				localCenter.x += centroid.x;
 				localCenter.y += centroid.y;
@@ -940,7 +940,7 @@ bool PhysicsBody::addToWorld(b2World* world)
 
 			mWorldBody = world->CreateBody(&bodyDef); // Call this after generating fixture defs!
 
-			for(auto &fixtureDef : fixtureDefs)
+			for(auto& fixtureDef : fixtureDefs)
 				mWorldBody->CreateFixture(&fixtureDef);
 
 			return true;
@@ -967,7 +967,7 @@ void PhysicsBody::removeFromWorld()
 }
 
 // Generates model matrix based on this body's position, rotation and scaling
-glm::mat4 PhysicsBody::generateModelMatrix()
+glm::mat4 PhysicsBody::generateModelMatrix() const
 {
 	glm::mat4 modelM = generateModelMatrix(
 		getPosition(),
@@ -1076,7 +1076,7 @@ void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* came
 		// Put the circle on the object geometry shape (relative to the object geometry)
 		vec2Vector vertices2D = getCircleVertices(circleCenter, circle->m_radius, 10);
 
-		for(auto &vertex2D : vertices2D)
+		for(auto& vertex2D : vertices2D)
 		{
 			localPositions3D.push_back(glm::vec3(
 				vertex2D.x * PHYSICS_PIXELS_PER_METER,

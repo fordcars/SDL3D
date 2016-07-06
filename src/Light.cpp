@@ -21,10 +21,14 @@
 
 Light::Light()
 {
+	mLightBufferIndex = 0; // Will be set when we add this light to the game
+	mModifiedSinceCheck = false;
+
 	mDiffuseColor = glm::vec3(0.0f, 0.0f, 0.0f);
 	mSpecularColor = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	mPower = 60.0f;
+	mIsOn = true;
 }
 
 Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
@@ -42,9 +46,28 @@ Light::~Light()
 	// Do nothing
 }
 
+void Light::setLightBufferIndex(int index)
+{
+	mLightBufferIndex = index;
+}
+
+int Light::getLightBufferIndex() const
+{
+	return mLightBufferIndex;
+}
+
+bool Light::wasModified()
+{
+	bool state = mModifiedSinceCheck;
+	mModifiedSinceCheck = false;
+
+	return state;
+}
+
 void Light::setDiffuseColor(glm::vec3 color)
 {
 	mDiffuseColor = color;
+	mModifiedSinceCheck = true;
 }
 
 glm::vec3 Light::getDiffuseColor() const
@@ -55,6 +78,7 @@ glm::vec3 Light::getDiffuseColor() const
 void Light::setSpecularColor(glm::vec3 color)
 {
 	mSpecularColor = color;
+	mModifiedSinceCheck = true;
 }
 
 glm::vec3 Light::getSpecularColor() const
@@ -65,6 +89,7 @@ glm::vec3 Light::getSpecularColor() const
 void Light::setPower(float power)
 {
 	mPower = power;
+	mModifiedSinceCheck = true;
 }
 
 float Light::getPower() const
@@ -72,12 +97,25 @@ float Light::getPower() const
 	return mPower;
 }
 
-void Light::setOnState(bool onState)
+void Light::turnOn()
 {
-	mOnState = onState;
+	if(!mIsOn) // Not already on (this check prevents an unnecessary unform GPU buffer update)
+	{
+		mIsOn = true;
+		mModifiedSinceCheck = true;
+	}
+}
+
+void Light::turnOff()
+{
+	if(mIsOn) // Not already off (this check prevents an unnecessary unform GPU buffer update)
+	{
+		mIsOn = false;
+		mModifiedSinceCheck = true;
+	}
 }
 
 bool Light::isOn() const
 {
-	return mOnState;
+	return mIsOn;
 }

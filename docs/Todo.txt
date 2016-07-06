@@ -3,6 +3,8 @@
 
 -Fix weird crash on Windows that happens sometimes. It happens a few seconds after you quit. I think it is the same bug as below (game stays alive for a while after quitting) and I think it is due to the fact I am forgetting to quit cleanly a certain .dll.
 -- Only happens when we load resources? Only happens when the game has been running for at least a few seconds?
+-- Maybe a VisualStudio problem? It happened with a completely different project...
+-- Did I fixing by calling SDL_GL_DeleteContext(mMainContext) when quitting?
 
 -Rename rotation to orientation, since it looks like rotation is an operation, and orientation is a state. What about scaling?
 

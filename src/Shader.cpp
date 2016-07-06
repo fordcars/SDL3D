@@ -154,9 +154,9 @@ GLuint Shader::registerUniform(const std::string& uniformName) // Uniform name i
 	
 	if(uniformLocation != -1) // Valid uniform
 	{
-		GLuintMapPair uniformPair(uniformName, uniformLocation);
+		gluintMapPair uniformPair(uniformName, uniformLocation);
 
-		std::pair<GLuintMap::iterator, bool> newlyAddedPair = mUniformMap.insert(uniformPair); // Insert in map
+		std::pair<gluintMap::iterator, bool> newlyAddedPair = mUniformMap.insert(uniformPair); // Insert in map
 	
 		if(newlyAddedPair.second == false) // Already exists!
 		{
@@ -202,7 +202,7 @@ std::string Shader::getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGe
 
 GLuint Shader::findUniform(const std::string& uniformName) const // Returns a read only int
 {
-	GLuintMap::const_iterator got = mUniformMap.find(uniformName); // Const iterator, we should not need to change this GLuint
+	gluintMap::const_iterator got = mUniformMap.find(uniformName); // Const iterator, we should not need to change this GLuint
 
 	if(got == mUniformMap.end())
 	{
