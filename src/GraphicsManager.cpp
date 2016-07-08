@@ -19,18 +19,19 @@
 
 #include "GraphicsManager.hpp"
 
+#include "Light.hpp"
 #include "Utils.hpp"
 #include "Definitions.hpp"
 
-#include "glad/glad.h"
+#include "Shader.hpp"
+
 #include <algorithm>
 #include <memory>
 
 // The size of 1 light in a GPU buffer according to the std140 layout. See modifyLightBuffer()
 // You don't need the 'static' keyword here since it was already declared, like a static function.
 const int GraphicsManager::cLightSize = (sizeof(float) * 4 * 3) + (sizeof(float) * 2);
-// TODOOOO MOVE GL+ INITIALIZATION TO HIGHER CLASS THAN GAME (AND INITIALIZE UTILS THERE TOO!), THEN ENTITYMANAGER CALL LIGHT FUNCTION TO GIVE IT INDEX AND GRAPHICSMANAGER
-// New TODO: Remove circular dependencies with Game and Engine and give EntityManager reference to GraphicsManager
+// New TODO: Give GraphicsManager pointer to ResourceManager and if unforme block is in shader, bind buffer
 GraphicsManager::GraphicsManager(glm::ivec2 outputSize)
 	: mLightBuffer(GL_UNIFORM_BUFFER),
 	mLightUsedBufferMap(GRAPHICS_MAX_LIGHTS, false) // Fill in the vector with false
@@ -150,7 +151,7 @@ int GraphicsManager::getNextAvailableLightIndex()
 
 // Add a light according to the GLSL std140 uniform block layout
 // Returns false on error
-bool GraphicsManager::addLight(Light& light)
+bool GraphicsManager::addLightToBuffer(Light& light)
 {
 	int ourIndex = getNextAvailableLightIndex();
 
@@ -171,7 +172,7 @@ bool GraphicsManager::addLight(Light& light)
 
 // After calling this, you cannot use the light anymore and you must call addLight() in order to use it again
 // "Frees" memory
-bool GraphicsManager::removeLight(Light& light)
+bool GraphicsManager::removeLightFromBuffer(Light& light)
 {
 	int index = light.getLightBufferIndex();
 

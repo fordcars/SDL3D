@@ -85,9 +85,10 @@ bool Game::init()
 	initContext();
 
 	// Libraries are initialized, now we can construct our managers!
-	mResourceManager = resourceManagerPointer(new ResourceManager(getBasePath()));
 	mInputManager = inputManagerPointer(new InputManager());
 	mGraphicsManager = graphicsManagerPointer(new GraphicsManager(mSize));
+
+	mResourceManager = resourceManagerPointer(new ResourceManager(mGraphicsManager, getBasePath()));
 	mEntityManager = entityManagerPointer(new EntityManager(mGraphicsManager, glm::vec2(0.0f)));
 
 	// Scripts

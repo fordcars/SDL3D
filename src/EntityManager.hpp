@@ -23,7 +23,6 @@
 #include "Object.hpp"
 #include "Light.hpp"
 #include "Camera.hpp"
-#include "GraphicsManager.hpp"
 
 #include "Box2D.h"
 #include "glm/glm.hpp"
@@ -32,6 +31,7 @@
 #include <vector>
 #include <cstddef> // For std::size_t
 
+class GraphicsManager;
 class EntityManager
 {
 public: // Public aliases

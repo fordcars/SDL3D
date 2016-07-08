@@ -21,6 +21,8 @@
 
 #include "Entity.hpp"
 
+#include "ObjectGeometry.hpp"
+
 Entity::Entity()
 {
 	// Do nothing

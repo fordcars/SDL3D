@@ -20,8 +20,12 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
+#include "GraphicsManager.hpp"
+
 #include "glad/glad.h"
+
 #include <map>
+#include <memory>
 #include <string>
 
 class Shader
@@ -29,6 +33,10 @@ class Shader
 private:
 	using gluintMap = std::map<std::string, GLuint>; // Un-capitalized gluint in name to avoid confusion with GLuint type
 	using gluintMapPair = std::pair<std::string, GLuint>;
+
+	using graphicsManagerPointer = std::shared_ptr<GraphicsManager>;
+
+	graphicsManagerPointer mGraphicsManager;
 
 	std::string mName; // Useful for error messages, don't change this stupidly
 
@@ -42,8 +50,11 @@ private:
 	void registerUniforms();
 	GLuint registerUniform(const std::string& uniformName);
 
+	void bindUniformBlocks();
+
 public:
-	Shader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+	Shader(graphicsManagerPointer graphicsManager,
+		const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 	~Shader();
 
 	std::string getName() const;

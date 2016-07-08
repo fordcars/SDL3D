@@ -21,12 +21,15 @@
 #define OBJECT_HPP
 
 #include "Entity.hpp"
-#include "ObjectGeometry.hpp"
-#include "Camera.hpp"
 
 #include "glm/glm.hpp"
 #include "glad/glad.h" // OpenGL, rendering and all
 
+#include <memory>
+
+class ObjectGeometry;
+class Shader;
+class Camera;
 class Object : public Entity
 {
 public:

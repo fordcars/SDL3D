@@ -21,6 +21,7 @@
 
 #include "EntityManager.hpp"
 #include "Utils.hpp"
+#include "GraphicsManager.hpp"
 #include "Definitions.hpp"
 
 #include "Box2D/Box2D.h"
@@ -118,7 +119,7 @@ bool EntityManager::addLight(lightPointer light) // Give it an actual object
 	{
 		mLights.push_back(light);
 		light->getPhysicsBody().addToWorld(&mPhysicsWorld);
-		mGraphicsManager->addLight(*light);
+		mGraphicsManager->addLightToBuffer(*light);
 
 		return true;
 	} else
@@ -137,7 +138,7 @@ EntityManager::lightPointer EntityManager::removeLight(std::size_t index)
 		lightVector::iterator iterator = mLights.begin() + index;
 		mLights.erase(iterator);
 
-		mGraphicsManager->removeLight(*removedItem);
+		mGraphicsManager->removeLightFromBuffer(*removedItem);
 		removedItem->getPhysicsBody().removeFromWorld();
 		return removedItem;
 	}
@@ -155,7 +156,7 @@ bool EntityManager::removeLight(lightPointer light)
 
 	if(found != mLights.end()) // If it is found
 	{
-		mGraphicsManager->removeLight(*light);
+		mGraphicsManager->removeLightFromBuffer(*light);
 		light->getPhysicsBody().removeFromWorld();
 		mLights.erase(found); // Remove it
 		return true;

@@ -20,6 +20,8 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+// As sad as it is to include these here, it seems we have to since we are using std smart pointers
+// and until C++17 it (seems) like it is better to do so.
 #include "ResourceManager.hpp"
 #include "InputManager.hpp"
 #include "EntityManager.hpp"

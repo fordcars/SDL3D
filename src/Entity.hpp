@@ -23,9 +23,9 @@
 #define ENTITY_HPP
 
 #include "PhysicsBody.hpp"
-#include "ObjectGeometry.hpp"
 #include "glm/glm.hpp"
 
+class ObjectGeometry;
 class Entity
 {
 private:

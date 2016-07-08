@@ -21,13 +21,14 @@
 #define SHADED_OBJECT_HPP
 
 #include "TexturedObject.hpp"
-#include "ObjectGeometry.hpp"
 #include "Texture.hpp"
 #include "Camera.hpp"
 
 #include <memory> // For smart pointers
 
-class ShadedObject : public TexturedObject // Inherit! 'public' makes the TexturedObject interface public.
+class Camera;
+class ObjectGeometry;
+class ShadedObject : public TexturedObject
 {
 public:
 	ShadedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer,

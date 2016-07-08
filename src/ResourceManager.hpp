@@ -35,6 +35,7 @@
 #include <memory> // For shared_ptr
 
 // All paths are prefixed with mResourceDir
+class GraphicsManager;
 class ResourceManager
 {
 public:
@@ -63,18 +64,22 @@ private:
 	using soundMap     = std::map<std::string, soundPointer>;
 	using soundMapPair = std::pair<std::string, soundPointer>;
 
+	using graphicsManagerPointer = std::shared_ptr<GraphicsManager>;
+
+	graphicsManagerPointer mGraphicsManager;
+
+	// This is directory the game is in or, in a Mac bundle, the bundle's Resources directory. Absolute path.
+	// The base path will be used to fetch resources and setup the script's require paths
+	std::string mBasePath;
+
 	shaderMap mShaderMap; // Map, faster access: shaders[shaderName] = shaderID etc
 	textureMap mTextureMap;
 	objectGeometryGroup_map mObjectGeometryGroupMap;
 	scriptMap mScriptMap;
 	soundMap mSoundMap;
 
-	// This is directory the game is in or, in a Mac bundle, the bundle's Resources directory. Absolute path.
-	// The base path will be used to fetch resources and setup the script's require paths
-	std::string mBasePath;
-
 public:
-	ResourceManager(const std::string& basePath);
+	ResourceManager(graphicsManagerPointer graphicsManager, const std::string& basePath);
 	~ResourceManager();
 
 	static std::string getBasename(const std::string& path);

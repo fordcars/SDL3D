@@ -33,8 +33,9 @@
 
 // Resource names are also kept in their instances, so don't change them randomly without updating the resources
 
-ResourceManager::ResourceManager(const std::string& basePath)
+ResourceManager::ResourceManager(graphicsManagerPointer graphicsManager, const std::string& basePath)
 {
+	mGraphicsManager = graphicsManager;
 	mBasePath = basePath;
 }
 
@@ -106,14 +107,14 @@ std::string ResourceManager::getFullScriptPath(const std::string& path)
 
 /////// Shaders ///////
 // Factory
-// I find that 'add' is a good verb since ResourceManager will TRACK the shader, but my opinion is subject to change.
+// I find that 'add' is a good verb since ResourceManager will track the shader, but my opinion is subject to change.
 ResourceManager::shaderPointer
 	ResourceManager::addShader(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
 	std::string vertexShaderPath = getFullShaderPath(vertexShaderFile); // All resources are in the resource dir
 	std::string fragmentShaderPath = getFullShaderPath(fragmentShaderFile);
 
-	shaderPointer shader(new Shader(name, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
+	shaderPointer shader(new Shader(mGraphicsManager, name, vertexShaderPath, fragmentShaderPath)); // Create a smart pointer of a shader instance
 
 	shaderMapPair shaderPair(name, shader);
 	std::pair<shaderMap::iterator, bool> newlyAddedPair = mShaderMap.insert(shaderPair);

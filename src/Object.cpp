@@ -29,6 +29,10 @@
 
 #include "Object.hpp"
 
+#include "Entity.hpp"
+#include "ObjectGeometry.hpp"
+#include "Camera.hpp"
+
 // Objects copy objectGeometry instead of pointing to them, allow you to modify them
 Object::Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer,
 	bool physicsCircularShape, int physicsType)

@@ -17,16 +17,41 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// Uniform blocks:
+// Lights:
+/*
+#define MAX_LIGHTS 256
+
+uniform numberOfLights;
+
+struct Light
+{
+	vec3 position;
+	vec3 diffuseColor;
+	vec3 specularColor;
+	float power;
+	bool onState;
+}
+
+layout(std140) uniform Lights
+{
+	Light lights[MAX_NUMBER_OF_LIGHTS];
+};
+*/
+
 #include "Shader.hpp"
 #include "Utils.hpp"
+#include "Definitions.hpp"
 
 #include <limits> // For numeric_limits
 
 // Takes the shader paths for better error logs
-Shader::Shader(const std::string& name,
-			   const std::string& vertexShaderPath,
-			   const std::string& fragmentShaderPath)
+Shader::Shader(graphicsManagerPointer graphicsManager, 
+				const std::string& name,
+				const std::string& vertexShaderPath,
+				const std::string& fragmentShaderPath)
 {
+	mGraphicsManager = graphicsManager;
 	mName = name;
 
 	std::string vertexShaderCode = Utils::getFileContents(vertexShaderPath);
@@ -41,6 +66,7 @@ Shader::Shader(const std::string& name,
 		mID = 0; // Make sure it doesn't blow up. Error messages should have already been sent.
 
 	registerUniforms(); // Will find all uniforms in the shader and register them
+	bindUniformBlocks();
 }
 
 Shader::~Shader()
@@ -131,19 +157,30 @@ GLuint Shader::linkShaderProgram(const std::string& shaderProgramName, GLuint ve
 void Shader::registerUniforms()
 {
 	GLint numberOfUniforms; // Number of uniforms in the shader (linked program)
+
+	// Also counts uniforms inside uniform blocks
 	glGetProgramiv(mID, GL_ACTIVE_UNIFORMS, &numberOfUniforms);
 	
 	const GLsizei bufferSize = 256;
 	GLchar uniformNameBuffer[bufferSize]; // Each uniform name will be read to this buffer
 
 	GLsizei numberOfCharsReceived;
-
+	
+	// Uniform indices start at 0 and go up to numberOfUniforms
 	for(int i=0; i < numberOfUniforms; i++)
 	{
-		glGetActiveUniformName(mID, i, bufferSize, &numberOfCharsReceived, uniformNameBuffer);
+		// Check if the uniform is in a uniform block, and ignore it if it is
+		GLint index = 0;
+		GLuint ui = static_cast<GLuint>(i); // The only safe way to generate a GLuint* from an int
+		glGetActiveUniformsiv(mID, 1, &ui, GL_UNIFORM_BLOCK_INDEX, &index);
 
-		// Buffer is converted to an std::string using the null terminator placed by gl
-		registerUniform(uniformNameBuffer);
+		if(index == -1) // Uniform not in uniform block (it is in the default, global one)
+		{
+			glGetActiveUniformName(mID, i, bufferSize, &numberOfCharsReceived, uniformNameBuffer);
+
+			// Buffer is converted to an std::string using the null terminator placed by gl
+			registerUniform(uniformNameBuffer);
+		}
 	}
 }
 
@@ -171,6 +208,16 @@ GLuint Shader::registerUniform(const std::string& uniformName) // Uniform name i
 	}
 
 	return uniformLocation; // Return the newly added uniform location
+}
+
+// Binds the present uniform blocks to the corresponding buffers
+void Shader::bindUniformBlocks()
+{
+	GLuint index = glGetUniformBlockIndex(mID, GRAPHICS_LIGHT_UNIFORM_BLOCK_NAME);
+
+	//if(index != GL_INVALID_INDEX) // The block is defined!
+		//glUniformBlockBinding(mID, index, mLightBuffer.getID());
+	// Ignore if it isn't defined, not all shaders use lights
 }
 
 // PUBLIC

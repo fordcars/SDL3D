@@ -21,13 +21,14 @@
 #define GRAPHICS_MANAGER_HPP
 
 #include "GPUBuffer.hpp"
-#include "Light.hpp"
 
 #include "glm/glm.hpp"
+#include "glad/glad.h"
 
 #include <string>
 #include <vector>
 
+class Light;
 class GraphicsManager
 {
 private:
@@ -57,11 +58,13 @@ public:
 	void setBackgroundColor(glm::vec3 color);
 	glm::vec3 getBackgroundColor();
 
+	// If we eventually add other uniform buffers, get rid of all of these methods and use a
+	// cleaner, more object-oriented approach
 	bool updateLightBuffer(const Light& light);
 	int getNextAvailableLightIndex();
 
-	bool addLight(Light& light);
-	bool removeLight(Light& light);
+	bool addLightToBuffer(Light& light);
+	bool removeLightFromBuffer(Light& light);
 	bool modifyLightInBuffer(const Light& light);
 };
 

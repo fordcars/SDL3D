@@ -22,7 +22,6 @@
 #ifndef OBJECT_GEOMETRY_HPP
 #define OBJECT_GEOMETRY_HPP
 
-#include "Shader.hpp"
 #include "GPUBuffer.hpp"
 
 #include "glm/glm.hpp"
@@ -43,8 +42,6 @@ public:
 	using vec3Vector = std::vector<glm::vec3>;
 
 private:
-	using constShaderPointer = std::shared_ptr<const Shader>; // Const shader
-
 	std::string mName; // Don't change this stupidly
 
 	uintBuffer mIndexBuffer;

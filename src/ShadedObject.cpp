@@ -18,6 +18,8 @@
 ///////////////////////////////////////////////////////////////////////
 
 #include "ShadedObject.hpp"
+#include "ObjectGeometry.hpp"
+#include "Camera.hpp"
 #include "Utils.hpp"
 
 // In:

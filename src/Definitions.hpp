@@ -36,7 +36,9 @@
 #define GRAPHICS_RASTERIZE_FACE GL_FRONT_AND_BACK
 #define GRAPHICS_RASTERIZE_MODE GL_FILL
 
-#define GRAPHICS_MAX_LIGHTS 256
+// Remember to change the uniform block definition in the Shader.cpp comment when changing this
+#define GRAPHICS_LIGHT_UNIFORM_BLOCK_NAME "Lights"
+#define GRAPHICS_MAX_LIGHTS 1000
 
 // Defines how many chunk sounds can exist. A super high number exceeding memory could segfault!
 #define MAX_SOUND_CHANNELS 50

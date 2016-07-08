@@ -21,12 +21,12 @@
 #define TEXTURED_OBJECT_HPP
 
 #include "Object.hpp"
-#include "ObjectGeometry.hpp"
 #include "Texture.hpp"
-#include "Camera.hpp"
 
 #include <memory> // For smart pointers
 
+class ObjectGeometry;
+class Camera;
 class TexturedObject : public Object // Inherit! 'public' is required here
 {
 public:

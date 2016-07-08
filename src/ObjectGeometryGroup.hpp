@@ -27,7 +27,7 @@
 #include <vector>
 #include <map>
 
-// Fancy! You can group object geometries together. Ex: levels, complex objects, animations, etc
+// Fancy! You can group object geometries together. Ex: levels, complex objects, animations, etc.
 class ObjectGeometryGroup
 {
 public:

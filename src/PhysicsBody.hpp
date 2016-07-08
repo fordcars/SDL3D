@@ -24,6 +24,7 @@
 
 #include "Definitions.hpp"
 #include "ObjectGeometry.hpp"
+#include "Shader.hpp" // It would be fun to get rid of this include, but it is unsafe with std::shared_ptr in C++11
 
 #include "Box2D.h"
 
@@ -34,7 +35,6 @@
 #include <vector>
 #include <string>
 
-class Shader;
 class Camera;
 class PhysicsBody
 {
