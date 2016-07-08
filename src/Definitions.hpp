@@ -27,7 +27,7 @@
 #include <memory>
 
 #define ENGINE_NAME "SDL3D"
-#define ENGINE_VERSION "0.1"
+#define ENGINE_VERSION "0.2"
 
 // Graphics
 #define GRAPHICS_OPENGL_MAJOR_VERSION 3
