@@ -22,6 +22,8 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include "glad/glad.h"
+
 #include <string>
 #include <vector>
 #include <cstddef> // For std::size_t
@@ -50,6 +52,8 @@ namespace Utils
 
 	std::vector<std::string>& splitString(const std::string& s, char delim, std::vector<std::string>& elems);
 	std::vector<std::string> splitString(const std::string& s, char delim);
+
+	std::string getGLErrorString(GLenum errorCode);
 
 	// Template functions
 	// Returns the size of the vector's data, in bytes

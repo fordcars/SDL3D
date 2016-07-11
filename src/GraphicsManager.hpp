@@ -25,6 +25,7 @@
 #include "glm/glm.hpp"
 #include "glad/glad.h"
 
+#include <cstddef> // For std::size_t
 #include <string>
 #include <vector>
 
@@ -32,11 +33,14 @@ class Light;
 class GraphicsManager
 {
 private:
-	static const int cLightSize;
+	using uniformBlockBuffer = GPUBuffer<float>;
+
+	static const std::size_t cLightSize;
 
 	glm::ivec2 mOutputSize;
 	glm::vec3 mBackgroundColor;
-	GPUBuffer<float> mLightBuffer; // Uniform buffer
+	int mLightCount; // Useful for some guys
+	uniformBlockBuffer mLightBuffer; // Uniform buffer
 
 	// Since all lights are the sime size, we can easily manage the uniform buffer's memory
 	// by having slots. Each slot has a 0-based index. When we remove lights, we create holes.
@@ -46,20 +50,25 @@ private:
 	std::vector<bool> mLightUsedBufferMap;
 
 public:
+	static const GLuint cLightBindingPoint;
+
 	GraphicsManager(glm::ivec2 outputSize);
 	~GraphicsManager();
 	void init();
+	void initBuffers();
 
 	void clearScreen();
 
 	void setOutputSize(glm::ivec2 outputSize);
-	glm::ivec2 getOutputSize();
+	glm::ivec2 getOutputSize() const;
 
 	void setBackgroundColor(glm::vec3 color);
-	glm::vec3 getBackgroundColor();
+	glm::vec3 getBackgroundColor() const;
 
 	// If we eventually add other uniform buffers, get rid of all of these methods and use a
 	// cleaner, more object-oriented approach
+	int getLightCount() const;
+	uniformBlockBuffer& getLightBuffer();
 	bool updateLightBuffer(const Light& light);
 	int getNextAvailableLightIndex();
 

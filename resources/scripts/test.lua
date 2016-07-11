@@ -49,7 +49,7 @@ local function foo()
 	local texture = resourceManager:findTexture("suzanne")
 	M.building = ShadedObject(resourceManager:findObjectGeometryGroup("building"):getObjectGeometries()[1], shader, resourceManager:findTexture("building"), false, PhysicsBodyType.Dynamic)
 	
-	local light = Light(Vec3(4, 4, 4), Vec3(1, 1, 1), Vec3(1, 1, 1), 60)
+	local light = Light(Vec3(4, 4, 4), Vec3(1, 1, 1), Vec3(1, 1, 1), 30) -- Color is 1-based
 	entityManager:addLight(light)
 	
 	local maxCoord = 0

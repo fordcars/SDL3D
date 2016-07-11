@@ -151,4 +151,22 @@ std::vector<std::string> splitString(const std::string& s, char delim)
 	splitString(s, delim, elems);
 	return elems;
 }
+
+std::string getGLErrorString(GLenum errorCode)
+{
+	if(errorCode == GL_INVALID_ENUM)
+		return "GL_INVALID_ENUM";
+	else if(errorCode == GL_INVALID_VALUE)
+		return "GL_INVALID_VALUE";
+	else if(errorCode == GL_INVALID_OPERATION)
+		return "GL_INVALID_OPERATION";
+	else if(errorCode == GL_STACK_OVERFLOW)
+		return "GL_STACK_OVERFLOW";
+	else if(errorCode == GL_STACK_UNDERFLOW)
+		return "GL_STACK_UNDERFLOW";
+	else if(errorCode == GL_OUT_OF_MEMORY)
+		return "GL_OUT_OF_MEMORY";
+
+	return "GL error string not found";
+}
 }

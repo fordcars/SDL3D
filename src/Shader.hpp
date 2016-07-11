@@ -57,6 +57,8 @@ public:
 		const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 	~Shader();
 
+	graphicsManagerPointer getGraphicsManager() const;
+
 	std::string getName() const;
 	GLuint getID() const;
 	static std::string getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog);

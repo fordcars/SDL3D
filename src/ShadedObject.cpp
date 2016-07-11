@@ -34,6 +34,29 @@
 // - mat4 projectionMatrix
 // - mat4 normalMatrix
 // - sampler2D textureSampler
+// - int lightCount
+
+// Uniform blocks:
+// Lights:
+/*
+#define MAX_LIGHTS 1000
+
+uniform numberOfLights;
+
+struct Light
+{
+vec3 position;
+vec3 diffuseColor;
+vec3 specularColor;
+float power;
+float isOn; // 1.0 if the light is on, 0.0 if it is off
+}
+
+layout(std140) uniform Lights
+{
+Light lights[MAX_NUMBER_OF_LIGHTS];
+};
+*/
 
 ShadedObject::ShadedObject(constObjectGeometryPointer objectGeometry,
 						   constShaderPointer shaderPointer, constTexturePointer texturePointer,
@@ -70,8 +93,8 @@ void ShadedObject::render(const Camera& camera)
 	glUniformMatrix4fv(getShader()->findUniform("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);
 	//glUniformMatrix4fv(getShader()->findUniform("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(getShader()->findUniform("normalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-
 	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now
+	glUniform1i(getShader()->findUniform("lightCount"), getShader()->getGraphicsManager()->getLightCount());
 
 	// Attribute 0, position buffer
 	glEnableVertexAttribArray(0);

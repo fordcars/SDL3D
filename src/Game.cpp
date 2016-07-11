@@ -38,6 +38,7 @@
 #include <cstddef> // For std::size_t
 #include <climits> // For CHAR_BIT
 #include <array>
+#include <cstdarg> // For glad debug callbacks
 
 // With the help of:
 // https://www.opengl.org/wiki/Tutorial1:_Creating_a_Cross_Platform_OpenGL_3.2_Context_in_SDL_%28C_/_SDL%29
@@ -143,6 +144,20 @@ bool Game::initSDL()
 	return true;
 }
 
+// Make sure OpenGL is initialized before calling this! (Hint: it is)
+void postCallbackForGladDebug(const char* name, void* funcPtr, int argLength, ...)
+{
+	GLenum error = glGetError();
+	
+	if(error != GL_NO_ERROR) // Something went wrong!
+	{
+		Utils::LOGPRINT("");
+		Utils::WARN("OpenGL error during function '" + std::string(name) + "'!");
+		Utils::LOGPRINT("OpenGL error message: '" + Utils::getGLErrorString(error) + "'.");
+		Utils::LOGPRINT("");
+	}
+}
+
 // This method initializes the graphics context, thus initializing OpenGL.
 // You cannot call anything from OpenGL before calling this.
 // Returns false on failure
@@ -190,6 +205,13 @@ bool Game::initContext()
 		Utils::CRASH_FROM_SDL("Unable to set current context!");
 		return false;
 	}
+
+// Setup glad debug callback if glad was generated with the C/C++ Debug generator
+// Note: right now it does not seem to work, but it looks like the problem
+// is on glad's side, but I am not sure.
+#ifdef GLAD_DEBUG
+	glad_set_post_callback(&postCallbackForGladDebug);
+#endif
 
 	// Print OpenGL information
 	// Since OpenGL gives GLubytes, we need to reinterpret them into chars (unsigned to signed)
@@ -282,29 +304,17 @@ bool Game::checkForErrors()
 {
 	bool errorsFound = false;
 
-	const int maxGLErrors = 1000;
+	const int maxGLErrors = 1000; // Because meh, I don't like infinite loops
 	bool finishedGLErrors = false;
 
-	for(int i = 0; i<maxGLErrors; i++) // Because meh, I don't like infinite loops
+	for(int i = 0; i<maxGLErrors; i++)
 	{
 		GLenum err = glGetError();
 
 		if(err != GL_NO_ERROR) // There is an error
 		{
 			errorsFound = true;
-
-			if(err == GL_INVALID_ENUM)
-				Utils::WARN("OpenGL error: GL_INVALID_ENUM");
-			else if(err == GL_INVALID_VALUE)
-				Utils::WARN("OpenGL error: GL_INVALID_VALUE");
-			else if(err == GL_INVALID_OPERATION)
-				Utils::WARN("OpenGL error: GL_INVALID_OPERATION");
-			else if(err == GL_STACK_OVERFLOW)
-				Utils::WARN("OpenGL error: GL_STACK_OVERFLOW");
-			else if(err == GL_STACK_UNDERFLOW)
-				Utils::WARN("OpenGL error: GL_STACK_UNDERFLOW");
-			else if(err == GL_OUT_OF_MEMORY)
-				Utils::WARN("OpenGL error: GL_OUT_OF_MEMORY");
+			Utils::WARN("OpenGL error: " + Utils::getGLErrorString(err));
 		}
 		else // No (more) errors!
 		{

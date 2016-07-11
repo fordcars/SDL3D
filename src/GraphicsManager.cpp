@@ -30,17 +30,18 @@
 
 // The size of 1 light in a GPU buffer according to the std140 layout. See modifyLightBuffer()
 // You don't need the 'static' keyword here since it was already declared, like a static function.
-const int GraphicsManager::cLightSize = (sizeof(float) * 4 * 3) + (sizeof(float) * 2);
-// New TODO: Give GraphicsManager pointer to ResourceManager and if unforme block is in shader, bind buffer
+const std::size_t GraphicsManager::cLightSize = 16 * sizeof(float);
+
+// Public
+const GLuint GraphicsManager::cLightBindingPoint = 0;
+
 GraphicsManager::GraphicsManager(glm::ivec2 outputSize)
 	: mLightBuffer(GL_UNIFORM_BUFFER),
 	mLightUsedBufferMap(GRAPHICS_MAX_LIGHTS, false) // Fill in the vector with false
 {
 	mOutputSize = outputSize;
 	mBackgroundColor = glm::vec3(0.0f, 0.0f, 1.0f);
-	
-	// Alocate the buffer's memory
-	mLightBuffer.setMutableData(GRAPHICS_MAX_LIGHTS * cLightSize, GL_DYNAMIC_DRAW);
+	mLightCount = 0;
 
 	init();
 }
@@ -59,6 +60,21 @@ void GraphicsManager::init()
 	GLuint vertexArrayID; // VAO - vertex array object
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
+
+	initBuffers();
+}
+
+void GraphicsManager::initBuffers()
+{
+	// Alocate the buffer's memory
+	mLightBuffer.setMutableData(GRAPHICS_MAX_LIGHTS * cLightSize, GL_DYNAMIC_DRAW);
+
+	// Bind the buffer to the binding point
+	// Information: how do we bind a buffer to a uniform block? We don't.
+	// Instead, we bind a buffer to a binding point (between 0 and a maximum) and
+	// bind the uniform block to this same binding point.
+	mLightBuffer.bind(); // Bind manually to target since we are calling a gl function directly
+	glBindBufferRange(mLightBuffer.getTarget(), cLightBindingPoint, mLightBuffer.getID(), 0, mLightBuffer.getSize());
 }
 
 // Call each frame
@@ -88,7 +104,7 @@ void GraphicsManager::setOutputSize(glm::ivec2 outputSize)
 	glViewport(0, 0, outputSize.x, outputSize.y);
 }
 
-glm::ivec2 GraphicsManager::getOutputSize()
+glm::ivec2 GraphicsManager::getOutputSize() const
 {
 	return mOutputSize;
 }
@@ -99,17 +115,32 @@ void GraphicsManager::setBackgroundColor(glm::vec3 color)
 	mBackgroundColor = color;
 }
 
-glm::vec3 GraphicsManager::getBackgroundColor()
+glm::vec3 GraphicsManager::getBackgroundColor() const
 {
 	return mBackgroundColor;
+}
+
+int GraphicsManager::getLightCount() const
+{
+	return mLightCount;
+}
+
+GraphicsManager::uniformBlockBuffer& GraphicsManager::getLightBuffer()
+{
+	return mLightBuffer;
 }
 
 // Returns true on success and false on failure
 // Modifies the uniform buffer with serialized data according to the std140 uniform block layout.
 // Can also be used to add a light in the buffer
 // The light is converted into serialized data with padding
-// according to std140. It is then written to the memory. Technically, all types should be 32-bit floats,
-// which is what OpenGL would want.
+// according to std140. It is then written to the memory. 
+// Keep in mind the padding is only to align the data.
+// So, the padding of each data is dependent on what follows next.
+// For example, a single vec3 followed by a float would not require padding
+// since the vec3 would be at the first address and the float
+// requires a 4-byte alignement, which a vec3 (3 * 4 bytes = 12)
+// is compliant (the float would be at the address 12, 12%4 = 0).
 bool GraphicsManager::updateLightBuffer(const Light& light) // index is an int for Lua and consistency
 {
 	int index = light.getLightBufferIndex();
@@ -121,21 +152,24 @@ bool GraphicsManager::updateLightBuffer(const Light& light) // index is an int f
 		return false;
 	}
 
-	glm::vec3 position = light.getPhysicsBody().getPosition();
+	glm::vec3 position = light.getPhysicsBody().getPosition() * PHYSICS_PIXELS_PER_METER;
 	glm::vec3 diffuseColor = light.getDiffuseColor();
 	glm::vec3 specularColor = light.getSpecularColor();
 
 	std::vector<float> data = {
-		position.x, position.y, position.z, 0, // Vec3 padding required by std140
-		diffuseColor.r, diffuseColor.g, diffuseColor.b, 0,
-		specularColor.r, specularColor.g, specularColor.b, 0,
+		position.x, position.y, position.z, 0.0f, // Vec3 padding required by std140 for alignment
+		diffuseColor.r, diffuseColor.g, diffuseColor.b, 0.0f,
+		specularColor.r, specularColor.g, specularColor.b, // No padding necessary here
 		light.getPower(),
-		static_cast<float>(light.isOn())
+		static_cast<float>(light.isOn()), // Making this a real GLboolean is too complicated for me, make it a float
+		0.0f, // Padding to make the size of the struct a multiple of 4 floats, as required by std140
+		0.0f,
+		0.0f
 	};
-
+	
 	mLightBuffer.modify(index * cLightSize, data);
 	mLightUsedBufferMap[index] = true; // Set the index as being used if it wasn't already
-
+	
 	return true;
 }
 
@@ -167,6 +201,7 @@ bool GraphicsManager::addLightToBuffer(Light& light)
 	light.setLightBufferIndex(ourIndex);
 	updateLightBuffer(light);
 
+	mLightCount++;
 	return true;
 }
 
@@ -183,6 +218,8 @@ bool GraphicsManager::removeLightFromBuffer(Light& light)
 	}
 
 	mLightUsedBufferMap[index] = false; // Memory freed!
+
+	mLightCount--;
 	return true;
 }
 

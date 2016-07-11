@@ -97,6 +97,13 @@ public:
 		mTarget = target;
 	}
 
+	GLenum getTarget()
+	{
+		return mTarget;
+	}
+
+	// Always call before doing stuff to the buffer manually
+	// (and with member functions here if auto bind is not enabled)
 	void bind(GLenum target) const
 	{
 		if(mAutoBind)

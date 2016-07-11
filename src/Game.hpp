@@ -57,10 +57,7 @@ private:
 	SDL_GLContext mMainContext; // OpenGl context
 
 	// These are pointers since we need to create them after some initialization
-	resourceManagerPointer mResourceManager; // On stack, calls its constructor by itself and cleans (deconstructs) itself like magic.
-									  // But in this case, we need data from the user to create the resource manager, so we
-									  // need a list initialization. See the Game constructor in Game.cpp.
-
+	resourceManagerPointer mResourceManager;
 	inputManagerPointer mInputManager;
 	entityManagerPointer mEntityManager;
 	graphicsManagerPointer mGraphicsManager;
@@ -71,10 +68,10 @@ private:
 
 	bool checkCompability();
 	bool checkForErrors();
+
 	std::string getBasePath();
 
 	void doMainLoop();
-
 	void doEvents();
 
 	void step(float divider);

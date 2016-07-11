@@ -86,6 +86,6 @@
 
 // Constants
 #define CONST_PI 3.14159f
-#define CONST_TWO_PI 2 * CONST_PI
+#define CONST_TWO_PI 6.28319f
 
 #endif // DEFINITIONS_HPP

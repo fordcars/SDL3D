@@ -33,6 +33,7 @@ private:
 
 	// Will be true if it was modified this frame. Needed since lights have to be modified in the GPU buffer.
 	bool mModifiedSinceCheck;
+	glm::vec3 mPositionAtLastCheck; // Since the position is store in physics body
 
 	glm::vec3 mDiffuseColor; // Virtually all of the time, diffuse color and specular color will be white
 	glm::vec3 mSpecularColor;

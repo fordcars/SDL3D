@@ -34,15 +34,41 @@ out vec3 color;
 
 // Values that stay constant for the whole mesh
 uniform sampler2D textureSampler;
-//uniform vec3 lightColor;
-//uniform float lightPower
+uniform int lightCount;
+
+#define MAX_LIGHTS 1000
+
+uniform int numberOfLights;
+
+struct Light
+{
+	vec3 position;
+	vec3 diffuseColor; // TODOOOOOOOOOOO::::Combine with ambient color!
+	vec3 specularColor;
+	float power;
+	float isOn;
+};
+
+layout(std140) uniform Lights
+{
+	Light lights[MAX_LIGHTS];
+};
 
 void main()
 {
+	vec3 lightPosition_worldspace = vec3(0, 0, 0);
+
+	if(0 < lightCount)
+	{
+		lightPosition_worldspace = lights[0].position;
+	}
+	
 	//DEBUG
-	vec3 lightPosition_worldspace = vec3(400, 400, 400);
-	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-	float lightPower = 300000.0;
+	vec3 lightColor = lights[0].specularColor;
+	float lightPower = lights[0].power;
+	
+	if(lights[0].isOn == 0.0)
+		lightPower = 0.0;
 	
 	vec3 textureColor = texture(textureSampler, UV).rgb;
 

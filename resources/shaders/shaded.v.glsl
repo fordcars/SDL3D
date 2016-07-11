@@ -40,10 +40,36 @@ out vec3 lightDirection_cameraspace;
 out vec3 vertexPosition_worldspace;
 out vec3 eyeDirection_cameraspace;
 
+
+
+
+
+#define MAX_LIGHTS 1000
+
+uniform int numberOfLights;
+
+struct Light
+{
+	vec3 position;
+	vec3 diffuseColor;
+	vec3 specularColor;
+	float power;
+	float isOn;
+};
+
+layout(std140) uniform Lights
+{
+	Light lights[MAX_LIGHTS];
+};
+
+
+
+
+
 void main()
 {
 	//DEBUG
-	vec3 lightPosition_worldspace = vec3(400, 400, 400);
+	vec3 lightPosition_worldspace = lights[0].position;
 	
 	// UV of the vertex
 	UV = vertexUV;

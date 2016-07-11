@@ -17,28 +17,6 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-// Uniform blocks:
-// Lights:
-/*
-#define MAX_LIGHTS 256
-
-uniform numberOfLights;
-
-struct Light
-{
-	vec3 position;
-	vec3 diffuseColor;
-	vec3 specularColor;
-	float power;
-	bool onState;
-}
-
-layout(std140) uniform Lights
-{
-	Light lights[MAX_NUMBER_OF_LIGHTS];
-};
-*/
-
 #include "Shader.hpp"
 #include "Utils.hpp"
 #include "Definitions.hpp"
@@ -215,12 +193,17 @@ void Shader::bindUniformBlocks()
 {
 	GLuint index = glGetUniformBlockIndex(mID, GRAPHICS_LIGHT_UNIFORM_BLOCK_NAME);
 
-	//if(index != GL_INVALID_INDEX) // The block is defined!
-		//glUniformBlockBinding(mID, index, mLightBuffer.getID());
+	if(index != GL_INVALID_INDEX) // The block is defined!
+		glUniformBlockBinding(mID, index, GraphicsManager::cLightBindingPoint);
 	// Ignore if it isn't defined, not all shaders use lights
 }
 
 // PUBLIC
+
+Shader::graphicsManagerPointer Shader::getGraphicsManager() const
+{
+	return mGraphicsManager;
+}
 
 std::string Shader::getName() const
 {

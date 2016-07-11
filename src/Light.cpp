@@ -23,6 +23,7 @@ Light::Light()
 {
 	mLightBufferIndex = 0; // Will be set when we add this light to the game
 	mModifiedSinceCheck = false;
+	mPositionAtLastCheck = getPhysicsBody().getPosition();
 
 	mDiffuseColor = glm::vec3(0.0f, 0.0f, 0.0f);
 	mSpecularColor = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -35,10 +36,15 @@ Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor
 {
 	getPhysicsBody().setPosition(position);
 
+	mLightBufferIndex = 0; // Will be set when we add this light to the game
+	mModifiedSinceCheck = false;
+	mPositionAtLastCheck = getPhysicsBody().getPosition();
+
 	mDiffuseColor = diffuseColor;
 	mSpecularColor = specularColor;
 
 	mPower = power;
+	mIsOn = true;
 }
 
 Light::~Light()
@@ -58,10 +64,16 @@ int Light::getLightBufferIndex() const
 
 bool Light::wasModified()
 {
-	bool state = mModifiedSinceCheck;
+	bool modifiedSince = mModifiedSinceCheck;
 	mModifiedSinceCheck = false;
 
-	return state;
+	if(mPositionAtLastCheck != getPhysicsBody().getPosition())
+	{
+		modifiedSince = true;
+		mPositionAtLastCheck = getPhysicsBody().getPosition();
+	}
+
+	return modifiedSince;
 }
 
 void Light::setDiffuseColor(glm::vec3 color)

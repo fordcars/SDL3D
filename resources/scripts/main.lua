@@ -33,6 +33,9 @@ function gameStep()
 	
 	local rotation = test.firstMonkey:getPhysicsBody():getRotation()
 	test.firstMonkey:getPhysicsBody():setRotation(Vec3(rotation.x + 0.1, rotation.y, rotation.z))
+	
+	--entityManager:getLights()[1]:setSpecularColor(Vec3(entityManager:getLights()[1]:getSpecularColor().r - 0.001, 1, 1))
+	entityManager:getLights()[1]:getPhysicsBody():setPosition(camera:getPhysicsBody():getPosition())
 end
 
 -- http://www.scs.ryerson.ca/~danziger/mth141/Handouts/Slides/projections.pdf
