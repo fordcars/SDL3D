@@ -27,6 +27,7 @@ function gameStep()
 		local physicsBody = v:getPhysicsBody()
 		physicsBody:renderDebugShape(shader, camera)
 	end
+	camera:getPhysicsBody():renderDebugShapeWithCoord(resourceManager:findShader("basic"), camera, 0.0)
 	
 	local buildingPosition = test.building:getPhysicsBody():getPosition()
 	test.building:getPhysicsBody():setPosition(Vec3(buildingPosition.x, 0, 0))
@@ -36,6 +37,11 @@ function gameStep()
 	
 	--entityManager:getLights()[1]:setSpecularColor(Vec3(entityManager:getLights()[1]:getSpecularColor().r - 0.001, 1, 1))
 	entityManager:getLights()[1]:getPhysicsBody():setPosition(camera:getPhysicsBody():getPosition())
+	
+	math.randomseed(os.time()) -- To get random numbers, calling this each frame limits the color change to 1 per second
+	entityManager:getLights()[1]:setSpecularColor(Vec3(math.random(), math.random(), math.random()))
+	
+	--entityManager:getLights()[1]:setSpecularColor(Vec3(-1, -1, -1))
 end
 
 -- http://www.scs.ryerson.ca/~danziger/mth141/Handouts/Slides/projections.pdf
@@ -50,8 +56,6 @@ function doControls()
 	
 	local camera = entityManager:getGameCamera()
 	local cameraPhysicsBody = camera:getPhysicsBody()
-	
-	cameraPhysicsBody:renderDebugShapeWithCoord(resourceManager:findShader("basic"), camera, 0.0)
 
 	-- Movement
 	if(inputManager:isKeyPressed(KeyCode.LSHIFT)) then

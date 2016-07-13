@@ -17,6 +17,10 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// Light buffer: When we add a light to the buffer, it is always added to the end of it.
+// When we remove a light, the last light of the buffer is moved into the hole we've created (if we did).
+// This guarantees contiguousness, but not order, which is fine in our case. This makes the shader cleaner.
+
 #include "GraphicsManager.hpp"
 
 #include "Light.hpp"
@@ -36,8 +40,7 @@ const std::size_t GraphicsManager::cLightSize = 16 * sizeof(float);
 const GLuint GraphicsManager::cLightBindingPoint = 0;
 
 GraphicsManager::GraphicsManager(glm::ivec2 outputSize)
-	: mLightBuffer(GL_UNIFORM_BUFFER),
-	mLightUsedBufferMap(GRAPHICS_MAX_LIGHTS, false) // Fill in the vector with false
+	: mLightBuffer(GL_UNIFORM_BUFFER)
 {
 	mOutputSize = outputSize;
 	mBackgroundColor = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -109,7 +112,6 @@ glm::ivec2 GraphicsManager::getOutputSize() const
 	return mOutputSize;
 }
 
-
 void GraphicsManager::setBackgroundColor(glm::vec3 color)
 {
 	mBackgroundColor = color;
@@ -147,7 +149,7 @@ bool GraphicsManager::updateLightBuffer(const Light& light) // index is an int f
 
 	if(index < 0 && index >= GRAPHICS_MAX_LIGHTS)
 	{
-		Utils::CRASH("Light uniform buffer index '" + std::to_string(index) + "' to modify out of range!" +
+		Utils::CRASH("Light uniform buffer index '" + std::to_string(index) + "' to update out of range!" +
 			" It cannot be under 0 and must be under " + std::to_string(GRAPHICS_MAX_LIGHTS) + ".");
 		return false;
 	}
@@ -168,26 +170,14 @@ bool GraphicsManager::updateLightBuffer(const Light& light) // index is an int f
 	};
 	
 	mLightBuffer.modify(index * cLightSize, data);
-	mLightUsedBufferMap[index] = true; // Set the index as being used if it wasn't already
-	
 	return true;
-}
-
-// Returns -1 on error
-int GraphicsManager::getNextAvailableLightIndex()
-{
-	for(std::size_t i = 0; i < mLightUsedBufferMap.size(); i++)
-		if(mLightUsedBufferMap[i] == false)
-			return i;
-
-	return -1; // If all indices are taken, out of memory!
 }
 
 // Add a light according to the GLSL std140 uniform block layout
 // Returns false on error
 bool GraphicsManager::addLightToBuffer(Light& light)
 {
-	int ourIndex = getNextAvailableLightIndex();
+	int ourIndex = mLightCount; // Add it to the end of the buffer
 
 	if(ourIndex == -1) // Failed, buffer is full!
 	{
@@ -213,13 +203,28 @@ bool GraphicsManager::removeLightFromBuffer(Light& light)
 
 	if(index < 0 && index >= GRAPHICS_MAX_LIGHTS)
 	{
-		Utils::CRASH("Light index to remove from uniform buffer out of range! Cannot remove.");
+		Utils::CRASH("Light at index '" + std::to_string(index) + "' to remove from uniform buffer"
+			" out of range! Cannot remove.");
+		return false;
+	} else if(index >= mLightCount)
+	{
+		Utils::CRASH("Light at index '" + std::to_string(index) + "' to remove does not exist! Remember, the index is 0-based.");
 		return false;
 	}
 
-	mLightUsedBufferMap[index] = false; // Memory freed!
+	// Not the last light of the buffer (also true when it is the last light in the buffer)
+	if(index != mLightCount-1)
+	{
+		// Copy the last light of the buffer into the "hole"
 
-	mLightCount--;
+		// Read the last light
+		std::vector<float> lastLight =  mLightBuffer.read(cLightSize * (mLightCount - 1), cLightSize);
+
+		// Write it to the hole
+		mLightBuffer.modify(index * cLightSize, lastLight);
+	}
+
+	mLightCount--; // Now we have one less light, essentially "removing" the last light
 	return true;
 }
 
@@ -229,9 +234,11 @@ bool GraphicsManager::modifyLightInBuffer(const Light& light)
 {
 	int index = light.getLightBufferIndex();
 
-	if(mLightUsedBufferMap[index] == false) // No light here! Better be safe and tell the client.
+	// No light here! Better be safe and tell the client.
+	if(index >= mLightCount || index < 0)
 	{
-		Utils::CRASH("Light to modify in the uniform buffer at the index '" + std::to_string(index) + "' does not exist!");
+		Utils::CRASH("Light at index '" + std::to_string(index) + "' to modify does not exist! "
+			"Remember, the index is 0-based.");
 		return false;
 	}
 

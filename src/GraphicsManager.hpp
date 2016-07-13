@@ -42,13 +42,6 @@ private:
 	int mLightCount; // Useful for some guys
 	uniformBlockBuffer mLightBuffer; // Uniform buffer
 
-	// Since all lights are the sime size, we can easily manage the uniform buffer's memory
-	// by having slots. Each slot has a 0-based index. When we remove lights, we create holes.
-	// The next lights added will fill in those holes.
-
-	// Vector holding the state of all vertices, false if it is free, true if it is used.
-	std::vector<bool> mLightUsedBufferMap;
-
 public:
 	static const GLuint cLightBindingPoint;
 
@@ -70,7 +63,6 @@ public:
 	int getLightCount() const;
 	uniformBlockBuffer& getLightBuffer();
 	bool updateLightBuffer(const Light& light);
-	int getNextAvailableLightIndex();
 
 	bool addLightToBuffer(Light& light);
 	bool removeLightFromBuffer(Light& light);
