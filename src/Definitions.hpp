@@ -38,7 +38,7 @@
 
 // Remember to change the uniform block definition in the Shader.cpp comment when changing this
 #define GRAPHICS_LIGHT_UNIFORM_BLOCK_NAME "Lights"
-#define GRAPHICS_MAX_LIGHTS 1000
+#define GRAPHICS_MAX_LIGHTS 128
 
 // Defines how many chunk sounds can exist. A super high number exceeding memory could segfault!
 #define MAX_SOUND_CHANNELS 50

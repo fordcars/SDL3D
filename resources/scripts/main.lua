@@ -25,9 +25,9 @@ function gameStep()
 	
 	for i,v in ipairs(objects) do
 		local physicsBody = v:getPhysicsBody()
-		physicsBody:renderDebugShape(shader, camera)
+		--physicsBody:renderDebugShape(shader, camera)
 	end
-	camera:getPhysicsBody():renderDebugShapeWithCoord(resourceManager:findShader("basic"), camera, 0.0)
+	--camera:getPhysicsBody():renderDebugShapeWithCoord(resourceManager:findShader("basic"), camera, 0.0)
 	
 	local buildingPosition = test.building:getPhysicsBody():getPosition()
 	test.building:getPhysicsBody():setPosition(Vec3(buildingPosition.x, 0, 0))
@@ -35,13 +35,11 @@ function gameStep()
 	local rotation = test.firstMonkey:getPhysicsBody():getRotation()
 	test.firstMonkey:getPhysicsBody():setRotation(Vec3(rotation.x + 0.1, rotation.y, rotation.z))
 	
-	--entityManager:getLights()[1]:setSpecularColor(Vec3(entityManager:getLights()[1]:getSpecularColor().r - 0.001, 1, 1))
 	entityManager:getLights()[1]:getPhysicsBody():setPosition(camera:getPhysicsBody():getPosition())
 	
 	math.randomseed(os.time()) -- To get random numbers, calling this each frame limits the color change to 1 per second
-	entityManager:getLights()[1]:setSpecularColor(Vec3(math.random(), math.random(), math.random()))
-	
-	--entityManager:getLights()[1]:setSpecularColor(Vec3(-1, -1, -1))
+	entityManager:getLights()[2]:setSpecularColor(Vec3(math.random(), math.random(), math.random()))
+	entityManager:getLights()[2]:setDiffuseColor(Vec3(math.random(), math.random(), math.random()))
 end
 
 -- http://www.scs.ryerson.ca/~danziger/mth141/Handouts/Slides/projections.pdf

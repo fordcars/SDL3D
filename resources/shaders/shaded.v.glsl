@@ -36,52 +36,18 @@ uniform mat4 normalMatrix;
 // Output data
 out vec2 UV; // Proxy, sends UV coord to fragment shader
 out vec3 normal_cameraspace;
-out vec3 lightDirection_cameraspace;
 out vec3 vertexPosition_worldspace;
 out vec3 eyeDirection_cameraspace;
 
-
-
-
-
-#define MAX_LIGHTS 1000
-
-uniform int numberOfLights;
-
-struct Light
-{
-	vec3 position;
-	vec3 diffuseColor;
-	vec3 specularColor;
-	float power;
-	float isOn;
-};
-
-layout(std140) uniform Lights
-{
-	Light lights[MAX_LIGHTS];
-};
-
-
-
-
-
 void main()
 {
-	//DEBUG
-	vec3 lightPosition_worldspace = lights[0].position;
-	
 	// UV of the vertex
 	UV = vertexUV;
 	
 	vertexPosition_worldspace = (modelMatrix * vec4(vertexPosition_modelspace, 1)).xyz;
 	
 	vec3 vertexPosition_cameraspace = (viewMatrix * modelMatrix * vec4(vertexPosition_modelspace, 1)).xyz;
-	// Vector from vertex to camera
-	eyeDirection_cameraspace = vec3(0, 0, 0) - vertexPosition_cameraspace;
-	
-	vec3 lightPosition_cameraspace = (viewMatrix * vec4(lightPosition_worldspace, 1)).xyz;
-	lightDirection_cameraspace = lightPosition_cameraspace + eyeDirection_cameraspace; // Vector from vertex to light
+	eyeDirection_cameraspace = vec3(0.0) - vertexPosition_cameraspace; // Vector from vertex to camera
 	
 	normal_cameraspace = (normalMatrix * vec4(vertexNormal_modelspace, 0.0)).xyz;
 	
