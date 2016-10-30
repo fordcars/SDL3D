@@ -27,8 +27,8 @@ in vec2 UV;
 in vec3 normal_cameraspace;
 in vec3 vertexPosition_worldspace; // Same as gl_FragCoord, but in world space instead of clip space
 in vec3 eyeDirection_cameraspace; // Vector from fragment to camera
-//////////////////////////////////////////////// TODOOO Filter out lights that are too far
-out vec3 color;
+//////////////////////////////////////////////// TODO Why is it not as bright as PC
+//////////////////////////////////////////////// TODO Filter out lights that are too far
 
 // Values that stay constant for the whole mesh
 uniform mat4 viewMatrix;
@@ -49,8 +49,12 @@ layout(std140) uniform Lights
 	Light lights[MAX_LIGHTS];
 };
 
+out vec3 color;
+
 void main()
 {
+	color = vec3(0.0);
+
 	vec3 textureColor = texture(textureSampler, UV).rgb;
 
 	vec3 materialDiffuseColor = textureColor;

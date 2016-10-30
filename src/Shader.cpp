@@ -237,7 +237,9 @@ GLuint Shader::findUniform(const std::string& uniformName) const // Returns a re
 	if(got == mUniformMap.end())
 	{
 		std::string error = uniformName;
-		error = "Uniform '" + error + "' was not registered for shader '" + mName + "'! Are you creating the right object type for your shader?";
+		error = "Uniform '" + error + "' was not registered for shader '" + mName + "'! "
+			"Is the uniform present in the shader and does it contribute to the shader's output? "
+			"Are you creating the correct object type using this shader?";
 		Utils::CRASH(error);
 		return 0;
 	}

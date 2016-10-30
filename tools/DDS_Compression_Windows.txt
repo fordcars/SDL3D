@@ -1,3 +1,5 @@
+Sadly, the tool currently only works on Windows. On Linux, I recommend using the gimp dds plugin for compressing to dds. Don't forget to vertially flip the texture first, though!
+
 Script depencies:
 - AmdCompressCLI
 - ImageMagick suite

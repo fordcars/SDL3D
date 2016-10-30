@@ -170,8 +170,6 @@ bool Game::initContext()
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	SDL_GL_SetSwapInterval(1);
-
 	// Create the window
 	mMainWindow = SDL_CreateWindow(mName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mSize.x, mSize.y,
 		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
@@ -205,6 +203,8 @@ bool Game::initContext()
 		Utils::CRASH_FROM_SDL("Unable to set current context!");
 		return false;
 	}
+
+	SDL_GL_SetSwapInterval(1); // Kind of V-sync?
 
 // Setup glad debug callback if glad was generated with the C/C++ Debug generator
 // Note: right now it does not seem to work, but it looks like the problem

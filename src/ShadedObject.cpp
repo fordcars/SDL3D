@@ -93,7 +93,7 @@ void ShadedObject::render(const Camera& camera)
 	glUniformMatrix4fv(getShader()->findUniform("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);
 	//glUniformMatrix4fv(getShader()->findUniform("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(getShader()->findUniform("normalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now
+	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, 0
 	glUniform1i(getShader()->findUniform("lightCount"), getShader()->getGraphicsManager()->getLightCount());
 
 	// Attribute 0, position buffer
