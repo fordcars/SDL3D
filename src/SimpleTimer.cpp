@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -19,7 +19,7 @@
 
 #include "SimpleTimer.hpp"
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 SimpleTimer::SimpleTimer()
 {

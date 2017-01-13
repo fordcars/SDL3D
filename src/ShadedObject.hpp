@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -32,7 +32,7 @@ class ShadedObject : public TexturedObject
 {
 public:
 	ShadedObject(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer, constTexturePointer texturePointer,
-		bool physicsCircularShape, int physicsType);
+		bool physicsCircularShape, int physicsBodyType);
 	~ShadedObject() override;
 
 	void render(const Camera& camera) override;

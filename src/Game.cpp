@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -30,7 +30,7 @@
 #include "SimpleTimer.hpp" // For game loop
 
 #include "LuaRef.h" // For getting references from scripts
-#include "SDL_mixer.h"
+#include "SDL2/SDL_mixer.h"
 #include "glm/glm.hpp"
 #include "glad/glad.h" // For graphics and compability checks
 
@@ -147,13 +147,14 @@ bool Game::initSDL()
 // Make sure OpenGL is initialized before calling this! (Hint: it is)
 void postCallbackForGladDebug(const char* name, void* funcPtr, int argLength, ...)
 {
+	// No loop since a function should only generate one error
 	GLenum error = glGetError();
 	
 	if(error != GL_NO_ERROR) // Something went wrong!
 	{
 		Utils::LOGPRINT("");
 		Utils::WARN("OpenGL error during function '" + std::string(name) + "'!");
-		Utils::LOGPRINT("OpenGL error message: '" + Utils::getGLErrorString(error) + "'.");
+		Utils::LOGPRINT("OpenGL error code: '" + Utils::getGLErrorString(error) + "'.");
 		Utils::LOGPRINT("");
 	}
 }
@@ -372,7 +373,6 @@ void Game::doMainLoop()
 	int numberOfStepsToDo = (currentTime - mLastFrameTime) / mStepLength;
 
 	doEvents();
-	mGraphicsManager->clearScreen(); // Call before step
 
 	if(mLastFrameTime != 0) // Make sure everything is good before moving stuff!
 	{
@@ -380,7 +380,7 @@ void Game::doMainLoop()
 			step(static_cast<float>(numberOfStepsToDo));
 	}
 
-	render();
+	mGraphicsManager->render(mMainWindow, mEntityManager);
 	checkForErrors();
 
 	mLastFrameTime = currentTime;
@@ -415,12 +415,6 @@ void Game::step(float divider) // Movement and all
 	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_STEP);
 }
 
-void Game::render()
-{
-	mEntityManager->render();
-	SDL_GL_SwapWindow(mMainWindow);
-}
-
 // Safely stops all systems
 void Game::cleanup()
 {
@@ -447,10 +441,7 @@ void Game::cleanup()
 void Game::startMainLoop()
 {
 	while(!mQuitting) // While not quitting
-	{
-		doEvents();
 		doMainLoop();
-	}
 
 	cleanup();
 	return; // Quit!
@@ -484,7 +475,7 @@ void Game::setSize(glm::ivec2 size)
 	mSize = size;
 	SDL_SetWindowSize(mMainWindow, size.x, size.y);
 	
-	mGraphicsManager->setOutputSize(size);
+	mGraphicsManager->setDrawSize(size);
 
 	// Update camera
 	mEntityManager->getGameCamera().setAspectRatio(getAspectRatio());

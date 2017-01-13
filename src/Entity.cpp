@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -34,8 +34,8 @@ Entity::Entity(float radius, int type)
 	// Do nothing
 }
 
-Entity::Entity(constObjectGeometryPointer objectGeometry, bool physicsCircularShape, int physicsType)
-	: mPhysicsBody(objectGeometry, physicsCircularShape, physicsType)
+Entity::Entity(constObjectGeometryPointer objectGeometry, bool physicsCircularShape, int physicsBodyType)
+	: mPhysicsBody(objectGeometry, physicsCircularShape, physicsBodyType)
 {
 	// Do nothing
 }

@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -453,7 +453,7 @@ glm::mat4 PhysicsBody::generateModelMatrix(glm::vec3 translation, glm::vec3 rota
 	glm::mat4 modelM;
 
 	// Obviously we have to multiply matrices in reverse of the transformation order we want
-	glm::mat4 translationM = glm::translate(glm::mat4(1.0f), translation * PHYSICS_PIXELS_PER_METER);
+	glm::mat4 translationM = glm::translate(glm::mat4(1.0f), translation * CONST_PIXELS_PER_METER);
 
 	glm::vec3 rotationInRadians = glm::vec3(
 		degreesToRadians(rotation.x),
@@ -601,7 +601,7 @@ bool PhysicsBody::calculateShapes(bool isCircularShape, glm::vec3 scaling)
 	if(mObjectGeometry)
 	{
 		mIsCircular = isCircularShape;
-		mShapes = createShapesFromObjectGeometry(*mObjectGeometry, isCircularShape, PHYSICS_PIXELS_PER_METER,
+		mShapes = createShapesFromObjectGeometry(*mObjectGeometry, isCircularShape, CONST_PIXELS_PER_METER,
 			mRotation, scaling);
 		mScaling = scaling;
 
@@ -1079,9 +1079,9 @@ void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* came
 		for(auto& vertex2D : vertices2D)
 		{
 			localPositions3D.push_back(glm::vec3(
-				vertex2D.x * PHYSICS_PIXELS_PER_METER,
+				vertex2D.x * CONST_PIXELS_PER_METER,
 				0.0f,
-				vertex2D.y * PHYSICS_PIXELS_PER_METER));
+				vertex2D.y * CONST_PIXELS_PER_METER));
 		}
 
 		// Add line to see circle angle better
@@ -1089,9 +1089,9 @@ void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* came
 		// Front is the first element
 		// We need to add this otherwise we see a hole in the circle
 		localPositions3D.push_back(localPositions3D.front());
-		localPositions3D.push_back(glm::vec3(circleCenter.x * PHYSICS_PIXELS_PER_METER,
+		localPositions3D.push_back(glm::vec3(circleCenter.x * CONST_PIXELS_PER_METER,
 			0.0f,
-			circleCenter.y * PHYSICS_PIXELS_PER_METER)); // Add the center of the circle
+			circleCenter.y * CONST_PIXELS_PER_METER)); // Add the center of the circle
 
 		drawMode = GL_LINE_STRIP;
 	} else
@@ -1108,9 +1108,9 @@ void PhysicsBody::renderDebugShape(constShaderPointer shader, const Camera* came
 				// Add each point to the buffer
 				b2Vec2 point2D = polygon->GetVertex(pointIndex);
 				localPositions3D.push_back(glm::vec3(
-					point2D.x * PHYSICS_PIXELS_PER_METER,
+					point2D.x * CONST_PIXELS_PER_METER,
 					0.0f,
-					point2D.y * PHYSICS_PIXELS_PER_METER));
+					point2D.y * CONST_PIXELS_PER_METER));
 			}
 		}
 

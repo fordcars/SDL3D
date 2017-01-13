@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -60,8 +60,8 @@ Light lights[MAX_NUMBER_OF_LIGHTS];
 
 ShadedObject::ShadedObject(constObjectGeometryPointer objectGeometry,
 						   constShaderPointer shaderPointer, constTexturePointer texturePointer,
-						   bool physicsCircularShape, int physicsType)
-	: TexturedObject(objectGeometry, shaderPointer, texturePointer, physicsCircularShape, physicsType)
+						   bool physicsCircularShape, int physicsBodyType)
+	: TexturedObject(objectGeometry, shaderPointer, texturePointer, physicsCircularShape, physicsBodyType)
 {
 	// Do nothing
 }

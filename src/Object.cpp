@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -35,8 +35,8 @@
 
 // Objects copy objectGeometry instead of pointing to them, allow you to modify them
 Object::Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer,
-	bool physicsCircularShape, int physicsType)
-	: Entity(objectGeometry, physicsCircularShape, physicsType), mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
+	bool physicsCircularShape, int physicsBodyType)
+	: Entity(objectGeometry, physicsCircularShape, physicsBodyType), mObjectGeometry(objectGeometry) // Copy the ObjectGeometry
 {
 	mShaderPointer = shaderPointer;
 }

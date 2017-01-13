@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -145,7 +145,7 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 
 #include "Definitions.hpp"
 #include "glm/glm.hpp"
-#include "SDL_keycode.h" // For key codes
+#include "SDL2/SDL_keycode.h" // For key codes
 
 // Binds all of the classes and functions. This creates our API!
 // We need a Game instance to give it to the scripts.
@@ -191,8 +191,13 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginModule("Engine")
-		.addConstant("Name", ENGINE_NAME)
-		.addConstant("Version", ENGINE_VERSION)
+		.addConstant("name", ENGINE_NAME)
+		.addConstant("version", ENGINE_VERSION)
+	.endModule();
+
+
+	LuaBinding(luaState).beginModule("Constant")
+		.addConstant("pixelsPerMeter", CONST_PIXELS_PER_METER)
 	.endModule();
 
 

@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -20,7 +20,7 @@
 #ifndef SOUND_HPP
 #define SOUND_HPP
 
-#include "SDL_mixer.h"
+#include "SDL2/SDL_mixer.h"
 #include <string>
 
 class Sound

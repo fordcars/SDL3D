@@ -1,15 +1,12 @@
 Todo before real release:
--Object constructors (all types), change physicsType arg to physicsBodyType)
--Filter out lights that are too far in frag shader
+-Deferred rendering
 -Fix uninitialized read with textured object in misc/FunctionVisualizer/resources/mainBUGGED.lua
--Add to Utils(?) a function to convert from pixels to meters for Lua
--Render to texture, so we can have some awesome effects!
 -Don't make uniforms obligatory
+-Render to texture, so we can have some awesome effects!
 
 - Fix subtle fish-eye effect (FOV math, obvious when looking at a cube)
 - Use a proper bmp loader since with some .bmp files, the texture will be offset when mapped.
-
--Switch to deferred rendering, my shaded shader sucks right now way too much
+- All lighting on Linux is dimmer, fix this
 
 -Fix weird crash on Windows that happens sometimes. It happens a few seconds after you quit. I think it is the same bug as below (game stays alive for a while after quitting) and I think it is due to the fact I am forgetting to quit cleanly a certain .dll.
 -- Only happens when we load resources? Only happens when the game has been running for at least a few seconds?
@@ -18,6 +15,8 @@ Todo before real release:
 
 -To make it faster, use delta instead of multiple steps per frame? Or nah?
 -Give us a way to check if it is the first step of a frame in lua gameStep().
+
+-Add a texture class to hide OpenGL's texture interface
 
 -Definitely try to make it faster CPU wise. When there are a lot of verticies, it slows down A LOT CPU side!
 

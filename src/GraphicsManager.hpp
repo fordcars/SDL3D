@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -21,39 +21,48 @@
 #define GRAPHICS_MANAGER_HPP
 
 #include "GPUBuffer.hpp"
+#include "GBuffer.hpp"
 
 #include "glm/glm.hpp"
 #include "glad/glad.h"
 
+#include <memory>
 #include <cstddef> // For std::size_t
 #include <string>
 #include <vector>
 
+struct SDL_Window; // Remember to include the least amount of files possible in the header!
+class EntityManager;
 class Light;
 class GraphicsManager
 {
 private:
 	using uniformBlockBuffer = GPUBuffer<float>;
+	using entityManagerPointer = std::shared_ptr<EntityManager>;
 
 	static const std::size_t cLightSize;
 
-	glm::ivec2 mOutputSize;
+	glm::ivec2 mDrawSize;
 	glm::vec3 mBackgroundColor;
+	GBuffer mGBuffer;
+
 	int mLightCount; // Useful for some guys
 	uniformBlockBuffer mLightBuffer; // Uniform buffer
+
+	void renderGeometry(SDL_Window* window, entityManagerPointer entityManager);
 
 public:
 	static const GLuint cLightBindingPoint;
 
-	GraphicsManager(glm::ivec2 outputSize);
+	GraphicsManager(glm::ivec2 drawSize);
 	~GraphicsManager();
 	void init();
 	void initBuffers();
 
-	void clearScreen();
+	void render(SDL_Window* window, entityManagerPointer entityManager);
 
-	void setOutputSize(glm::ivec2 outputSize);
-	glm::ivec2 getOutputSize() const;
+	void setDrawSize(glm::ivec2 drawSize);
+	glm::ivec2 getDrawSize() const;
 
 	void setBackgroundColor(glm::vec3 color);
 	glm::vec3 getBackgroundColor() const;

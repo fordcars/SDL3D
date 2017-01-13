@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -71,8 +71,6 @@
 #define SOUND_CHUNK 1 // Short sound effects would use this type
 
 // Physics
-#define PHYSICS_PIXELS_PER_METER 10.0f // Float
-
 #define PHYSICS_DEFAULT_WORLD_FRICTION 2.0f
 
 #define PHYSICS_BODY_IGNORED 0    // Ignored by the physics engine, still moves 'cus we are nice
@@ -85,6 +83,7 @@
 #define PHYSICS_BODY_MIN_VERTEX_DISTANCE 0.06f
 
 // Constants
+#define CONST_PIXELS_PER_METER 10.0f // Float
 #define CONST_PI 3.14159f
 #define CONST_TWO_PI 6.28319f
 

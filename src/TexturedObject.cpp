@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -33,8 +33,8 @@
 
 TexturedObject::TexturedObject(constObjectGeometryPointer objectGeometry,
 							   constShaderPointer shaderPointer, constTexturePointer texturePointer,
-							   bool physicsCircularShape, int physicsType)
-	: Object(objectGeometry, shaderPointer, physicsCircularShape, physicsType) // Calls Object constructor with those arguments
+							   bool physicsCircularShape, int physicsBodyType)
+	: Object(objectGeometry, shaderPointer, physicsCircularShape, physicsBodyType) // Calls Object constructor with those arguments
 {
 	mTexturePointer = texturePointer;
 }

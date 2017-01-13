@@ -17,41 +17,30 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef TEXTURE_HPP
-#define TEXTURE_HPP
+#ifndef GBUFFER_HPP
+#define GBUFFER_HPP
 
-// For DDS files
-#define FOURCC_DXT1 0x31545844 // "DXT1" is ASCII
-#define FOURCC_DXT3 0x33545844 // "DXT3" is ASCII
-#define FOURCC_DXT5 0x35545844 // "DXT5" is ASCII
+#include "GPUFramebuffer.hpp"
 
 #include "glad/glad.h"
-#include <string>
+#include "glm/glm.hpp"
+#include <vector>
 
-// Since I am not feeling like rewriting OpenGL, this class is more of a datatype with functions
-
-class Texture
+class GBuffer : public GPUFramebuffer
 {
 private:
-	std::string mName; // May be useful, for error messages for example. Don't change this stupidly.
-	std::string mPath;
-	int mType;
+	using IDVector = std::vector<GLuint>;
 
-	GLuint mID;
+	glm::ivec2 mSize;
 
-	bool load();
+	GLuint mDepthTextureID;
+	IDVector mColorTextureIDs;
 
-	static GLuint loadBMPTexture(const std::string& texturePath);
-	static GLuint loadDDSTexture(const std::string& texturePath);
+	bool init(int colorTextureCount);
 
 public:
-	Texture(const std::string& name, const std::string& path, int type);
-	Texture(const Texture& other);
-	~Texture();
-
-	std::string getName() const;
-	GLuint getID() const;
-	GLuint getType() const;
+	GBuffer(glm::ivec2 size, int colorTextureCount);
+	~GBuffer() override;
 };
 
-#endif // TEXTURE_HPP
+#endif // GBUFFER_HPP

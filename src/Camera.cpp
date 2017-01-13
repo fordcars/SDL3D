@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -104,15 +104,15 @@ glm::mat4 Camera::getViewMatrix() const
 {
 	const PhysicsBody& physicsBody = getPhysicsBody();
 
-	glm::vec3 position = physicsBody.getPosition() * PHYSICS_PIXELS_PER_METER;
+	glm::vec3 position = physicsBody.getPosition() * CONST_PIXELS_PER_METER;
 	glm::vec3 vec3Direction;
 
 	if(mDirection.w==1) // Is a position
 	{
 		vec3Direction = glm::vec3(
-			mDirection.x * PHYSICS_PIXELS_PER_METER,
-			mDirection.y * PHYSICS_PIXELS_PER_METER,
-			mDirection.z * PHYSICS_PIXELS_PER_METER);
+			mDirection.x * CONST_PIXELS_PER_METER,
+			mDirection.y * CONST_PIXELS_PER_METER,
+			mDirection.z * CONST_PIXELS_PER_METER);
 	} else if(mDirection.w==0)
 	{
 		vec3Direction = glm::vec3(mDirection) + position; // Is a vector
@@ -130,7 +130,7 @@ glm::mat4 Camera::getProjectionMatrix() const
 	float radFOVY = 2 * atan( tan(radFOVX / 2) / mAspectRatio);
 	
 	glm::mat4 projectionMatrix = glm::perspective(radFOVY, mAspectRatio,
-		mNearClippingDistance * PHYSICS_PIXELS_PER_METER, mFarClippingPlaneDistance * PHYSICS_PIXELS_PER_METER);
+		mNearClippingDistance * CONST_PIXELS_PER_METER, mFarClippingPlaneDistance * CONST_PIXELS_PER_METER);
 
 	return projectionMatrix;
 }

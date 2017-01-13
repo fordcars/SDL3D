@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -42,7 +42,7 @@ private:
 
 public:
 	Object(constObjectGeometryPointer objectGeometry, constShaderPointer shaderPointer,
-		bool physicsCircularShape, int physicsType);
+		bool physicsCircularShape, int physicsBodyType);
 	virtual ~Object() override; // virtual here is just for looks
 
 	void setObjectGeometry(constObjectGeometryPointer objectGeometry);

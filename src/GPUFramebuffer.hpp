@@ -17,41 +17,27 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#ifndef TEXTURE_HPP
-#define TEXTURE_HPP
-
-// For DDS files
-#define FOURCC_DXT1 0x31545844 // "DXT1" is ASCII
-#define FOURCC_DXT3 0x33545844 // "DXT3" is ASCII
-#define FOURCC_DXT5 0x35545844 // "DXT5" is ASCII
+#ifndef GPUFRAMEBUFFER_HPP
+#define GPUFRAMEBUFFER_HPP
 
 #include "glad/glad.h"
-#include <string>
 
-// Since I am not feeling like rewriting OpenGL, this class is more of a datatype with functions
-
-class Texture
+class GPUFramebuffer
 {
 private:
-	std::string mName; // May be useful, for error messages for example. Don't change this stupidly.
-	std::string mPath;
-	int mType;
-
 	GLuint mID;
 
-	bool load();
-
-	static GLuint loadBMPTexture(const std::string& texturePath);
-	static GLuint loadDDSTexture(const std::string& texturePath);
-
 public:
-	Texture(const std::string& name, const std::string& path, int type);
-	Texture(const Texture& other);
-	~Texture();
+	GPUFramebuffer();
+	virtual ~GPUFramebuffer();
 
-	std::string getName() const;
-	GLuint getID() const;
-	GLuint getType() const;
+	GLuint getID();
+	void bind(GLenum target) const;
+	void attach1DTexture(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	void attach2DTexture(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	void attachTextureLayer(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer);
+
+	bool checkFramebufferCompleteness(GLenum target);
 };
 
-#endif // TEXTURE_HPP
+#endif // GPUFRAMEBUFFER_HPP

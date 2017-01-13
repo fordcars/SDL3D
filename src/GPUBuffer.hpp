@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -87,7 +87,7 @@ public:
 		}
 	}
 
-	const GLuint getID()
+	GLuint getID()
 	{
 		return mID;
 	}
@@ -196,7 +196,6 @@ public:
 		bind();
 		glBufferSubData(mTarget, offset, sizeof(bufferDataType) * data.size(), data.data());
 	}
-
 };
 
 #endif // GPU_BUFFER_HPP

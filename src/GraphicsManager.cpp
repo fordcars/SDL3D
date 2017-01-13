@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -23,11 +23,13 @@
 
 #include "GraphicsManager.hpp"
 
+#include "EntityManager.hpp"
 #include "Light.hpp"
 #include "Utils.hpp"
 #include "Definitions.hpp"
-
 #include "Shader.hpp"
+
+#include "SDL2/SDL.h"
 
 #include <algorithm>
 #include <memory>
@@ -39,10 +41,11 @@ const std::size_t GraphicsManager::cLightSize = 16 * sizeof(float);
 // Public
 const GLuint GraphicsManager::cLightBindingPoint = 0;
 
-GraphicsManager::GraphicsManager(glm::ivec2 outputSize)
-	: mLightBuffer(GL_UNIFORM_BUFFER)
+GraphicsManager::GraphicsManager(glm::ivec2 drawSize)
+	: mGBuffer(drawSize, 2),
+	mLightBuffer(GL_UNIFORM_BUFFER)
 {
-	mOutputSize = outputSize;
+	mDrawSize = drawSize;
 	mBackgroundColor = glm::vec3(0.0f, 0.0f, 1.0f);
 	mLightCount = 0;
 
@@ -58,7 +61,7 @@ GraphicsManager::~GraphicsManager()
 void GraphicsManager::init()
 {
 	// Make sure the OpenGL context extends over the whole screen
-	glViewport(0, 0, mOutputSize.x, mOutputSize.y);
+	glViewport(0, 0, mDrawSize.x, mDrawSize.y);
 
 	GLuint vertexArrayID; // VAO - vertex array object
 	glGenVertexArrays(1, &vertexArrayID);
@@ -80,16 +83,17 @@ void GraphicsManager::initBuffers()
 	glBindBufferRange(mLightBuffer.getTarget(), cLightBindingPoint, mLightBuffer.getID(), 0, mLightBuffer.getSize());
 }
 
-// Call each frame
-void GraphicsManager::clearScreen()
+void GraphicsManager::renderGeometry(SDL_Window* window, entityManagerPointer entityManager)
 {
+	// Bind the GBuffer
+	mGBuffer.bind(GL_DRAW_FRAMEBUFFER);
+
 	// Set clear color
 	glClearColor(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, 1.0f);
 
 	// Clear both color buffers and depth (z-indexes) buffers to have a clean buffer to render in
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// It looks like it's better to call these each frame
 	glEnable(GL_DEPTH_TEST); // Enable depth test (check if z is closer to the screen than last fragement's z)
 	glDepthFunc(GL_LESS); // Accept the fragment closer to the camera
 
@@ -97,19 +101,31 @@ void GraphicsManager::clearScreen()
 	// If there are holes in the model because of this, click the "invert normals" button in your 3D modeler.
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	// Just to make sure
 	glPolygonMode(GRAPHICS_RASTERIZE_FACE, GRAPHICS_RASTERIZE_MODE);
+
+	entityManager->render();
+}
+
+void GraphicsManager::render(SDL_Window* window, entityManagerPointer entityManager)
+{
+	renderGeometry(window, entityManager);
+
+
+	SDL_GL_SwapWindow(window);
 }
 
 // Set the draw size in the framebuffer, mostly used internally
-void GraphicsManager::setOutputSize(glm::ivec2 outputSize)
+void GraphicsManager::setDrawSize(glm::ivec2 drawSize)
 {
-	mOutputSize = outputSize;
-	glViewport(0, 0, outputSize.x, outputSize.y);
+	mDrawSize = drawSize;
+	glViewport(0, 0, drawSize.x, drawSize.y);
 }
 
-glm::ivec2 GraphicsManager::getOutputSize() const
+glm::ivec2 GraphicsManager::getDrawSize() const
 {
-	return mOutputSize;
+	return mDrawSize;
 }
 
 void GraphicsManager::setBackgroundColor(glm::vec3 color)
@@ -154,7 +170,7 @@ bool GraphicsManager::updateLightBuffer(const Light& light) // index is an int f
 		return false;
 	}
 
-	glm::vec3 position = light.getPhysicsBody().getPosition() * PHYSICS_PIXELS_PER_METER;
+	glm::vec3 position = light.getPhysicsBody().getPosition() * CONST_PIXELS_PER_METER;
 	glm::vec3 diffuseColor = light.getDiffuseColor();
 	glm::vec3 specularColor = light.getSpecularColor();
 

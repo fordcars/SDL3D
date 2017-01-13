@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -20,7 +20,7 @@
 #ifndef INPUT_MANAGER_HPP
 #define INPUT_MANAGER_HPP
 
-#include "SDL.h"
+#include "SDL2/SDL.h"
 
 #include <map>
 #include <cstddef> // For std::size_t

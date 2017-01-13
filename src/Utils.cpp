@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -20,8 +20,8 @@
 #include "Utils.hpp"
 #include "Definitions.hpp"
 
-#include "SDL.h" // For quitting
-#include "SDL_mixer.h" // For quitting
+#include "SDL2/SDL.h" // For quitting
+#include "SDL2/SDL_mixer.h" // For quitting
 
 #include <fstream>
 #include <sstream> // For std::getLine()

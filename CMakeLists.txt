@@ -1,4 +1,4 @@
-# Copyright 2016 Carl Hewett
+# Copyright 2017 Carl Hewett
 #
 # This file is part of SDL3D.
 #
@@ -17,6 +17,8 @@
 
 # This file based off: https://github.com/mitsuhiko/immersedcode/blob/master/2011/4/6/sdl13-intro.rst
 
+# SDL3DMain is the main engine executable while SDL3D is the project name.
+
 # TODO: Make it work with everything, make it funner to use.
 
 # NOTES: CMAKE_CURRENT_SOURCE_DIR is the root directory of the project.
@@ -27,7 +29,7 @@ project(SDL3D)
 
 set(LINUX_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(VS_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
-set(XCODE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL3D.app/Contents/MacOS/SDL3D)
+set(XCODE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL3DMain.app/Contents/MacOS/SDL3DMain)
 
 set(LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources)
@@ -41,7 +43,7 @@ set(POLY2TRI_DIR ${LIBRARY_DIR}/poly2tri/poly2tri)
 
 # A list of header and source files
 set(SOURCES
-    src/main.cpp
+	src/main.cpp
 	src/Game.cpp
 	src/Utils.cpp
 	src/ResourceManager.cpp
@@ -62,6 +64,8 @@ set(SOURCES
 	src/Sound.cpp
 	src/PhysicsBody.cpp
 	src/GraphicsManager.cpp
+	src/GPUFramebuffer.cpp
+	src/GBuffer.cpp
 	
 	# Static libs
 	${GLAD_DIR}/src/glad.c
@@ -74,7 +78,7 @@ AUX_SOURCE_DIRECTORY(${POLY2TRI_DIR}/common SOURCES)
 
  # Shows up in VisualStudio
 set(HEADERS
-    src/main.hpp
+	src/main.hpp
 	src/Game.hpp
 	src/Utils.hpp
 	src/Definitions.hpp
@@ -97,6 +101,8 @@ set(HEADERS
 	src/Sound.hpp
 	src/PhysicsBody.hpp
 	src/GraphicsManager.hpp
+	src/GPUFramebuffer.hpp
+	src/GBuffer.hpp
 
 	# THIS FILE INCLUDES LuaIntf FILES! This is why we don't need to explicitly compile those .cpp files.
 	src/IncludeLuaIntf.hpp

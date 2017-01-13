@@ -1,4 +1,4 @@
-//// Copyright 2016 Carl Hewett
+//// Copyright 2017 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -35,7 +35,7 @@ private:
 public:
 	Entity();
 	Entity(float radius, int type);
-	Entity(constObjectGeometryPointer objectGeometry, bool physicsCircularShape, int physicsType);
+	Entity(constObjectGeometryPointer objectGeometry, bool physicsCircularShape, int physicsBodyType);
 	virtual ~Entity();
 	
 	PhysicsBody& getPhysicsBody();

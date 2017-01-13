@@ -10,7 +10,7 @@ local function foo()
 	game:setMaxFramesPerSecond(60)
 	game:reCenterMainWindow()
 	
-	Utils.logprint("From Lua! The engine version is " .. Engine.Version)
+	Utils.logprint("From Lua! The engine version is " .. Engine.version)
 	
 	local resourceManager = game:getResourceManager()
 	local inputManager = game:getInputManager()
