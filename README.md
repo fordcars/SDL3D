@@ -1,3 +1,5 @@
+THIS ENGINE IS STILL IN CONSTRUCTION AND NOT FULLY USEABLE!!
+
 SDL3D
 ========
 
@@ -33,7 +35,7 @@ Roadmap
 Support
 --------
 
-Feel free to add issues at [our issue tracker](https://github.com/fordcars/SDL3D/issues).
+Feel free to add issues in [our issue tracker](https://github.com/fordcars/SDL3D/issues).
 
 License
 --------
