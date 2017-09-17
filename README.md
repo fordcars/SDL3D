@@ -1,4 +1,4 @@
-THIS ENGINE IS STILL IN CONSTRUCTION AND NOT FULLY USEABLE!!
+*Note: This engine is still in construction and not fully useable!!*
 
 SDL3D
 ========
