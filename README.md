@@ -1,5 +1,3 @@
-**Note: This engine is still in construction and not fully useable!!**
-
 SDL3D
 ========
 
