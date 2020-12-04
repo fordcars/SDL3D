@@ -1,0 +1,8 @@
+Starting SDL3D v0.1!
+Graphics: 3.3.0 NVIDIA 457.30
+Your system seems to be compatible with the game!
+SDL message (most of the time you can ignore these): XAudio2: SDL was built without XAudio2 support (old DirectX SDK).
+Initialization finished!
+Engine version: 0.1
+Hello, init from lua!
+Game quit successfully.
