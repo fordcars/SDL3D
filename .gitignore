@@ -10,6 +10,7 @@
 /lib/**/*.obj
 
 # Executables
+# Phil wanted to allow .exe to be pushed
 #*.exe
 *.out
 *.app
@@ -19,3 +20,4 @@
 
 # Phil wanted to push the build dir to github
 #/build/
+/build/.vs/
