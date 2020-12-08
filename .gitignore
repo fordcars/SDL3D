@@ -14,10 +14,14 @@
 #*.exe
 *.out
 *.app
+*.suo
+*.pdb
 
 # Linux hidden temporary files (files ending with a tilde (~))
 *~
 
 # Phil wanted to push the build dir to github
 #/build/
+/build/debug/*.ilk
+/build/debug/*.pdb
 /build/.vs/
