@@ -1,0 +1,24 @@
+Starting SDL3D v0.1!
+Graphics: 3.3.0 NVIDIA 457.30
+Your system seems to be compatible with the game!
+SDL message (most of the time you can ignore these): XAudio2: SDL was built without XAudio2 support (old DirectX SDK).
+Initialization finished!
+Engine version: 0.1
+Hello, init from lua!
+Mouse was captured and is now: 1437, 1
+Mouse was captured and is now: 1520, 9
+Mouse was captured and is now: 1580, 14
+Mouse was captured and is now: 1630, 16
+Mouse was captured and is now: 1660, 16
+Mouse was captured and is now: 1678, 15
+Mouse was captured and is now: 1689, 13
+Mouse was captured and is now: 1696, 11
+Mouse was captured and is now: 1703, 9
+Mouse was captured and is now: 1713, 7
+Mouse was captured and is now: 1726, 4
+Mouse was captured and is now: 1751, 3
+Mouse was captured and is now: 1781, 2
+Mouse was captured and is now: 1809, 1
+Mouse was captured and is now: 1826, 0
+Mouse was captured and is now: 1849, 0
+Game quit successfully.

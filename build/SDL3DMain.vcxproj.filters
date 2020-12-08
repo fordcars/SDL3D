@@ -165,4 +165,8 @@
       <UniqueIdentifier>{11283D5C-1A15-3D1F-94E2-5297F2DBABD0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Debug\resources\scripts\main.lua" />
+    <None Include="Debug\resources\scripts\test.lua" />
+  </ItemGroup>
 </Project>

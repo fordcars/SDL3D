@@ -33,6 +33,9 @@ private:
 	using sdlKeyMapPair = std::pair<int, bool>;
 
 	sdlKeyMap mKeys;
+	SDL_MouseMotionEvent mMouseMotionEvent;
+	int mMouseX;
+	int mMouseY;
 
 public:
 	using keyVector = std::vector<int>;
@@ -41,9 +44,11 @@ public:
 	~InputManager();
 	void registerKey(int sdlKey);
 	void registerKeys(const keyVector& keys);
+	void getMousePosition();
 	bool isKeyPressed(int sdlKey);
 
 	void updateKeyByEvent(SDL_Event event);
+	void updateMouseMovement(SDL_Event event);
 };
 
 #endif /* INPUT_MANAGER_HPP */

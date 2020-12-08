@@ -5,8 +5,8 @@ M.lastMonkey = nil
 
 local function foo()
 	local game = getGame()
-	game:setName("Testing 123!")
-	game:setSize(IVec2(1024, 600))
+	game:setName("Phil mouse test")
+	game:setSize(IVec2(1920, 1080))
 	game:setMaxFramesPerSecond(60)
 	game:reCenterMainWindow()
 	
