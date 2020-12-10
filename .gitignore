@@ -10,15 +10,11 @@
 /lib/**/*.obj
 
 # Executables
-Phil wanted to allow .exe to be pushed
 *.exe
 *.out
 *.app
-*.suo
-*.pdb
 
 # Linux hidden temporary files (files ending with a tilde (~))
 *~
 
-Phil wanted to push the build dir to github
 /build/
