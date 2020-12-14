@@ -38,8 +38,22 @@ local function foo()
 	
 	resourceManager:findSound("music"):fadeIn(10, -1)
 	
-	inputManager:registerKeys({KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT,
-		KeyCode.w, KeyCode.a, KeyCode.s, KeyCode.d, KeyCode.SPACE, KeyCode.LSHIFT, KeyCode.LCTRL, KeyCode.m})
+	inputManager:registerKeys({KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, 
+	KeyCode.LSHIFT, KeyCode.RSHIFT, KeyCode.LCTRL, KeyCode.RCTRL, KeyCode.SPACE, 
+	KeyCode.BACKSPACE, KeyCode.TAB, KeyCode.RETURN, KeyCode.ESCAPE, KeyCode.EXCLAIM, 
+	KeyCode.QUOTEDBL, KeyCode.HASH, KeyCode.DOLLAR, KeyCode.AMPERSAND, 
+	KeyCode.QUOTE, KeyCode.LEFTPAREN, KeyCode.RIGHTPAREN, KeyCode.ASTERISK, 
+	KeyCode.PLUS, KeyCode.COMMA, KeyCode.MINUS, KeyCode.PERIOD, KeyCode.FSLASH, 
+	KeyCode.BSLASH, 
+	KeyCode.a, KeyCode.b, KeyCode.c, KeyCode.d, KeyCode.e, KeyCode.f, KeyCode.g, 
+	KeyCode.h, KeyCode.i, KeyCode.j, KeyCode.k, KeyCode.l, KeyCode.m, KeyCode.n, 
+	KeyCode.o, KeyCode.p, KeyCode.q, KeyCode.r, KeyCode.s, KeyCode.t, KeyCode.u, 
+	KeyCode.v, KeyCode.w, KeyCode.x, KeyCode.y, KeyCode.z, KeyCode.N0, KeyCode.N1, 
+	KeyCode.N2, KeyCode.N3, KeyCode.N4, KeyCode.N5, KeyCode.N6, KeyCode.N7, KeyCode.N8, 
+	KeyCode.N9, KeyCode.KP0, KeyCode.KP1, KeyCode.KP2, KeyCode.KP3, KeyCode.KP4, 
+	KeyCode.KP5, KeyCode.KP6, KeyCode.KP7, KeyCode.KP8, KeyCode.KP9, KeyCode.F1, 
+	KeyCode.F2, KeyCode.F3, KeyCode.F4, KeyCode.F5, KeyCode.F6, KeyCode.F7, 
+	KeyCode.F8, KeyCode.F9, KeyCode.F10, KeyCode.F11, KeyCode.F12})
 	
 	camera:setDirection(Vec4(3, 0.0, 0.0, 0.0))
 	

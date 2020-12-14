@@ -51,6 +51,17 @@ void InputManager::registerKeys(const keyVector& keys)
 		registerKey(key);
 }
 
+void InputManager::getMousePosition()
+{
+	mMouseX = mMouseMotionEvent.x;
+	mMouseY = mMouseMotionEvent.y;
+	/*
+	Utils::LOGPRINT("Mouse was captured");
+	Utils::LOGPRINT(std::to_string(mMouseX));
+	Utils::LOGPRINT(std::to_string(mMouseY));
+	*/
+}
+
 bool InputManager::isKeyPressed(int sdlKey)
 {
 	sdlKeyMap::const_iterator got = mKeys.find(sdlKey);
@@ -77,5 +88,18 @@ void InputManager::updateKeyByEvent(SDL_Event event)
 		{
 			keyEvent.type == SDL_KEYDOWN ? sdlKeyIt->second = true : sdlKeyIt->second = false; // If keydown, set to true
 		}
+	}
+}
+
+void InputManager::updateMouseMovement(SDL_Event event)
+{
+	if (event.type == SDL_MOUSEMOTION) // Make sure this is a mouse event
+	{
+		// Carl would like me to report it like this, trying to figure out a way:
+		// mousePosX = (mousePosX / getSize().x * 2) - 1;
+		SDL_MouseMotionEvent mouseEvent = event.motion;
+		int mouseEventX = mouseEvent.x;
+		int mouseEventY = mouseEvent.y;
+		Utils::LOGPRINT("Mouse was captured and is now: " + std::to_string(mouseEventX) + ", " + std::to_string(mouseEventY));
 	}
 }
