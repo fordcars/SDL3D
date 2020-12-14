@@ -1,4 +1,4 @@
-4-philhzss-mergeSDL3D
+SDL3D
 ========
 
 This is a very simple 3D Lua-scriptable game engine using SDL and OpenGL.
