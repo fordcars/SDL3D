@@ -24,13 +24,6 @@ Compiling
 
 Check out Compiling.txt.
 
-Additional notes by Phil:
-- If you want even simpler compiling instructions, try this:
-  - Run CMake
-  - Build in your IDE
-  - Run it!
-- Appears to be no need to do anything that's listed in the Compiling.txt file. 
-
 Roadmap
 --------
 

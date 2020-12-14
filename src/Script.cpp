@@ -49,8 +49,7 @@ Script::Script(const std::string& name, const std::string& mainFilePath, const s
 	{
 		LuaState luaState = mLuaContext.state();
 		luaState.openLibs(); // Open all of Lua's basic libs, like io and math.
-	}
-	catch (const std::exception& e)
+	} catch(const std::exception& e)
 	{
 		std::string errorMessage = "Lua failed to load libraries. Error: ";
 		Utils::CRASH(errorMessage + e.what());
@@ -72,20 +71,20 @@ bool Script::clarifyError(const std::string& errorMessage)
 	std::string clarifiedErrorMessage = "";
 
 	// A function is returning an object that wasn't binded!
-	if (errorMessage.find("bad argument #-2") != std::string::npos)
+	if(errorMessage.find("bad argument #-2") != std::string::npos)
 	{
 		clarifiedError = true;
 		clarifiedErrorMessage = "We suspect a function is returning an object of a non-binded class. If this is the case, this is a bug in this engine (!), please contact the developpers.";
 	}
 
 	// A module fonction is being called using the ':' syntax instead of the '.' syntax!
-	if (errorMessage.find("on bad self") != std::string::npos)
+	if(errorMessage.find("on bad self") != std::string::npos)
 	{
 		clarifiedError = true;
 		clarifiedErrorMessage = "We suspect you are attempting to call a function that is not binded to an object using ':'. Please use the '.' syntax instead!";
 	}
 
-	if (clarifiedError)
+	if(clarifiedError)
 		Utils::WARN(clarifiedErrorMessage);
 
 	return clarifiedError;
@@ -102,7 +101,7 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 		// From http://stackoverflow.com/questions/4125971/setting-the-global-lua-path-variable-from-c-c/4156038#4156038
 		luaState.getGlobal("package");
 		luaState.getField(-1, "path");
-
+		
 		std::string currentPath = luaState.toString(-1);
 		currentPath.append(";");
 		currentPath.append(absolutePath + "?.lua"); // ?.lua seems to be needed and works better for cross-platform
@@ -111,8 +110,7 @@ bool Script::setLuaRequirePath(const std::string& absolutePath)
 		luaState.push(currentPath.c_str());
 		luaState.setField(-2, "path");
 		luaState.pop(1);
-	}
-	catch (const std::exception& e)
+	} catch(const std::exception& e)
 	{
 		std::string errorMessage = "Failed to set Lua's require path for script '" + mName + "'! Error: ";
 		Utils::CRASH(errorMessage + e.what());
@@ -168,9 +166,9 @@ void Script::bindInterface(Game& game)
 	LuaState luaState = mLuaContext.state();
 
 	LuaBinding(luaState).addFunction("getGame", [&game]() -> Game& // The -> specifies the return type. The () are needed for this syntax.
-		{
-			return game;
-		});
+	{
+		return game;
+	});
 
 	LuaBinding(luaState).beginClass<Game>("Game")
 		.addFunction("quit", &Game::quit) // &Game::quit returns quit()'s address
@@ -190,13 +188,13 @@ void Script::bindInterface(Game& game)
 		.addFunction("getResourceManager", &Game::getResourceManager)
 		.addFunction("getInputManager", &Game::getInputManager)
 		.addFunction("getEntityManager", &Game::getEntityManager)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginModule("Engine")
 		.addConstant("Name", ENGINE_NAME)
 		.addConstant("Version", ENGINE_VERSION)
-		.endModule();
+	.endModule();
 
 
 	LuaBinding(luaState).beginClass<ResourceManager>("ResourceManager")
@@ -204,22 +202,22 @@ void Script::bindInterface(Game& game)
 			// Specify which overload we want. Lua doesn't support functions with same names, though.
 			// (ResourceManager::*) says this is a pointer to a function
 			static_cast<ResourceManager::shaderPointer(ResourceManager::*) (const std::string&, const std::string&)>
-			(&ResourceManager::addShader))
+				(&ResourceManager::addShader))
 
 		.addFunction("addNamedShader",
 			static_cast<ResourceManager::shaderPointer(ResourceManager::*) (const std::string&, const std::string&, const std::string&)>
-			(&ResourceManager::addShader))
+				(&ResourceManager::addShader))
 
 		.addFunction("findShader", &ResourceManager::findShader)
 		.addFunction("clearShaders", &ResourceManager::clearShaders)
 
 		.addFunction("addTexture",
 			static_cast<ResourceManager::texturePointer(ResourceManager::*) (const std::string&, int)>
-			(&ResourceManager::addTexture))
+				(&ResourceManager::addTexture))
 
 		.addFunction("addNamedTexture",
 			static_cast<ResourceManager::texturePointer(ResourceManager::*) (const std::string&, const std::string&, int)>
-			(&ResourceManager::addTexture))
+				(&ResourceManager::addTexture))
 
 		.addFunction("findTexture", &ResourceManager::findTexture)
 		.addFunction("clearTextures", &ResourceManager::clearTextures)
@@ -249,24 +247,24 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("findSound", &ResourceManager::findSound)
 		.addFunction("clearSounds", &ResourceManager::clearSounds)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<Shader>("Shader")
 		.addFunction("getName", &Shader::getName)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<Texture>("Texture")
 		.addFunction("getName", &Texture::getName)
 		.addFunction("getType", &Texture::getType)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginModule("TextureType")
 		.addConstant("BMP", TEXTURE_BMP)
 		.addConstant("DDS", TEXTURE_DDS)
-		.endModule();
+	.endModule();
 
 
 	LuaBinding(luaState).beginClass<ObjectGeometryGroup>("ObjectGeometryGroup")
@@ -277,7 +275,7 @@ void Script::bindInterface(Game& game)
 		.addFunction("addObjectGeometry", &ObjectGeometryGroup::addObjectGeometry)
 		.addFunction("findObjectGeometry", &ObjectGeometryGroup::findObjectGeometry)
 		.addFunction("getObjectGeometries", &ObjectGeometryGroup::getObjectGeometries)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<ObjectGeometry>("ObjectGeometry")
@@ -294,17 +292,17 @@ void Script::bindInterface(Game& game)
 		.addFunction("getName", &ObjectGeometry::getName)
 		.addFunction("getIndexBuffer",
 			// To get the non-const version
-			static_cast<ObjectGeometry::uintBuffer & (ObjectGeometry::*) ()> (&ObjectGeometry::getIndexBuffer))
+			static_cast<ObjectGeometry::uintBuffer&(ObjectGeometry::*) ()> (&ObjectGeometry::getIndexBuffer))
 
 		.addFunction("getPositionBuffer",
-			static_cast<ObjectGeometry::vec3Buffer & (ObjectGeometry::*) ()> (&ObjectGeometry::getPositionBuffer))
+			static_cast<ObjectGeometry::vec3Buffer&(ObjectGeometry::*) ()> (&ObjectGeometry::getPositionBuffer))
 
 		.addFunction("getUVBuffer",
-			static_cast<ObjectGeometry::vec2Buffer & (ObjectGeometry::*) ()> (&ObjectGeometry::getUVBuffer))
+			static_cast<ObjectGeometry::vec2Buffer&(ObjectGeometry::*) ()> (&ObjectGeometry::getUVBuffer))
 
 		.addFunction("getNormalBuffer",
-			static_cast<ObjectGeometry::vec3Buffer & (ObjectGeometry::*) ()> (&ObjectGeometry::getNormalBuffer))
-		.endClass();
+			static_cast<ObjectGeometry::vec3Buffer&(ObjectGeometry::*) ()> (&ObjectGeometry::getNormalBuffer))
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<Sound>("Sound")
@@ -321,13 +319,13 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("setVolume", &Sound::setVolume)
 		.addFunction("getVolume", &Sound::getVolume)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginModule("SoundType")
 		.addConstant("Music", SOUND_MUSIC)
 		.addConstant("Chunk", SOUND_CHUNK)
-		.endModule();
+	.endModule();
 
 
 	// Bind a few useful GPUBuffers
@@ -347,9 +345,9 @@ void Script::bindInterface(Game& game)
 		// No argument version of read()
 		.addFunction("read",
 			static_cast<std::vector<unsigned int>(ObjectGeometry::uintBuffer::*)() const> (&ObjectGeometry::uintBuffer::read))
-
+		
 		.addFunction("modify", &ObjectGeometry::uintBuffer::modify)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<ObjectGeometry::vec2Buffer>("GPUBuffer_vec2")
@@ -367,7 +365,7 @@ void Script::bindInterface(Game& game)
 			static_cast<std::vector<glm::vec2>(ObjectGeometry::vec2Buffer::*)() const> (&ObjectGeometry::vec2Buffer::read))
 
 		.addFunction("modifyData", &ObjectGeometry::vec2Buffer::modify)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<ObjectGeometry::vec3Buffer>("GPUBuffer_vec3")
@@ -383,16 +381,16 @@ void Script::bindInterface(Game& game)
 		// No argument version of readData()
 		.addFunction("readData",
 			static_cast<std::vector<glm::vec3>(ObjectGeometry::vec3Buffer::*)() const> (&ObjectGeometry::vec3Buffer::read))
-
+		
 		.addFunction("modifyData", &ObjectGeometry::vec3Buffer::modify)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<InputManager>("InputManager")
 		.addFunction("registerKey", &InputManager::registerKey)
 		.addFunction("registerKeys", &InputManager::registerKeys)
 		.addFunction("isKeyPressed", &InputManager::isKeyPressed)
-		.endClass();
+	.endClass();
 
 
 	// Bind SDL key codes (not all of them, we are lazy)
@@ -483,7 +481,7 @@ void Script::bindInterface(Game& game)
 		.addConstant("F10", SDLK_F10)
 		.addConstant("F11", SDLK_F11)
 		.addConstant("F12", SDLK_F12)
-		.endModule();
+	.endModule();
 
 
 	LuaBinding(luaState).beginClass<EntityManager>("EntityManager")
@@ -514,13 +512,13 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("setPhysicsTimePerStep", &EntityManager::setPhysicsTimePerStep)
 		.addFunction("getPhysicsTimePerStep", &EntityManager::getPhysicsTimePerStep)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<Entity>("Entity")
 		.addFunction("getPhysicsBody",
-			static_cast<PhysicsBody & (Entity::*)()> (&Entity::getPhysicsBody))
-		.endClass();
+			static_cast<PhysicsBody& (Entity::*)()> (&Entity::getPhysicsBody))
+	.endClass();
 
 
 	LuaBinding(luaState).beginClass<PhysicsBody>("PhysicsBody")
@@ -570,7 +568,7 @@ void Script::bindInterface(Game& game)
 			static_cast<void (PhysicsBody::*)(Object::constShaderPointer, const Camera*, float)> (&PhysicsBody::renderDebugShape))
 		.addFunction("renderDebugShape",
 			static_cast<void (PhysicsBody::*)(Object::constShaderPointer, const Camera*)> (&PhysicsBody::renderDebugShape))
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginModule("PhysicsBodyType")
@@ -578,7 +576,7 @@ void Script::bindInterface(Game& game)
 		.addConstant("Static", PHYSICS_BODY_STATIC)
 		.addConstant("Kinematic", PHYSICS_BODY_KINEMATIC)
 		.addConstant("Dynamic", PHYSICS_BODY_DYNAMIC)
-		.endModule();
+	.endModule();
 
 
 	LuaBinding(luaState).beginExtendClass<Camera, Entity>("Camera")
@@ -592,7 +590,7 @@ void Script::bindInterface(Game& game)
 		.addFunction("getNearClippingDistance", &Camera::getNearClippingDistance)
 		.addFunction("setFarClippingDistance", &Camera::setFarClippingDistance)
 		.addFunction("getFarClippingDistance", &Camera::getFarClippingDistance)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<Object, Entity>("Object")
@@ -603,20 +601,20 @@ void Script::bindInterface(Game& game)
 		.addFunction("getObjectGeometry", &Object::getObjectGeometry)
 		.addFunction("setShader", &Object::setShader)
 		.addFunction("getShader", &Object::getShader)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<TexturedObject, Object>("TexturedObject")
 		.addConstructor(LUA_SP(std::shared_ptr<TexturedObject>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer,
 			TexturedObject::constTexturePointer, bool, int))
 		.addFunction("setTexture", &TexturedObject::setTexture)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<ShadedObject, TexturedObject>("ShadedObject")
 		.addConstructor(LUA_SP(std::shared_ptr<ShadedObject>), LUA_ARGS(Object::constObjectGeometryPointer, Object::constShaderPointer,
 			TexturedObject::constTexturePointer, bool, int))
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginExtendClass<Light, Entity>("Light")
@@ -633,197 +631,197 @@ void Script::bindInterface(Game& game)
 
 		.addFunction("setOnState", &Light::setOnState)
 		.addFunction("isOn", &Light::isOn)
-		.endClass();
+	.endClass();
 
 
 	LuaBinding(luaState).beginModule("Utils")
 		.addFunction("logprint", [](const std::string& msg) // Use a lamda to not need to specify line numbers (those are defaulted arguments in the definition)
-			{
-				Utils::directly_logprint(msg); // Use directly, we don't want C++ line numbers and files!
-			})
+		{
+			Utils::directly_logprint(msg); // Use directly, we don't want C++ line numbers and files!
+		})
 
 		.addFunction("warn", [](const std::string& msg)
-			{
-				Utils::directly_warn(msg);
-			})
+		{
+			Utils::directly_warn(msg);
+		})
 
-				.addFunction("crash", [](const std::string& msg)
-					{
-						Utils::directly_crash(msg);
-					})
-				.endModule();
+		.addFunction("crash", [](const std::string& msg)
+		{
+			Utils::directly_crash(msg);
+		})
+	.endModule();
+	
+	// Basic glm bindings
+	LuaBinding(luaState).beginClass<glm::ivec2>("IVec2") // Small glm::ivec2 binding
+		.addConstructor(LUA_ARGS(int, int))
 
-					// Basic glm bindings
-					LuaBinding(luaState).beginClass<glm::ivec2>("IVec2") // Small glm::ivec2 binding
-						.addConstructor(LUA_ARGS(int, int))
+		.addVariable("x", &glm::ivec2::x) // Accessible in Lua using the '.' syntax
+		.addVariable("y", &glm::ivec2::y)
 
-						.addVariable("x", &glm::ivec2::x) // Accessible in Lua using the '.' syntax
-						.addVariable("y", &glm::ivec2::y)
+		.addVariable("r", &glm::ivec2::r)
+		.addVariable("g", &glm::ivec2::g)
+	.endClass();
 
-						.addVariable("r", &glm::ivec2::r)
-						.addVariable("g", &glm::ivec2::g)
-						.endClass();
+	LuaBinding(luaState).beginClass<glm::vec2>("Vec2")
+		.addConstructor(LUA_ARGS(float, float))
 
-					LuaBinding(luaState).beginClass<glm::vec2>("Vec2")
-						.addConstructor(LUA_ARGS(float, float))
+		.addVariable("x", &glm::vec2::x) // Accessible in Lua using the '.' syntax
+		.addVariable("y", &glm::vec2::y)
 
-						.addVariable("x", &glm::vec2::x) // Accessible in Lua using the '.' syntax
-						.addVariable("y", &glm::vec2::y)
+		.addVariable("r", &glm::vec2::r)
+		.addVariable("g", &glm::vec2::g)
+		
+		// Can't have multiple constructors in Lua (no function overloading)
+		.addStaticFunction("fromVec3", [](const glm::vec3& vector) // This name works well with Lua
+		{
+			return glm::vec2(vector);
+		})
 
-						.addVariable("r", &glm::vec2::r)
-						.addVariable("g", &glm::vec2::g)
+		.addStaticFunction("fromVec4", [](const glm::vec4& vector)
+		{
+			return glm::vec2(vector);
+		})
 
-						// Can't have multiple constructors in Lua (no function overloading)
-						.addStaticFunction("fromVec3", [](const glm::vec3& vector) // This name works well with Lua
-							{
-								return glm::vec2(vector);
-							})
+		// Couldn't figure out how to use glm's built in basic arithmetics with Lua (if possible)
+		// Arithmetics
+		.addStaticFunction("add", [](const glm::vec2& left, const glm::vec2& right)
+		{
+			return (left + right);
+		})
 
-						.addStaticFunction("fromVec4", [](const glm::vec4& vector)
-							{
-								return glm::vec2(vector);
-							})
+		.addStaticFunction("sub", [](const glm::vec2& left, const glm::vec2& right)
+		{
+			return (left - right);
+		})
 
-								// Couldn't figure out how to use glm's built in basic arithmetics with Lua (if possible)
-								// Arithmetics
-								.addStaticFunction("add", [](const glm::vec2& left, const glm::vec2& right)
-									{
-										return (left + right);
-									})
+		.addStaticFunction("scalarMul", [](const glm::vec2& vector, float scalar)
+		{
+			return (vector * scalar);
+		})
 
-								.addStaticFunction("sub", [](const glm::vec2& left, const glm::vec2& right)
-									{
-										return (left - right);
-									})
+		.addStaticFunction("scalarDiv", [](const glm::vec2& vector, float scalar)
+		{
+			return (vector / scalar);
+		})
 
-										.addStaticFunction("scalarMul", [](const glm::vec2& vector, float scalar)
-											{
-												return (vector * scalar);
-											})
+		.addStaticFunction("length", [](const glm::vec2& vector)
+		{
+			return glm::length(vector);
+		})
 
-										.addStaticFunction("scalarDiv", [](const glm::vec2& vector, float scalar)
-											{
-												return (vector / scalar);
-											})
+		.addStaticFunction("normalize", [](const glm::vec2& vector)
+		{
+			return glm::normalize(vector);
+		})
 
-												.addStaticFunction("length", [](const glm::vec2& vector)
-													{
-														return glm::length(vector);
-													})
-
-												.addStaticFunction("normalize", [](const glm::vec2& vector)
-													{
-														return glm::normalize(vector);
-													})
-
-														.addStaticFunction("dot", [](const glm::vec2& vector1, const glm::vec2& vector2)
-															{
-																return glm::dot(vector1, vector2);
-															})
-														.endClass();
-
-
-															LuaBinding(luaState).beginClass<glm::vec3>("Vec3")
-																.addConstructor(LUA_ARGS(float, float, float))
-
-																.addVariable("x", &glm::vec3::x)
-																.addVariable("y", &glm::vec3::y)
-																.addVariable("z", &glm::vec3::z)
-
-																.addVariable("r", &glm::vec3::r)
-																.addVariable("g", &glm::vec3::g)
-																.addVariable("b", &glm::vec3::b)
-
-																.addStaticFunction("fromVec4", [](const glm::vec4& vector)
-																	{
-																		return glm::vec3(vector);
-																	})
-
-																.addStaticFunction("add", [](const glm::vec3& left, const glm::vec3& right)
-																	{
-																		return (left + right);
-																	})
-
-																		.addStaticFunction("sub", [](const glm::vec3& left, const glm::vec3& right)
-																			{
-																				return (left - right);
-																			})
-
-																		.addStaticFunction("scalarMul", [](const glm::vec3& vector, float scalar)
-																			{
-																				return (vector * scalar);
-																			})
-
-																				.addStaticFunction("scalarDiv", [](const glm::vec3& vector, float scalar)
-																					{
-																						return (vector / scalar);
-																					})
-
-																				.addStaticFunction("length", [](const glm::vec3& vector)
-																					{
-																						return glm::length(vector);
-																					})
-
-																						.addStaticFunction("normalize", [](const glm::vec3& vector)
-																							{
-																								return glm::normalize(vector);
-																							})
-
-																						.addStaticFunction("dot", [](const glm::vec3& vector1, const glm::vec3& vector2)
-																							{
-																								return glm::dot(vector1, vector2);
-																							})
-																								.endClass();
+		.addStaticFunction("dot", [](const glm::vec2& vector1, const glm::vec2& vector2)
+		{
+			return glm::dot(vector1, vector2);
+		})
+	.endClass();
 
 
-																							LuaBinding(luaState).beginClass<glm::vec4>("Vec4")
-																								.addConstructor(LUA_ARGS(float, float, float, float))
+	LuaBinding(luaState).beginClass<glm::vec3>("Vec3")
+		.addConstructor(LUA_ARGS(float, float, float))
 
-																								.addVariable("x", &glm::vec4::x)
-																								.addVariable("y", &glm::vec4::y)
-																								.addVariable("z", &glm::vec4::z)
-																								.addVariable("w", &glm::vec4::w)
+		.addVariable("x", &glm::vec3::x)
+		.addVariable("y", &glm::vec3::y)
+		.addVariable("z", &glm::vec3::z)
 
-																								.addVariable("r", &glm::vec4::r)
-																								.addVariable("g", &glm::vec4::g)
-																								.addVariable("b", &glm::vec4::b)
-																								.addVariable("a", &glm::vec4::a)
+		.addVariable("r", &glm::vec3::r)
+		.addVariable("g", &glm::vec3::g)
+		.addVariable("b", &glm::vec3::b)
 
-																								.addStaticFunction("add", [](const glm::vec4& left, const glm::vec4& right)
-																									{
-																										return (left + right);
-																									})
+		.addStaticFunction("fromVec4", [](const glm::vec4& vector)
+		{
+			return glm::vec3(vector);
+		})
 
-																								.addStaticFunction("sub", [](const glm::vec4& left, const glm::vec4& right)
-																									{
-																										return (left - right);
-																									})
+		.addStaticFunction("add", [](const glm::vec3& left, const glm::vec3& right)
+		{
+			return (left + right);
+		})
 
-																										.addStaticFunction("scalarMul", [](const glm::vec4& vector, float scalar)
-																											{
-																												return (vector * scalar);
-																											})
+		.addStaticFunction("sub", [](const glm::vec3& left, const glm::vec3& right)
+		{
+			return (left - right);
+		})
 
-																										.addStaticFunction("scalarDiv", [](const glm::vec4& vector, float scalar)
-																											{
-																												return (vector / scalar);
-																											})
+		.addStaticFunction("scalarMul", [](const glm::vec3& vector, float scalar)
+		{
+			return (vector * scalar);
+		})
 
-																												.addStaticFunction("length", [](const glm::vec4& vector)
-																													{
-																														return glm::length(vector);
-																													})
+		.addStaticFunction("scalarDiv", [](const glm::vec3& vector, float scalar)
+		{
+			return (vector / scalar);
+		})
 
-																												.addStaticFunction("normalize", [](const glm::vec4& vector)
-																													{
-																														return glm::normalize(vector);
-																													})
+		.addStaticFunction("length", [](const glm::vec3& vector)
+		{
+			return glm::length(vector);
+		})
 
-																														.addStaticFunction("dot", [](const glm::vec4& vector1, const glm::vec4& vector2)
-																															{
-																																return glm::dot(vector1, vector2);
-																															})
-																														.endClass();
+		.addStaticFunction("normalize", [](const glm::vec3& vector)
+		{
+			return glm::normalize(vector);
+		})
+
+		.addStaticFunction("dot", [](const glm::vec3& vector1, const glm::vec3& vector2)
+		{
+			return glm::dot(vector1, vector2);
+		})
+	.endClass();
+
+
+	LuaBinding(luaState).beginClass<glm::vec4>("Vec4")
+		.addConstructor(LUA_ARGS(float, float, float, float))
+
+		.addVariable("x", &glm::vec4::x)
+		.addVariable("y", &glm::vec4::y)
+		.addVariable("z", &glm::vec4::z)
+		.addVariable("w", &glm::vec4::w)
+
+		.addVariable("r", &glm::vec4::r)
+		.addVariable("g", &glm::vec4::g)
+		.addVariable("b", &glm::vec4::b)
+		.addVariable("a", &glm::vec4::a)
+
+		.addStaticFunction("add", [](const glm::vec4& left, const glm::vec4& right)
+		{
+			return (left + right);
+		})
+
+		.addStaticFunction("sub", [](const glm::vec4& left, const glm::vec4& right)
+		{
+			return (left - right);
+		})
+
+		.addStaticFunction("scalarMul", [](const glm::vec4& vector, float scalar)
+		{
+			return (vector * scalar);
+		})
+
+		.addStaticFunction("scalarDiv", [](const glm::vec4& vector, float scalar)
+		{
+			return (vector / scalar);
+		})
+
+		.addStaticFunction("length", [](const glm::vec4& vector)
+		{
+			return glm::length(vector);
+		})
+
+		.addStaticFunction("normalize", [](const glm::vec4& vector)
+		{
+			return glm::normalize(vector);
+		})
+
+		.addStaticFunction("dot", [](const glm::vec4& vector1, const glm::vec4& vector2)
+		{
+			return glm::dot(vector1, vector2);
+		})
+	.endClass();
 }
 
 // Running a script will probably not be too heavy since it will probably only be defining a bunch of callbacks.
@@ -833,8 +831,7 @@ bool Script::run()
 	try
 	{
 		mLuaContext.doString(mMainFileContents.c_str()); // Run the file!
-	}
-	catch (const std::exception& e)
+	} catch(const std::exception& e)
 	{
 		std::string scriptErrorMessage = e.what();
 
@@ -855,7 +852,7 @@ bool Script::runString(const std::string& scriptCode)
 	{
 		mLuaContext.doString(scriptCode.c_str()); // Run the file!
 	}
-	catch (const std::exception& e)
+	catch(const std::exception& e)
 	{
 		std::string scriptErrorMessage = e.what();
 
@@ -883,7 +880,7 @@ void Script::runFunction(const std::string& functionName)
 	{
 		getReference(functionName)();
 	}
-	catch (const std::exception& e)
+	catch(const std::exception& e)
 	{
 		std::string scriptErrorMessage = e.what();
 

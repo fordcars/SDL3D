@@ -218,7 +218,6 @@ void Game::doEvents()
 	while(SDL_PollEvent(&event))
 	{
 		mInputManager.updateKeyByEvent(event);
-		mInputManager.updateMouseMovement(event);
 
 		if(event.type == SDL_QUIT)
 			quit();
