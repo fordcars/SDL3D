@@ -1,20 +1,19 @@
 SDL3D
 ========
 
-This is a very simple 3D Lua-scriptable game engine using SDL and OpenGL.
+This is a simple 3D Lua-scriptable game engine using SDL and OpenGL.
 
 Features
 --------
 
-- 3D rendering with OpenGL
-- Uses SDL
+- 3D rendering with OpenGL 3.3
 - SDL_mixer sounds
 - Box2D physics
 - Lua API
 
 Platforms
 --------
-SDL3D is supported on multiple platforms, but should be compilable on on other platforms without too much work.
+SDL3D is supported on multiple platforms, but should run on other platforms without too much work.
 
 - Windows
 - Linux (tested on Ubuntu)
