@@ -35,11 +35,11 @@ private:
 	glm::vec3 mDiffuseColor; // Virtually all of the time, diffuse color and specular color will be white
 	glm::vec3 mSpecularColor;
 
-	float mPower;
+	float mIntensity;
 	bool mOnState; // Can turn the light on or off
 
 public:
-	Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power);
+	Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float intensity);
 	~Light() override;
 
 	void renderDeferred(const Camera& camera,  GLuint positionTexture, GLuint normalTexture, GLuint albedoTexture);
@@ -50,8 +50,8 @@ public:
 	void setSpecularColor(glm::vec3 color);
 	glm::vec3 getSpecularColor();
 
-	void setPower(float power);
-	float getPower();
+	void setIntensity(float intensity);
+	float getIntensity();
 
 	void setOnState(bool onState);
 	bool isOn();

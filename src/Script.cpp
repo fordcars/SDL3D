@@ -626,8 +626,8 @@ void Script::bindInterface(Game& game)
 		.addFunction("setSpecularColor", &Light::setSpecularColor)
 		.addFunction("getSpecularColor", &Light::getSpecularColor)
 
-		.addFunction("setPower", &Light::setPower)
-		.addFunction("getPower", &Light::getPower)
+		.addFunction("setIntensity", &Light::setIntensity)
+		.addFunction("getIntensity", &Light::getIntensity)
 
 		.addFunction("setOnState", &Light::setOnState)
 		.addFunction("isOn", &Light::isOn)

@@ -58,11 +58,14 @@ void ShadedObject::render(const Camera& camera)
 	glm::mat4 projectionMatrix = camera.getProjectionMatrix();
 
 	glm::mat4 MVP = projectionMatrix * viewMatrix * modelMatrix;
+	glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+	glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
 
 	glUseProgram(getShader()->getID());
 
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(getShader()->findUniform("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]);
+	glUniformMatrix4fv(getShader()->findUniform("normalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 
 	glUniform1i(getShader()->findUniform("textureSampler"), 0);
 

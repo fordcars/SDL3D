@@ -39,7 +39,7 @@ static const ObjectGeometry::uintVector LIGHT_INDICES = {
 	2, 3, 1
 };
 
-Light::Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
+Light::Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float intensity)
 	: mObjectGeometry("lightGeometry", LIGHT_INDICES, LIGHT_VERTS, LIGHT_UVs, LIGHT_VERTS)
 {
 	getPhysicsBody().setPosition(position);
@@ -48,7 +48,7 @@ Light::Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 dif
 	mDiffuseColor = diffuseColor;
 	mSpecularColor = specularColor;
 
-	mPower = power;
+	mIntensity = intensity;
 }
 
 Light::~Light()
@@ -68,6 +68,9 @@ void Light::renderDeferred(const Camera &camera, GLuint positionTexture, GLuint 
 	glUseProgram(mShaderPointer->getID());
 	glUniformMatrix4fv(mShaderPointer->findUniform("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);
 	glUniform3f(mShaderPointer->findUniform("lightPos_worldspace"), position.x, position.y, position.z);
+	glUniform3f(mShaderPointer->findUniform("lightDiffuseColor"), mDiffuseColor.x, mDiffuseColor.y, mDiffuseColor.z);
+	glUniform3f(mShaderPointer->findUniform("lightSpecularColor"), mSpecularColor.x, mSpecularColor.y, mSpecularColor.z);
+	glUniform1f(mShaderPointer->findUniform("lightIntensity"), mIntensity);
 
 	glUniform1i(mShaderPointer->findUniform("positionTex"), 0);
 	glUniform1i(mShaderPointer->findUniform("normalTex"), 1);
@@ -138,14 +141,14 @@ glm::vec3 Light::getSpecularColor()
 	return mSpecularColor;
 }
 
-void Light::setPower(float power)
+void Light::setIntensity(float intensity)
 {
-	mPower = power;
+	mIntensity = intensity;
 }
 
-float Light::getPower()
+float Light::getIntensity()
 {
-	return mPower;
+	return mIntensity;
 }
 
 void Light::setOnState(bool onState)
