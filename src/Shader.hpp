@@ -51,7 +51,7 @@ public:
 
 	static std::string getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGet_iv, PFNGLGETSHADERINFOLOGPROC glGet__InfoLog);
 
-	GLuint findUniform(const std::string& uniformName) const;
+	GLint findUniform(const std::string& uniformName) const;
 };
 
 #endif /* SHADER_HPP */

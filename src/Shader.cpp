@@ -200,17 +200,13 @@ std::string Shader::getGLShaderDebugLog(GLuint object, PFNGLGETSHADERIVPROC glGe
 	return "\n-----------GL LOG-----------\n" + log; // For looks
 }
 
-GLuint Shader::findUniform(const std::string& uniformName) const // Returns a read only int
+// Returns -1 if not found (expected GL behavior)
+GLint Shader::findUniform(const std::string& uniformName) const // Returns a read only int
 {
 	GLuintMap::const_iterator got = mUniformMap.find(uniformName); // Const iterator, we should not need to change this GLuint
 
 	if(got == mUniformMap.end())
-	{
-		std::string error = uniformName;
-		error = "Uniform '" + error + "' was not registered for shader '" + mName + "'! Are you creating the right object type for your shader?";
-		Utils::CRASH(error);
-		return 0;
-	}
+		return -1;
 
 	return got->second;
 }
