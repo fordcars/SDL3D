@@ -32,5 +32,5 @@ uniform sampler2D albedoTex;
 void main()
 {
 	// Ouput color = color at that specific UV
-	color = texture(normalTex, UV).rgb;
+	color = texture(albedoTex, UV).rgb;
 }

@@ -35,4 +35,5 @@ void main()
 {
     fragPosition_worldspace = position_worldspace;
     fragNormal_worldspace = normalize(normal_worldspace);
+    albedo = texture(textureSampler, UV).rgb;
 }
