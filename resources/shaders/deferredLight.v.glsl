@@ -1,4 +1,4 @@
-//// Copyright 2015 Carl Hewett
+//// Copyright 2016 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -17,17 +17,22 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// This file is heavily based off http://www.opengl-tutorial.org/, see SpecialThanks.txt
+
 #version 330 core
 
-layout(location = 0) in vec3 vertexPosition_modelspace;
-uniform mat4 MVP;
+layout(location = 0) in vec3 vertexPosition_clipspace;
+layout(location = 1) in vec2 vertexUV;
 
-out vec3 fScreenPos;
+uniform mat4 viewMatrix;
+
+out vec2 UV;
 
 void main()
 {
-	vec4 v = vec4(vertexPosition_modelspace, 1);
-	gl_Position = MVP * v;
+	// Output position of the vertex
+	gl_Position = vec4(vertexPosition_clipspace, 1);
 	
-	fScreenPos = vec3(gl_Position.xyz);
+	// UV of the vertex
+	UV = vertexUV;
 }

@@ -309,6 +309,6 @@ void EntityManager::render() // Renders all entities that can be rendered
 	// Third pass - lights
 	for(lightVector::iterator it = mLights.begin(); it != mLights.end(); ++it)
 	{
-		(*it)->renderDeferred(mGameCamera);
+		(*it)->renderDeferred(mGameCamera, mDeferredTextures[0], mDeferredTextures[1], mDeferredTextures[2]);
 	}
 }

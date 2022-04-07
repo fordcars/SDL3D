@@ -42,7 +42,7 @@ public:
 	Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power);
 	~Light() override;
 
-	void renderDeferred(const Camera& camera);
+	void renderDeferred(const Camera& camera,  GLuint positionTexture, GLuint normalTexture, GLuint albedoTexture);
 
 	void setDiffuseColor(glm::vec3 color);
 	glm::vec3 getDiffuseColor();

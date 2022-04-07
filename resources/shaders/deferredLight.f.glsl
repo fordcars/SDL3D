@@ -1,4 +1,4 @@
-//// Copyright 2015 Carl Hewett
+//// Copyright 2016 Carl Hewett
 ////
 //// This file is part of SDL3D.
 ////
@@ -17,14 +17,20 @@
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
+// This file is heavily based off http://www.opengl-tutorial.org/, see SpecialThanks.txt
+
 #version 330 core
 
-uniform vec3 color;
+in vec2 UV;
+out vec3 color;
 
-in vec3 fScreenPos;
-out vec3 outColor;
+uniform vec3 lightPos_worldspace;
+uniform sampler2D positionTex;
+uniform sampler2D normalTex;
+uniform sampler2D albedoTex;
 
 void main()
 {
-	outColor = color;
+	// Ouput color = color at that specific UV
+	color = texture(positionTex, UV).rgb;
 }
