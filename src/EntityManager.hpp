@@ -42,8 +42,9 @@ public: // Public aliases
 	using lightVector = std::vector<lightPointer>;
 
 private:
+	static const unsigned mDeferredTextureCount = 3;
 	GLuint mDeferredFramebuffer;
-	GLuint mDeferredTextures[3];
+	GLuint mDeferredTextures[mDeferredTextureCount];
 	GLuint mDeferredDepthbuffer;
 	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.
 

@@ -29,6 +29,8 @@
 
 #include <Box2D/Box2D.h>
 
+const unsigned EntityManager::mDeferredTextureCount;
+
 EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
 {
@@ -46,7 +48,7 @@ EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 
 EntityManager::~EntityManager()
 {
-	// Do nothing
+	glDeleteTextures(mDeferredTextureCount, mDeferredTextures);
 }
 
 void EntityManager::initDeferredRendering()
@@ -119,13 +121,12 @@ void EntityManager::initDeferredRendering()
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mDeferredTextures[2], 0);
 
 	// Set draw buffers
-	const unsigned numBuffers = 3;
-	GLenum drawBuffers[numBuffers] = {
+	GLenum drawBuffers[mDeferredTextureCount] = {
 		GL_COLOR_ATTACHMENT0,
 		GL_COLOR_ATTACHMENT1,
 		GL_COLOR_ATTACHMENT2
 	};
-	glDrawBuffers(numBuffers, drawBuffers);
+	glDrawBuffers(mDeferredTextureCount, drawBuffers);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		Utils::CRASH("Could not initialized deferred rendering framebuffer!");
@@ -286,6 +287,8 @@ void EntityManager::render() // Renders all entities that can be rendered
 {
 	// First pass - shaded objets
 	glBindFramebuffer(GL_FRAMEBUFFER, mDeferredFramebuffer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear textures before writing to them
+
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
 		Object *object = &(*(*it));
