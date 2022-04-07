@@ -24,8 +24,8 @@ local function foo()
 	
 	resourceManager:addShader("basic.v.glsl", "basic.f.glsl")
 	resourceManager:addShader("textured.v.glsl", "textured.f.glsl")
-	resourceManager:addShader("shaded.v.glsl", "shaded.f.glsl")
     resourceManager:addShader("deferredLight.v.glsl", "deferredLight.f.glsl")
+    resourceManager:addShader("deferredShaded.v.glsl", "deferredShaded.f.glsl")
 	
 	resourceManager:addTexture("test.bmp", TextureType.BMP)
 	resourceManager:addTexture("suzanne.dds", TextureType.DDS)
@@ -59,7 +59,7 @@ local function foo()
 	camera:setDirection(Vec4(3, 0.0, 0.0, 0.0))
 	
 	local geometry = resourceManager:findObjectGeometryGroup("suzanne"):getObjectGeometries()[1]
-	local shader = resourceManager:findShader("shaded")
+	local shader = resourceManager:findShader("deferredShaded")
 	local texture = resourceManager:findTexture("suzanne")
 	M.building = ShadedObject(resourceManager:findObjectGeometryGroup("building"):getObjectGeometries()[1], shader, resourceManager:findTexture("building"), false, PhysicsBodyType.Dynamic)
 	
