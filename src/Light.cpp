@@ -19,7 +19,27 @@
 
 #include <Light.hpp>
 
+static const ObjectGeometry::vec3Vector LIGHT_VERTS = {
+	glm::vec3(-1.0f, 1.0f, 0.0f),  // Top left
+	glm::vec3(1.0f, 1.0f, 0.0f),   // Top right
+	glm::vec3(-1.0f, -1.0f, 0.0f), // Bottom left
+	glm::vec3(1.0f, -1.0f, 0.0f)   // Bottom right
+};
+
+static const ObjectGeometry::vec2Vector LIGHT_UVs = {
+	glm::vec2(0.0f, 1.0f),   // Top left
+	glm::vec2(1.0f, 1.0f),   // Top right
+	glm::vec2(0.0f, 0.0f),   // Bottom left
+	glm::vec2(1.0f, 0.0f)    // Bottom right
+};
+
+static const ObjectGeometry::uintVector LIGHT_INDICES = {
+	0, 2, 1,
+	2, 3, 1
+};
+
 Light::Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
+	: mObjectGeometry("lightGeometry", LIGHT_INDICES, LIGHT_VERTS, LIGHT_UVs, LIGHT_VERTS)
 {
 	getPhysicsBody().setPosition(position);
 

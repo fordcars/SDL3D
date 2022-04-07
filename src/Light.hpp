@@ -21,6 +21,7 @@
 #define LIGHT_HPP
 
 #include <Entity.hpp>
+#include <ObjectGeometry.hpp>
 
 #include <glm/glm.hpp>
 
@@ -30,6 +31,7 @@ private:
 	using constShaderPointer = std::shared_ptr<const Shader>; // Const shader
 
 	constShaderPointer mShaderPointer;
+	ObjectGeometry mObjectGeometry;
 	glm::vec3 mDiffuseColor; // Virtually all of the time, diffuse color and specular color will be white
 	glm::vec3 mSpecularColor;
 
