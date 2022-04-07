@@ -79,10 +79,10 @@ local function foo()
 	
 	local color = Vec3(1, 0, 0.5)
 	local light = Light(lightShader, Vec3(4, 4, 4), color, color, 60)
-	entityManager:addLight(light)
+	--entityManager:addLight(light)
 	
 	color = Vec3(0, 0.5, 1)
-	light = Light(lightShader, Vec3(4.5, 4, 4), color, color, 60)
+	light = Light(lightShader, Vec3(10.5, 0, 0), color, color, 60)
 	entityManager:addLight(light)
 	
 	local maxCoord = 0
@@ -97,7 +97,7 @@ local function foo()
 		
 		-- Add light
 		light = Light(lightShader, Vec3(coord, 0.0, 0.0), color, color, 60)
-		entityManager:addLight(light)
+		--entityManager:addLight(light)
 		
 		maxCoord = coord
 		

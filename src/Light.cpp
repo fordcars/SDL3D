@@ -63,7 +63,7 @@ void Light::renderDeferred(const Camera &camera, GLuint positionTexture, GLuint 
 	const ObjectGeometry::vec2Buffer &UVBuffer = mObjectGeometry.getUVBuffer();
 
 	glm::mat4 viewMatrix = camera.getViewMatrix();
-	glm::vec3 position = getPhysicsBody().getPosition();
+	glm::vec3 position = getPhysicsBody().getPosition() * PHYSICS_PIXELS_PER_METER;
 
 	glUseProgram(mShaderPointer->getID());
 	glUniformMatrix4fv(mShaderPointer->findUniform("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);
