@@ -71,11 +71,11 @@ void EntityManager::initDeferredRendering()
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
-		GL_RGB,                     // Internal format
+		GL_RGBA16F,                     // Internal format
 		DEFAULT_GAME_WINDOW_WIDTH,
 		DEFAULT_GAME_WINDOW_HEIGHT,
 		0,                          // Border
-		GL_RGB,
+		GL_RGBA,
 		GL_FLOAT,                   // Data format
 		nullptr                     // Data (0s)
 	);
@@ -89,11 +89,11 @@ void EntityManager::initDeferredRendering()
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
-		GL_RGB,                     // Internal format
+		GL_RGBA16F,                     // Internal format
 		DEFAULT_GAME_WINDOW_WIDTH,
 		DEFAULT_GAME_WINDOW_HEIGHT,
 		0,                          // Border
-		GL_RGB,
+		GL_RGBA,
 		GL_FLOAT,                   // Data format
 		nullptr                     // Data (0s)
 	);
@@ -107,11 +107,11 @@ void EntityManager::initDeferredRendering()
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
-		GL_RGB,                     // Internal format
+		GL_RGBA,                     // Internal format
 		DEFAULT_GAME_WINDOW_WIDTH,
 		DEFAULT_GAME_WINDOW_HEIGHT,
 		0,                          // Border
-		GL_RGB,
+		GL_RGBA,
 		GL_UNSIGNED_BYTE,           // Data format
 		nullptr                     // Data (0s)
 	);
@@ -287,6 +287,7 @@ void EntityManager::render() // Renders all entities that can be rendered
 {
 	// First pass - shaded objets
 	glBindFramebuffer(GL_FRAMEBUFFER, mDeferredFramebuffer);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear textures before writing to them
 
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)

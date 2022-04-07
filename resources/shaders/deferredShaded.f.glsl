@@ -21,19 +21,18 @@
 
 #version 330 core
 
-// Interpolated values from the vertex shader
 in vec2 UV;
 in vec3 position_worldspace;
+in vec3 normal_worldspace;
 
 layout(location = 0) out vec3 fragPosition_worldspace;
-layout(location = 1) out vec3 normal;
+layout(location = 1) out vec3 fragNormal_worldspace;
 layout(location = 2) out vec3 albedo;
 
-// Values that stay constant for the whole mesh
 uniform sampler2D textureSampler;
 
 void main()
 {
-	// Ouput color = color at that specific UV
     fragPosition_worldspace = position_worldspace;
+    fragNormal_worldspace = normalize(normal_worldspace);
 }

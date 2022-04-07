@@ -63,6 +63,7 @@ void ShadedObject::render(const Camera& camera)
 
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(getShader()->findUniform("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]);
+
 	glUniform1i(getShader()->findUniform("textureSampler"), 0);
 
 	// Attribute 0, position buffer
