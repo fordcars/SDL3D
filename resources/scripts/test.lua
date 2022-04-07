@@ -6,7 +6,7 @@ M.lastMonkey = nil
 local function foo()
 	local game = getGame()
 	game:setName("Testing 123!")
-	game:setSize(IVec2(1024, 600))
+	--game:setSize(IVec2(1024, 600))
 	game:setMaxFramesPerSecond(60)
 	game:reCenterMainWindow()
 	
@@ -77,11 +77,11 @@ local function foo()
 		end
 	end]]--
 	
-	local color = Vec3(1, 1, 0.5)
+	local color = Vec3(1, 0, 0.5)
 	local light = Light(lightShader, Vec3(4, 4, 4), color, color, 60)
 	entityManager:addLight(light)
 	
-	color = Vec3(1, 0.5, 1)
+	color = Vec3(0, 0.5, 1)
 	light = Light(lightShader, Vec3(4.5, 4, 4), color, color, 60)
 	entityManager:addLight(light)
 	
@@ -94,6 +94,10 @@ local function foo()
 		newMonkey:getPhysicsBody():setVelocity(Vec3(0, 0.0, 0.0))
 		newMonkey:getPhysicsBody():setWorldFriction(2)
 		entityManager:addObject(newMonkey)
+		
+		-- Add light
+		light = Light(lightShader, Vec3(coord, 0.0, 0.0), color, color, 60)
+		entityManager:addLight(light)
 		
 		maxCoord = coord
 		

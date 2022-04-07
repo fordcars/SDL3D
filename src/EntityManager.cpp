@@ -290,6 +290,7 @@ void EntityManager::render() // Renders all entities that can be rendered
 {
 	// First pass - shaded objets
 	glBindFramebuffer(GL_FRAMEBUFFER, mDeferredFramebuffer);
+	glViewport(0, 0, DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear textures before writing to them
 	glDisable(GL_BLEND);
@@ -305,6 +306,7 @@ void EntityManager::render() // Renders all entities that can be rendered
 
 	// Second pass - other objects
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
 
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
