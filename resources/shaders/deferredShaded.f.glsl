@@ -23,10 +23,10 @@
 
 in vec2 UV;
 in vec3 position_worldspace;
-in vec3 normal_worldspace;
+in vec3 normal_cameraspace;
 
 layout(location = 0) out vec3 fragPosition_worldspace;
-layout(location = 1) out vec3 fragNormal_worldspace;
+layout(location = 1) out vec3 fragNormal_cameraspace;
 layout(location = 2) out vec3 albedo;
 
 uniform sampler2D textureSampler;
@@ -34,6 +34,6 @@ uniform sampler2D textureSampler;
 void main()
 {
     fragPosition_worldspace = position_worldspace;
-    fragNormal_worldspace = normalize(normal_worldspace);
+    fragNormal_cameraspace = normalize(normal_cameraspace);
     albedo = texture(textureSampler, UV).rgb;
 }

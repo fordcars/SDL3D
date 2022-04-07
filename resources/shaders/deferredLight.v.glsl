@@ -24,8 +24,6 @@
 layout(location = 0) in vec3 vertexPosition_clipspace;
 layout(location = 1) in vec2 vertexUV;
 
-uniform mat4 viewMatrix;
-
 out vec2 UV;
 
 void main()
