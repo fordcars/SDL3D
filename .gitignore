@@ -17,4 +17,7 @@
 # Linux hidden temporary files (files ending with a tilde (~))
 *~
 
+# Notepad++
+*.bak
+
 /build/
