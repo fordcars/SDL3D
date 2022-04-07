@@ -19,14 +19,6 @@
 
 #include <Light.hpp>
 
-Light::Light()
-{
-	mDiffuseColor = glm::vec3(0.0f, 0.0f, 0.0f);
-	mSpecularColor = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	mPower = 60.0f;
-}
-
 Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
 {
 	getPhysicsBody().setPosition(position);
@@ -40,6 +32,11 @@ Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor
 Light::~Light()
 {
 	// Do nothing
+}
+
+void Light::renderDiffered(const Camera &camera)
+{
+
 }
 
 void Light::setDiffuseColor(glm::vec3 color)

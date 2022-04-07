@@ -26,6 +26,7 @@
 
 #include <Box2D.h>
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 
 #include <memory>
 #include <vector>
@@ -41,6 +42,9 @@ public: // Public aliases
 	using lightVector = std::vector<lightPointer>;
 
 private:
+	GLuint mDifferedFramebuffer;
+	GLuint mDifferedTextures[3];
+	GLuint mDifferedDepthbuffer;
 	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.
 
 	objectVector mObjects;
@@ -54,6 +58,7 @@ private:
 public:
 	EntityManager(glm::vec2 gravity, float physicsTimePerStep);
 	~EntityManager();
+	void initDifferedRendering();
 
 	Camera& getGameCamera();
 

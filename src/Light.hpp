@@ -38,6 +38,8 @@ public:
 	Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power);
 	~Light() override;
 
+	void renderDiffered(const Camera& camera);
+
 	void setDiffuseColor(glm::vec3 color);
 	glm::vec3 getDiffuseColor();
 

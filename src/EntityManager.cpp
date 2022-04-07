@@ -22,6 +22,7 @@
 #include <EntityManager.hpp>
 #include <Utils.hpp>
 #include <Definitions.hpp>
+#include <ShadedObject.hpp>
 
 #include <algorithm> // For finding in vector
 #include <string>
@@ -31,6 +32,10 @@
 EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
 {
+	mDifferedFramebuffer = 0;
+	*mDifferedTextures = {0};
+	mDifferedDepthbuffer = 0;
+
 	// Defaults
 	mPhysicsTimePerStep = physicsTimePerStep;
 	mPhysicsVelocityIterations = 6;
@@ -42,6 +47,88 @@ EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 EntityManager::~EntityManager()
 {
 	// Do nothing
+}
+
+void EntityManager::initDifferedRendering()
+{
+	// Create framebuffer
+	glGenFramebuffers(1, &mDifferedFramebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mDifferedFramebuffer);
+
+	// Add depth buffer
+	glGenRenderbuffers(1, &mDifferedDepthbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, mDifferedDepthbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDifferedDepthbuffer);
+
+	// Generate textures
+	glGenTextures(3, mDifferedTextures);
+
+	// Position
+	glBindTexture(GL_TEXTURE_2D, mDifferedTextures[0]);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,                          // Level
+		GL_RGB,                     // Internal format
+		DEFAULT_GAME_WINDOW_WIDTH,
+		DEFAULT_GAME_WINDOW_HEIGHT,
+		0,                          // Border
+		GL_RGB,
+		GL_FLOAT,                   // Data format
+		nullptr                     // Data (0s)
+	);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mDifferedTextures[0], 0);
+
+	// Normal
+	glBindTexture(GL_TEXTURE_2D, mDifferedTextures[1]);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,                          // Level
+		GL_RGB,                     // Internal format
+		DEFAULT_GAME_WINDOW_WIDTH,
+		DEFAULT_GAME_WINDOW_HEIGHT,
+		0,                          // Border
+		GL_RGB,
+		GL_FLOAT,                   // Data format
+		nullptr                     // Data (0s)
+	);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mDifferedTextures[1], 0);
+
+	// Albedo
+	glBindTexture(GL_TEXTURE_2D, mDifferedTextures[2]);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,                          // Level
+		GL_RGB,                     // Internal format
+		DEFAULT_GAME_WINDOW_WIDTH,
+		DEFAULT_GAME_WINDOW_HEIGHT,
+		0,                          // Border
+		GL_RGB,
+		GL_UNSIGNED_BYTE,           // Data format
+		nullptr                     // Data (0s)
+	);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mDifferedTextures[2], 0);
+
+	// Set draw buffers
+	const unsigned numBuffers = 3;
+	GLenum drawBuffers[numBuffers] = {
+		GL_COLOR_ATTACHMENT0,
+		GL_COLOR_ATTACHMENT1,
+		GL_COLOR_ATTACHMENT2
+	};
+	glDrawBuffers(numBuffers, drawBuffers);
+
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		Utils::CRASH("Could not initialized differed rendering framebuffer!");
 }
 
 Camera& EntityManager::getGameCamera()
@@ -197,8 +284,31 @@ void EntityManager::step(float divider)
 
 void EntityManager::render() // Renders all entities that can be rendered
 {
+	// First pass - shaded objets
+	glBindFramebuffer(GL_FRAMEBUFFER, mDifferedFramebuffer);
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
-		(*it)->render(mGameCamera);
+		Object *object = &(*(*it));
+		ShadedObject *shaded = dynamic_cast<ShadedObject *>(object);
+		
+		if(shaded != nullptr)
+			shaded->render(mGameCamera);
+	}
+
+	// Second pass - other objects
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+	{
+		Object *object = &(*(*it));
+		ShadedObject *shaded = dynamic_cast<ShadedObject *>(object);
+
+		if(shaded == nullptr)
+			object->render(mGameCamera);
+	}
+
+	// Third pass - lights
+	for(lightVector::iterator it = mLights.begin(); it != mLights.end(); ++it)
+	{
+		(*it)->renderDiffered(mGameCamera);
 	}
 }
