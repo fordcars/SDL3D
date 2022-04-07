@@ -10,7 +10,7 @@ local function foo()
 	game:setMaxFramesPerSecond(60)
 	game:reCenterMainWindow()
 	
-	game:setGraphicsBackgroundColor(Vec3(0, 0, 1))
+	game:setGraphicsBackgroundColor(Vec3(0, 0, 0))
 	
 	Utils.logprint("Engine version: " .. Engine.Version)
 	
@@ -63,8 +63,26 @@ local function foo()
 	local texture = resourceManager:findTexture("suzanne")
 	M.building = ShadedObject(resourceManager:findObjectGeometryGroup("building"):getObjectGeometries()[1], shader, resourceManager:findTexture("building"), false, PhysicsBodyType.Dynamic)
 	
-    local lightShader = resourceManager:findShader("deferredLight")
-	local light = Light(lightShader, Vec3(4, 4, 4), Vec3(1, 1, 1), Vec3(1, 1, 1), 60)
+	local lightShader = resourceManager:findShader("deferredLight")
+    
+	math.randomseed(os.time())
+	local stride = 1
+    
+	--[[
+	for i = 0, 20, 1 do
+		for j = 0, 20, 1 do
+			local color = Vec3(math.random(), math.random(), math.random())
+			local light = Light(lightShader, Vec3(i * stride, 4, j * stride), color, color, 60)
+			entityManager:addLight(light)
+		end
+	end]]--
+	
+	local color = Vec3(1, 1, 0.5)
+	local light = Light(lightShader, Vec3(4, 4, 4), color, color, 60)
+	entityManager:addLight(light)
+	
+	color = Vec3(1, 0.5, 1)
+	light = Light(lightShader, Vec3(4.5, 4, 4), color, color, 60)
 	entityManager:addLight(light)
 	
 	local maxCoord = 0
