@@ -42,9 +42,9 @@ public: // Public aliases
 	using lightVector = std::vector<lightPointer>;
 
 private:
-	GLuint mDifferedFramebuffer;
-	GLuint mDifferedTextures[3];
-	GLuint mDifferedDepthbuffer;
+	GLuint mDeferredFramebuffer;
+	GLuint mDeferredTextures[3];
+	GLuint mDeferredDepthbuffer;
 	Camera mGameCamera; // The main camera for the game. Whatever this camera sees will be displayed on the screen.
 
 	objectVector mObjects;
@@ -58,7 +58,7 @@ private:
 public:
 	EntityManager(glm::vec2 gravity, float physicsTimePerStep);
 	~EntityManager();
-	void initDifferedRendering();
+	void initDeferredRendering();
 
 	Camera& getGameCamera();
 

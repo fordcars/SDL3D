@@ -32,9 +32,9 @@
 EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
 {
-	mDifferedFramebuffer = 0;
-	*mDifferedTextures = {0};
-	mDifferedDepthbuffer = 0;
+	mDeferredFramebuffer = 0;
+	*mDeferredTextures = {0};
+	mDeferredDepthbuffer = 0;
 
 	// Defaults
 	mPhysicsTimePerStep = physicsTimePerStep;
@@ -49,23 +49,23 @@ EntityManager::~EntityManager()
 	// Do nothing
 }
 
-void EntityManager::initDifferedRendering()
+void EntityManager::initDeferredRendering()
 {
 	// Create framebuffer
-	glGenFramebuffers(1, &mDifferedFramebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, mDifferedFramebuffer);
+	glGenFramebuffers(1, &mDeferredFramebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mDeferredFramebuffer);
 
 	// Add depth buffer
-	glGenRenderbuffers(1, &mDifferedDepthbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, mDifferedDepthbuffer);
+	glGenRenderbuffers(1, &mDeferredDepthbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, mDeferredDepthbuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDifferedDepthbuffer);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDeferredDepthbuffer);
 
 	// Generate textures
-	glGenTextures(3, mDifferedTextures);
+	glGenTextures(3, mDeferredTextures);
 
 	// Position
-	glBindTexture(GL_TEXTURE_2D, mDifferedTextures[0]);
+	glBindTexture(GL_TEXTURE_2D, mDeferredTextures[0]);
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
@@ -80,10 +80,10 @@ void EntityManager::initDifferedRendering()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mDifferedTextures[0], 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mDeferredTextures[0], 0);
 
 	// Normal
-	glBindTexture(GL_TEXTURE_2D, mDifferedTextures[1]);
+	glBindTexture(GL_TEXTURE_2D, mDeferredTextures[1]);
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
@@ -98,10 +98,10 @@ void EntityManager::initDifferedRendering()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mDifferedTextures[1], 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mDeferredTextures[1], 0);
 
 	// Albedo
-	glBindTexture(GL_TEXTURE_2D, mDifferedTextures[2]);
+	glBindTexture(GL_TEXTURE_2D, mDeferredTextures[2]);
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
@@ -116,7 +116,7 @@ void EntityManager::initDifferedRendering()
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mDifferedTextures[2], 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mDeferredTextures[2], 0);
 
 	// Set draw buffers
 	const unsigned numBuffers = 3;
@@ -128,7 +128,7 @@ void EntityManager::initDifferedRendering()
 	glDrawBuffers(numBuffers, drawBuffers);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		Utils::CRASH("Could not initialized differed rendering framebuffer!");
+		Utils::CRASH("Could not initialized deferred rendering framebuffer!");
 }
 
 Camera& EntityManager::getGameCamera()
@@ -285,7 +285,7 @@ void EntityManager::step(float divider)
 void EntityManager::render() // Renders all entities that can be rendered
 {
 	// First pass - shaded objets
-	glBindFramebuffer(GL_FRAMEBUFFER, mDifferedFramebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mDeferredFramebuffer);
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
 		Object *object = &(*(*it));
@@ -309,6 +309,6 @@ void EntityManager::render() // Renders all entities that can be rendered
 	// Third pass - lights
 	for(lightVector::iterator it = mLights.begin(); it != mLights.end(); ++it)
 	{
-		(*it)->renderDiffered(mGameCamera);
+		(*it)->renderDeferred(mGameCamera);
 	}
 }

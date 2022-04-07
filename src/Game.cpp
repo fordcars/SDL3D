@@ -168,7 +168,7 @@ void Game::setupGraphics() // VAO and OpenGL options
 	GLuint vertexArrayID; // VAO - vertex array object
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
-	mEntityManager.initDifferedRendering();
+	mEntityManager.initDeferredRendering();
 }
 
 void Game::initMainLoop() // Initialize a few things before the main loop

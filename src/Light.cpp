@@ -34,7 +34,7 @@ Light::~Light()
 	// Do nothing
 }
 
-void Light::renderDiffered(const Camera &camera)
+void Light::renderDeferred(const Camera &camera)
 {
 
 }
