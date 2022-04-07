@@ -618,7 +618,7 @@ void Script::bindInterface(Game& game)
 
 
 	LuaBinding(luaState).beginExtendClass<Light, Entity>("Light")
-		.addConstructor(LUA_SP(std::shared_ptr<Light>), LUA_ARGS(glm::vec3, glm::vec3, glm::vec3, float))
+		.addConstructor(LUA_SP(std::shared_ptr<Light>), LUA_ARGS(Object::constShaderPointer, glm::vec3, glm::vec3, glm::vec3, float))
 
 		.addFunction("setDiffuseColor", &Light::setDiffuseColor)
 		.addFunction("getDiffuseColor", &Light::getDiffuseColor)

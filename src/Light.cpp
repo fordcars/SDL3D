@@ -19,10 +19,11 @@
 
 #include <Light.hpp>
 
-Light::Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
+Light::Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power)
 {
 	getPhysicsBody().setPosition(position);
 
+	mShaderPointer = shaderPointer;
 	mDiffuseColor = diffuseColor;
 	mSpecularColor = specularColor;
 

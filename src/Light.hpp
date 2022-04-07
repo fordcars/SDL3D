@@ -27,6 +27,9 @@
 class Light : public Entity
 {
 private:
+	using constShaderPointer = std::shared_ptr<const Shader>; // Const shader
+
+	constShaderPointer mShaderPointer;
 	glm::vec3 mDiffuseColor; // Virtually all of the time, diffuse color and specular color will be white
 	glm::vec3 mSpecularColor;
 
@@ -34,8 +37,7 @@ private:
 	bool mOnState; // Can turn the light on or off
 
 public:
-	Light();
-	Light(glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power);
+	Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float power);
 	~Light() override;
 
 	void renderDeferred(const Camera& camera);
