@@ -71,11 +71,11 @@ void EntityManager::initDeferredRendering()
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
-		GL_RGBA16F,                     // Internal format
+		GL_RGB16F,                     // Internal format
 		DEFAULT_GAME_WINDOW_WIDTH,
 		DEFAULT_GAME_WINDOW_HEIGHT,
 		0,                          // Border
-		GL_RGBA,
+		GL_RGB,
 		GL_FLOAT,                   // Data format
 		nullptr                     // Data (0s)
 	);
@@ -89,11 +89,11 @@ void EntityManager::initDeferredRendering()
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
-		GL_RGBA16F,                     // Internal format
+		GL_RGB16F,                     // Internal format
 		DEFAULT_GAME_WINDOW_WIDTH,
 		DEFAULT_GAME_WINDOW_HEIGHT,
 		0,                          // Border
-		GL_RGBA,
+		GL_RGB,
 		GL_FLOAT,                   // Data format
 		nullptr                     // Data (0s)
 	);
@@ -107,11 +107,11 @@ void EntityManager::initDeferredRendering()
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
-		GL_RGBA,                     // Internal format
+		GL_RGB,                     // Internal format
 		DEFAULT_GAME_WINDOW_WIDTH,
 		DEFAULT_GAME_WINDOW_HEIGHT,
 		0,                          // Border
-		GL_RGBA,
+		GL_RGB,
 		GL_UNSIGNED_BYTE,           // Data format
 		nullptr                     // Data (0s)
 	);
@@ -130,9 +130,6 @@ void EntityManager::initDeferredRendering()
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		Utils::CRASH("Could not initialized deferred rendering framebuffer!");
-
-	// Setup blending
-	glBlendFunc(GL_ONE, GL_ONE);
 }
 
 Camera& EntityManager::getGameCamera()
@@ -293,7 +290,9 @@ void EntityManager::render() // Renders all entities that can be rendered
 	glViewport(0, 0, DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear textures before writing to them
+
 	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
@@ -319,6 +318,9 @@ void EntityManager::render() // Renders all entities that can be rendered
 
 	// Third pass - lights
 	glEnable(GL_BLEND); // Enable blending to add each light source
+	glDisable(GL_DEPTH_TEST);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendEquation(GL_FUNC_ADD);
 	for(lightVector::iterator it = mLights.begin(); it != mLights.end(); ++it)
 	{
 		(*it)->renderDeferred(mGameCamera, mDeferredTextures[0], mDeferredTextures[1], mDeferredTextures[2]);

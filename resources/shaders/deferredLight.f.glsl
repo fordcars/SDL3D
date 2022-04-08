@@ -41,8 +41,6 @@ void main()
     vec3 fragNormal_cameraspace = texture(normalTex, UV).rgb;
     vec3 albedo = texture(albedoTex, UV).rgb;
     
-    vec3 ambientColor = vec3(0.4, 0.4, 0.4) * albedo;
-    
 	vec3 lightPos_cameraspace = (viewMatrix * vec4(lightPos_worldspace, 1)).xyz;
     vec3 fragPos_cameraspace = (viewMatrix * vec4(fragPos_worldspace, 1)).xyz;
     vec3 eyeDirection_cameraspace = normalize(vec3(0, 0, 0) - fragPos_cameraspace);               // Frag to camera
@@ -61,8 +59,6 @@ void main()
 	float cosAlpha = clamp(dot(E, R), 0, 1);
 	
 	color =
-        // Ambient
-        ambientColor +
         // Diffuse
         albedo * lightDiffuseColor * lightIntensity * cosTheta / squareDistance +
         // Specular

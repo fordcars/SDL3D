@@ -97,7 +97,7 @@ local function foo()
 		
 		-- Add light
 		light = Light(lightShader, Vec3(coord, 0.0, 0.0), color, color, 60)
-		--entityManager:addLight(light)
+		entityManager:addLight(light)
 		
 		maxCoord = coord
 		
