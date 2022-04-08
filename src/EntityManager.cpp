@@ -71,7 +71,7 @@ void EntityManager::initDeferredRendering()
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
-		GL_RGB16F,                     // Internal format
+		GL_RGB32F,                  // Internal format
 		DEFAULT_GAME_WINDOW_WIDTH,
 		DEFAULT_GAME_WINDOW_HEIGHT,
 		0,                          // Border
@@ -89,7 +89,7 @@ void EntityManager::initDeferredRendering()
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,                          // Level
-		GL_RGB16F,                     // Internal format
+		GL_RGB32F,                  // Internal format
 		DEFAULT_GAME_WINDOW_WIDTH,
 		DEFAULT_GAME_WINDOW_HEIGHT,
 		0,                          // Border
