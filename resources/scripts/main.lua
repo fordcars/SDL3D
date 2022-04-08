@@ -23,10 +23,14 @@ function gameStep()
 	
 	doControls();
 	
+	--[[
+	-- Debug shapes
 	for i,v in ipairs(objects) do
 		local physicsBody = v:getPhysicsBody()
 		physicsBody:renderDebugShape(shader, camera)
 	end
+	camera:getPhysicsBody():renderDebugShapeWithCoord(resourceManager:findShader("basic"), camera, 0.0)
+	]]--
 	
 	local buildingPosition = test.building:getPhysicsBody():getPosition()
 	test.building:getPhysicsBody():setPosition(Vec3(buildingPosition.x, 0, 0))
@@ -47,8 +51,6 @@ function doControls()
 	
 	local camera = entityManager:getGameCamera()
 	local cameraPhysicsBody = camera:getPhysicsBody()
-	
-	cameraPhysicsBody:renderDebugShapeWithCoord(resourceManager:findShader("basic"), camera, 0.0)
 
 	-- Movement
 	if(inputManager:isKeyPressed(KeyCode.LSHIFT)) then
@@ -163,5 +165,27 @@ function doControls()
 		end
 	else
 		musicButtonPressedLastFrame = false
+	end
+	
+	if(inputManager:isKeyPressed(KeyCode.N1)) then
+		test.light1:setOnState(true)
+		test.light2:setOnState(false)
+		test.light3:setOnState(false)
+		test.sun:setOnState(false)
+	elseif(inputManager:isKeyPressed(KeyCode.N2)) then
+		test.light1:setOnState(false)
+		test.light2:setOnState(true)
+		test.light3:setOnState(false)
+		test.sun:setOnState(false)
+	elseif(inputManager:isKeyPressed(KeyCode.N3)) then
+		test.light1:setOnState(false)
+		test.light2:setOnState(false)
+		test.light3:setOnState(true)
+		test.sun:setOnState(false)
+	else
+		test.light1:setOnState(false)
+		test.light2:setOnState(false)
+		test.light3:setOnState(false)
+		test.sun:setOnState(true)
 	end
 end

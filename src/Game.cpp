@@ -168,6 +168,7 @@ void Game::setupGraphics() // VAO and OpenGL options
 	GLuint vertexArrayID; // VAO - vertex array object
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
+	mEntityManager.initDeferredRendering();
 }
 
 void Game::initMainLoop() // Initialize a few things before the main loop
@@ -185,9 +186,6 @@ void Game::initMainLoop() // Initialize a few things before the main loop
 	mainScript->runFunction(MAIN_SCRIPT_FUNCTION_INIT);
 
 	mEntityManager.getGameCamera().setAspectRatio(calculateAspectRatio());
-
-	EntityManager::lightPointer light(new Light(glm::vec3(4, 4, 4), glm::vec3(1, 1, 1), glm::vec3(1, 1, 1), 60));
-	mEntityManager.addLight(light);
 }
 
 void Game::cleanUp() // Cleans up everything. Call before quitting

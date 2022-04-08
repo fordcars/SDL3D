@@ -51,7 +51,7 @@ void ShadedObject::render(const Camera& camera)
 	const ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry()->getIndexBuffer();
 	const ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry()->getPositionBuffer();
 	const ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry()->getUVBuffer();
-	const ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry()->getNormalBuffer();
+	const ObjectGeometry::vec3Buffer &normalBuffer = getObjectGeometry()->getNormalBuffer();
 
 	glm::mat4 modelMatrix = getPhysicsBody().generateModelMatrix();
 	glm::mat4 viewMatrix = camera.getViewMatrix();
@@ -65,11 +65,9 @@ void ShadedObject::render(const Camera& camera)
 
 	glUniformMatrix4fv(getShader()->findUniform("MVP"), 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(getShader()->findUniform("modelMatrix"), 1, GL_FALSE, &modelMatrix[0][0]);
-	glUniformMatrix4fv(getShader()->findUniform("viewMatrix"), 1, GL_FALSE, &viewMatrix[0][0]);
-	//glUniformMatrix4fv(getShader()->findUniform("projectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
 	glUniformMatrix4fv(getShader()->findUniform("normalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 
-	glUniform1i(getShader()->findUniform("textureSampler"), 0); // The first texture, not necessary for now
+	glUniform1i(getShader()->findUniform("textureSampler"), 0);
 
 	// Attribute 0, position buffer
 	glEnableVertexAttribArray(0);

@@ -3,14 +3,18 @@ local M = {}
 M.building = nil
 M.lastMonkey = nil
 
+M.light1 = nil
+M.light3 = nil
+M.sun = nil
+
 local function foo()
 	local game = getGame()
 	game:setName("Testing 123!")
-	game:setSize(IVec2(1024, 600))
+	--game:setSize(IVec2(1024, 600))
 	game:setMaxFramesPerSecond(60)
 	game:reCenterMainWindow()
 	
-	game:setGraphicsBackgroundColor(Vec3(0, 0, 1))
+	game:setGraphicsBackgroundColor(Vec3(0, 0, 0))
 	
 	Utils.logprint("Engine version: " .. Engine.Version)
 	
@@ -24,7 +28,11 @@ local function foo()
 	
 	resourceManager:addShader("basic.v.glsl", "basic.f.glsl")
 	resourceManager:addShader("textured.v.glsl", "textured.f.glsl")
-	resourceManager:addShader("shaded.v.glsl", "shaded.f.glsl")
+	resourceManager:addShader("deferredLight.v.glsl", "deferredLight.f.glsl")
+	resourceManager:addShader("deferredShaded.v.glsl", "deferredShaded.f.glsl")
+	resourceManager:addShader("test/test_deferredLight1.v.glsl", "test/test_deferredLight1.f.glsl")
+	resourceManager:addShader("test/test_deferredLight2.v.glsl", "test/test_deferredLight2.f.glsl")
+	resourceManager:addShader("test/test_deferredLight3.v.glsl", "test/test_deferredLight3.f.glsl")
 	
 	resourceManager:addTexture("test.bmp", TextureType.BMP)
 	resourceManager:addTexture("suzanne.dds", TextureType.DDS)
@@ -58,12 +66,46 @@ local function foo()
 	camera:setDirection(Vec4(3, 0.0, 0.0, 0.0))
 	
 	local geometry = resourceManager:findObjectGeometryGroup("suzanne"):getObjectGeometries()[1]
-	local shader = resourceManager:findShader("shaded")
+	local shader = resourceManager:findShader("deferredShaded")
 	local texture = resourceManager:findTexture("suzanne")
 	M.building = ShadedObject(resourceManager:findObjectGeometryGroup("building"):getObjectGeometries()[1], shader, resourceManager:findTexture("building"), false, PhysicsBodyType.Dynamic)
 	
-	local light = Light(Vec3(4, 4, 4), Vec3(1, 1, 1), Vec3(1, 1, 1), 60)
-	entityManager:addLight(light)
+	M.light1 = Light(resourceManager:findShader("test_deferredLight1"), Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(0, 0, 0), 1)
+	entityManager:addLight(M.light1)
+	M.light1:setOnState(false)
+	
+	M.light2 = Light(resourceManager:findShader("test_deferredLight2"), Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(0, 0, 0), 1)
+	entityManager:addLight(M.light2)
+	M.light2:setOnState(false)
+	
+	M.light3 = Light(resourceManager:findShader("test_deferredLight3"), Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(0, 0, 0), 1)
+	entityManager:addLight(M.light3)
+	M.light3:setOnState(false)
+	
+	local lightShader = resourceManager:findShader("deferredLight")
+    
+	--[[
+	math.randomseed(os.time())
+	local stride = 1
+	for i = 0, 20, 1 do
+		for j = 0, 20, 1 do
+			local color = Vec3(math.random(), math.random(), math.random())
+			local light = Light(lightShader, Vec3(i * stride, 4, j * stride), color, color, 60)
+			entityManager:addLight(light)
+		end
+	end]]--
+	
+	local sunColor = Vec3(1, 1, 1)
+	M.sun = Light(lightShader, Vec3(400, 400, 400), sunColor, sunColor, 70000000)
+	entityManager:addLight(M.sun)
+	
+	local color = Vec3(1, 0, 0.5)
+	local light = Light(lightShader, Vec3(0, 0, 0), color, color, 60)
+	--entityManager:addLight(light)
+	
+	color = Vec3(0, 0.5, 1)
+	light = Light(lightShader, Vec3(10.5, 0, 0), color, color, 60)
+	--entityManager:addLight(light)
 	
 	local maxCoord = 0
 	local firstMonkey = nil

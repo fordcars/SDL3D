@@ -22,15 +22,22 @@
 #include <EntityManager.hpp>
 #include <Utils.hpp>
 #include <Definitions.hpp>
+#include <ShadedObject.hpp>
 
 #include <algorithm> // For finding in vector
 #include <string>
 
 #include <Box2D/Box2D.h>
 
+const unsigned EntityManager::mDeferredTextureCount;
+
 EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 	: mPhysicsWorld(b2Vec2(gravity.x, gravity.y)) // Quick type conversion shhhh
 {
+	mDeferredFramebuffer = 0;
+	*mDeferredTextures = {0};
+	mDeferredDepthbuffer = 0;
+
 	// Defaults
 	mPhysicsTimePerStep = physicsTimePerStep;
 	mPhysicsVelocityIterations = 6;
@@ -41,7 +48,88 @@ EntityManager::EntityManager(glm::vec2 gravity, float physicsTimePerStep)
 
 EntityManager::~EntityManager()
 {
-	// Do nothing
+	glDeleteTextures(mDeferredTextureCount, mDeferredTextures);
+}
+
+void EntityManager::initDeferredRendering()
+{
+	// Create framebuffer
+	glGenFramebuffers(1, &mDeferredFramebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mDeferredFramebuffer);
+
+	// Add depth buffer
+	glGenRenderbuffers(1, &mDeferredDepthbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, mDeferredDepthbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDeferredDepthbuffer);
+
+	// Generate textures
+	glGenTextures(3, mDeferredTextures);
+
+	// Position
+	glBindTexture(GL_TEXTURE_2D, mDeferredTextures[0]);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,                          // Level
+		GL_RGB32F,                  // Internal format
+		DEFAULT_GAME_WINDOW_WIDTH,
+		DEFAULT_GAME_WINDOW_HEIGHT,
+		0,                          // Border
+		GL_RGB,
+		GL_FLOAT,                   // Data format
+		nullptr                     // Data (0s)
+	);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mDeferredTextures[0], 0);
+
+	// Normal
+	glBindTexture(GL_TEXTURE_2D, mDeferredTextures[1]);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,                          // Level
+		GL_RGB32F,                  // Internal format
+		DEFAULT_GAME_WINDOW_WIDTH,
+		DEFAULT_GAME_WINDOW_HEIGHT,
+		0,                          // Border
+		GL_RGB,
+		GL_FLOAT,                   // Data format
+		nullptr                     // Data (0s)
+	);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, mDeferredTextures[1], 0);
+
+	// Albedo
+	glBindTexture(GL_TEXTURE_2D, mDeferredTextures[2]);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,                          // Level
+		GL_RGB,                     // Internal format
+		DEFAULT_GAME_WINDOW_WIDTH,
+		DEFAULT_GAME_WINDOW_HEIGHT,
+		0,                          // Border
+		GL_RGB,
+		GL_UNSIGNED_BYTE,           // Data format
+		nullptr                     // Data (0s)
+	);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, mDeferredTextures[2], 0);
+
+	// Set draw buffers
+	GLenum drawBuffers[mDeferredTextureCount] = {
+		GL_COLOR_ATTACHMENT0,
+		GL_COLOR_ATTACHMENT1,
+		GL_COLOR_ATTACHMENT2
+	};
+	glDrawBuffers(mDeferredTextureCount, drawBuffers);
+
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		Utils::CRASH("Could not initialized deferred rendering framebuffer!");
 }
 
 Camera& EntityManager::getGameCamera()
@@ -197,8 +285,44 @@ void EntityManager::step(float divider)
 
 void EntityManager::render() // Renders all entities that can be rendered
 {
+	// First pass - shaded objets
+	glBindFramebuffer(GL_FRAMEBUFFER, mDeferredFramebuffer);
+	glViewport(0, 0, DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear textures before writing to them
+
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+
 	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
 	{
-		(*it)->render(mGameCamera);
+		Object *object = &(*(*it));
+		ShadedObject *shaded = dynamic_cast<ShadedObject *>(object);
+		
+		if(shaded != nullptr)
+			shaded->render(mGameCamera);
+	}
+
+	// Second pass - other objects
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, DEFAULT_GAME_WINDOW_WIDTH, DEFAULT_GAME_WINDOW_HEIGHT);
+
+	for(objectVector::iterator it = mObjects.begin(); it != mObjects.end(); ++it)
+	{
+		Object *object = &(*(*it));
+		ShadedObject *shaded = dynamic_cast<ShadedObject *>(object);
+
+		if(shaded == nullptr)
+			object->render(mGameCamera);
+	}
+
+	// Third pass - lights
+	glEnable(GL_BLEND); // Enable blending to add each light source
+	glDisable(GL_DEPTH_TEST);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendEquation(GL_FUNC_ADD);
+	for(lightVector::iterator it = mLights.begin(); it != mLights.end(); ++it)
+	{
+		(*it)->renderDeferred(mGameCamera, mDeferredTextures[0], mDeferredTextures[1], mDeferredTextures[2]);
 	}
 }
