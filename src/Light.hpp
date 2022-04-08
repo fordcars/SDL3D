@@ -32,11 +32,11 @@ private:
 
 	constShaderPointer mShaderPointer;
 	ObjectGeometry mObjectGeometry;
-	glm::vec3 mDiffuseColor; // Virtually all of the time, diffuse color and specular color will be white
+	glm::vec3 mDiffuseColor;  // Virtually all of the time, diffuse color and specular color will be white
 	glm::vec3 mSpecularColor;
 
 	float mIntensity;
-	bool mOnState; // Can turn the light on or off
+	bool mOnState;            // Can turn the light on or off
 
 public:
 	Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 diffuseColor, glm::vec3 specularColor, float intensity);

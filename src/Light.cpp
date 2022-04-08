@@ -49,6 +49,7 @@ Light::Light(constShaderPointer shaderPointer, glm::vec3 position, glm::vec3 dif
 	mSpecularColor = specularColor;
 
 	mIntensity = intensity;
+	mOnState = true;
 }
 
 Light::~Light()
@@ -58,6 +59,9 @@ Light::~Light()
 
 void Light::renderDeferred(const Camera &camera, GLuint positionTexture, GLuint normalTexture, GLuint albedoTexture)
 {
+	if(!mOnState)
+		return;
+
 	const ObjectGeometry::uintBuffer &indexBuffer = mObjectGeometry.getIndexBuffer();
 	const ObjectGeometry::vec3Buffer &positionBuffer = mObjectGeometry.getPositionBuffer();
 	const ObjectGeometry::vec2Buffer &UVBuffer = mObjectGeometry.getUVBuffer();
