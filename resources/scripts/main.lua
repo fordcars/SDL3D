@@ -166,4 +166,26 @@ function doControls()
 	else
 		musicButtonPressedLastFrame = false
 	end
+	
+	if(inputManager:isKeyPressed(KeyCode.N1)) then
+		test.light1:setOnState(true)
+		test.light2:setOnState(false)
+		test.light3:setOnState(false)
+		test.sun:setOnState(false)
+	elseif(inputManager:isKeyPressed(KeyCode.N2)) then
+		test.light1:setOnState(false)
+		test.light2:setOnState(true)
+		test.light3:setOnState(false)
+		test.sun:setOnState(false)
+	elseif(inputManager:isKeyPressed(KeyCode.N3)) then
+		test.light1:setOnState(false)
+		test.light2:setOnState(false)
+		test.light3:setOnState(true)
+		test.sun:setOnState(false)
+	else
+		test.light1:setOnState(false)
+		test.light2:setOnState(false)
+		test.light3:setOnState(false)
+		test.sun:setOnState(true)
+	end
 end

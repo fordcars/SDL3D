@@ -3,6 +3,10 @@ local M = {}
 M.building = nil
 M.lastMonkey = nil
 
+M.light1 = nil
+M.light3 = nil
+M.sun = nil
+
 local function foo()
 	local game = getGame()
 	game:setName("Testing 123!")
@@ -24,8 +28,11 @@ local function foo()
 	
 	resourceManager:addShader("basic.v.glsl", "basic.f.glsl")
 	resourceManager:addShader("textured.v.glsl", "textured.f.glsl")
-    resourceManager:addShader("deferredLight.v.glsl", "deferredLight.f.glsl")
-    resourceManager:addShader("deferredShaded.v.glsl", "deferredShaded.f.glsl")
+	resourceManager:addShader("deferredLight.v.glsl", "deferredLight.f.glsl")
+	resourceManager:addShader("deferredShaded.v.glsl", "deferredShaded.f.glsl")
+	resourceManager:addShader("test/test_deferredLight1.v.glsl", "test/test_deferredLight1.f.glsl")
+	resourceManager:addShader("test/test_deferredLight2.v.glsl", "test/test_deferredLight2.f.glsl")
+	resourceManager:addShader("test/test_deferredLight3.v.glsl", "test/test_deferredLight3.f.glsl")
 	
 	resourceManager:addTexture("test.bmp", TextureType.BMP)
 	resourceManager:addTexture("suzanne.dds", TextureType.DDS)
@@ -63,6 +70,18 @@ local function foo()
 	local texture = resourceManager:findTexture("suzanne")
 	M.building = ShadedObject(resourceManager:findObjectGeometryGroup("building"):getObjectGeometries()[1], shader, resourceManager:findTexture("building"), false, PhysicsBodyType.Dynamic)
 	
+	M.light1 = Light(resourceManager:findShader("test_deferredLight1"), Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(0, 0, 0), 1)
+	entityManager:addLight(M.light1)
+	M.light1:setOnState(false)
+	
+	M.light2 = Light(resourceManager:findShader("test_deferredLight2"), Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(0, 0, 0), 1)
+	entityManager:addLight(M.light2)
+	M.light2:setOnState(false)
+	
+	M.light3 = Light(resourceManager:findShader("test_deferredLight3"), Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(0, 0, 0), 1)
+	entityManager:addLight(M.light3)
+	M.light3:setOnState(false)
+	
 	local lightShader = resourceManager:findShader("deferredLight")
     
 	--[[
@@ -77,16 +96,16 @@ local function foo()
 	end]]--
 	
 	local sunColor = Vec3(1, 1, 1)
-	local sun = Light(lightShader, Vec3(400, 400, 400), sunColor, sunColor, 70000000)
-	entityManager:addLight(sun)
+	M.sun = Light(lightShader, Vec3(400, 400, 400), sunColor, sunColor, 70000000)
+	entityManager:addLight(M.sun)
 	
 	local color = Vec3(1, 0, 0.5)
 	local light = Light(lightShader, Vec3(0, 0, 0), color, color, 60)
-	entityManager:addLight(light)
+	--entityManager:addLight(light)
 	
 	color = Vec3(0, 0.5, 1)
 	light = Light(lightShader, Vec3(10.5, 0, 0), color, color, 60)
-	entityManager:addLight(light)
+	--entityManager:addLight(light)
 	
 	local maxCoord = 0
 	local firstMonkey = nil
