@@ -40,12 +40,12 @@ uniform sampler2D albedoTex;
 void main()
 {
     vec3 fragPos_worldspace = texture(positionTex, UV).rgb;
-    vec3 fragNormal_cameraspace = texture(normalTex, UV).rgb;
-    vec3 albedo = texture(albedoTex, UV).rgb;
+	vec3 fragNormal_cameraspace = texture(normalTex, UV).rgb;
+	vec3 albedo = texture(albedoTex, UV).rgb;
     
-    vec3 fragPos_cameraspace = (viewMatrix * vec4(fragPos_worldspace, 1)).xyz;
-    vec3 eyeDirection_cameraspace = vec3(0, 0, 0) - fragPos_cameraspace;               // Frag to camera
-    vec3 lightDirection_cameraspace = lightPos_cameraspace + eyeDirection_cameraspace; // Frag to light
+	vec3 fragPos_cameraspace = (viewMatrix * vec4(fragPos_worldspace, 1)).xyz;
+	vec3 eyeDirection_cameraspace = vec3(0, 0, 0) - fragPos_cameraspace;               // Frag to camera
+	vec3 lightDirection_cameraspace = lightPos_cameraspace + eyeDirection_cameraspace; // Frag to light
     
 	float squareDistance = pow(length(lightPos_worldspace - fragPos_worldspace), 2);
 	
@@ -60,9 +60,9 @@ void main()
 	float cosAlpha = clamp(dot(E, R), 0, 1);
 	
 	color =
-        // Diffuse
-        albedo * lightDiffuseColor * lightIntensity * cosTheta / squareDistance +
-        // Specular
-        // Multiplying by cos theta removes annoying artefacts http://www.gamedev.net/topic/672374-blinn-phong-artifact-in-shader/
-        lightSpecularColor * lightDiffuseColor * lightIntensity * pow(cosAlpha, 5) / squareDistance * cosTheta;
+		// Diffuse
+		albedo * lightDiffuseColor * lightIntensity * cosTheta / squareDistance +
+		// Specular
+		// Multiplying by cos theta removes annoying artefacts http://www.gamedev.net/topic/672374-blinn-phong-artifact-in-shader/
+		lightSpecularColor * lightDiffuseColor * lightIntensity * pow(cosAlpha, 5) / squareDistance * cosTheta;
 }

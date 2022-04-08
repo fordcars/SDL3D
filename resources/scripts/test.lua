@@ -77,9 +77,13 @@ local function foo()
 		end
 	end]]--
 	
+	local sunColor = Vec3(1, 1, 1)
+	local sun = Light(lightShader, Vec3(400, 400, 400), sunColor, sunColor, 70000000)
+	entityManager:addLight(sun)
+	
 	local color = Vec3(1, 0, 0.5)
-	local light = Light(lightShader, Vec3(4, 4, 4), color, color, 60)
-	--entityManager:addLight(light)
+	local light = Light(lightShader, Vec3(0, 0, 0), color, color, 60)
+	entityManager:addLight(light)
 	
 	color = Vec3(0, 0.5, 1)
 	light = Light(lightShader, Vec3(10.5, 0, 0), color, color, 60)
@@ -94,10 +98,6 @@ local function foo()
 		newMonkey:getPhysicsBody():setVelocity(Vec3(0, 0.0, 0.0))
 		newMonkey:getPhysicsBody():setWorldFriction(2)
 		entityManager:addObject(newMonkey)
-		
-		-- Add light
-		light = Light(lightShader, Vec3(coord, 0.0, 0.0), color, color, 60)
-		entityManager:addLight(light)
 		
 		maxCoord = coord
 		

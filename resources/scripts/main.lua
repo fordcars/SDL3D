@@ -23,10 +23,14 @@ function gameStep()
 	
 	doControls();
 	
+	--[[
+	-- Debug shapes
 	for i,v in ipairs(objects) do
 		local physicsBody = v:getPhysicsBody()
 		physicsBody:renderDebugShape(shader, camera)
 	end
+	camera:getPhysicsBody():renderDebugShapeWithCoord(resourceManager:findShader("basic"), camera, 0.0)
+	]]--
 	
 	local buildingPosition = test.building:getPhysicsBody():getPosition()
 	test.building:getPhysicsBody():setPosition(Vec3(buildingPosition.x, 0, 0))
@@ -47,8 +51,6 @@ function doControls()
 	
 	local camera = entityManager:getGameCamera()
 	local cameraPhysicsBody = camera:getPhysicsBody()
-	
-	cameraPhysicsBody:renderDebugShapeWithCoord(resourceManager:findShader("basic"), camera, 0.0)
 
 	-- Movement
 	if(inputManager:isKeyPressed(KeyCode.LSHIFT)) then
