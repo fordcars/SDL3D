@@ -65,10 +65,9 @@ local function foo()
 	
 	local lightShader = resourceManager:findShader("deferredLight")
     
+	--[[
 	math.randomseed(os.time())
 	local stride = 1
-    
-	--[[
 	for i = 0, 20, 1 do
 		for j = 0, 20, 1 do
 			local color = Vec3(math.random(), math.random(), math.random())
