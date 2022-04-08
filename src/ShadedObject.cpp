@@ -51,7 +51,7 @@ void ShadedObject::render(const Camera& camera)
 	const ObjectGeometry::uintBuffer& indexBuffer = getObjectGeometry()->getIndexBuffer();
 	const ObjectGeometry::vec3Buffer& positionBuffer = getObjectGeometry()->getPositionBuffer();
 	const ObjectGeometry::vec2Buffer& UVBuffer = getObjectGeometry()->getUVBuffer();
-	const ObjectGeometry::vec3Buffer& normalBuffer = getObjectGeometry()->getNormalBuffer();
+	const ObjectGeometry::vec3Buffer &normalBuffer = getObjectGeometry()->getNormalBuffer();
 
 	glm::mat4 modelMatrix = getPhysicsBody().generateModelMatrix();
 	glm::mat4 viewMatrix = camera.getViewMatrix();

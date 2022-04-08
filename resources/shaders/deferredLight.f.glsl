@@ -21,7 +21,9 @@
 
 #version 330 core
 
+in vec3 lightPos_cameraspace;
 in vec2 UV;
+
 out vec3 color;
 
 uniform mat4 viewMatrix;
@@ -41,10 +43,9 @@ void main()
     vec3 fragNormal_cameraspace = texture(normalTex, UV).rgb;
     vec3 albedo = texture(albedoTex, UV).rgb;
     
-	vec3 lightPos_cameraspace = (viewMatrix * vec4(lightPos_worldspace, 1)).xyz;
     vec3 fragPos_cameraspace = (viewMatrix * vec4(fragPos_worldspace, 1)).xyz;
-    vec3 eyeDirection_cameraspace = normalize(vec3(0, 0, 0) - fragPos_cameraspace);               // Frag to camera
-    vec3 lightDirection_cameraspace = normalize(lightPos_cameraspace + eyeDirection_cameraspace); // Frag to light
+    vec3 eyeDirection_cameraspace = vec3(0, 0, 0) - fragPos_cameraspace;               // Frag to camera
+    vec3 lightDirection_cameraspace = lightPos_cameraspace + eyeDirection_cameraspace; // Frag to light
     
 	float squareDistance = pow(length(lightPos_worldspace - fragPos_worldspace), 2);
 	

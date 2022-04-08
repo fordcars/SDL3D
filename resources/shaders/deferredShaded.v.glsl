@@ -41,7 +41,7 @@ void main()
 	// Output position of the vertex
 	gl_Position = MVP * vec4(vertexPosition_modelspace, 1);
     position_worldspace = (modelMatrix * vec4(vertexPosition_modelspace, 1)).xyz;
-    normal_cameraspace = (normalMatrix * vec4(vertexNormal_modelspace, 0.0)).xyz;
+    normal_cameraspace = (normalMatrix * vec4(vertexNormal_modelspace, 1)).xyz;
 	
 	// UV of the vertex
 	UV = vertexUV;

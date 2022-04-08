@@ -24,12 +24,17 @@
 layout(location = 0) in vec3 vertexPosition_clipspace;
 layout(location = 1) in vec2 vertexUV;
 
+uniform mat4 viewMatrix;
+uniform vec3 lightPos_worldspace;
+
+out vec3 lightPos_cameraspace;
 out vec2 UV;
 
 void main()
 {
 	// Output position of the vertex
 	gl_Position = vec4(vertexPosition_clipspace, 1);
+	lightPos_cameraspace = (viewMatrix * vec4(lightPos_worldspace, 1)).xyz;
 	
 	// UV of the vertex
 	UV = vertexUV;
